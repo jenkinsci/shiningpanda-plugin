@@ -1,0 +1,46 @@
+<!--
+ShiningPanda plug-in for Jenkins
+Copyright (C) 2011 ShiningPanda S.A.S.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+-->
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <j:if test="${!empty(descriptor.installations) &amp;&amp; descriptor.showInstallations}">
+    <f:entry title="${%Python Version}" help="/plugin/shiningpanda/help/InstalledPythonBuilder/help-pythonName.html">
+      <select class="setting-input" name="pythonName">
+        <option value="${descriptor.defaultInstallationName}">(${%Default})</option>
+        <j:forEach var="inst" items="${descriptor.installations}">
+          <f:option selected="${inst.name==instance.python.name}" value="${inst.name}">${inst.name}</f:option>
+        </j:forEach>
+      </select>
+    </f:entry>
+  </j:if>
+  <f:entry title="${%Virtualenv home}" help="/plugin/shiningpanda/help/VirtualenvBuilder/help-home.html">
+    <f:textbox field="home" default="env"/>
+  </f:entry>
+  <f:entry field="clear" title="${%Clear}" help="/plugin/shiningpanda/help/VirtualenvBuilder/help-clear.html">
+    <f:checkbox checked="${it.clear}" />
+  </f:entry>
+  <f:entry title="${%Package manager}" help="/plugin/shiningpanda/help/VirtualenvBuilder/help-useDistribute.html">
+    <f:radio name="useDistribute" value="true" checked="${ instance==null || instance.useDistribute==true }" />
+    <label class="attach-previous">${%Distribute}</label>
+    <st:nbsp />
+    <f:radio name="useDistribute" value="false" checked="${ instance!=null and instance.useDistribute==false }"/>
+    <label class="attach-previous">${%Setuptools}</label>
+  </f:entry>
+  <f:entry title="${%Command}" help="/plugin/shiningpanda/help/PythonBuilder/help-command.html">
+    <f:textarea field="command" class="fixed-width" />
+  </f:entry>
+</j:jelly>

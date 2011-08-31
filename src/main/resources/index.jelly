@@ -1,0 +1,20 @@
+<!--
+ShiningPanda plug-in for Jenkins
+Copyright (C) 2011 ShiningPanda S.A.S.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+-->
+<div>
+  This plugin adds the Python support to Jenkins with some useful builders (standard Python builder, <a href="http://pypi.python.org/pypi/virtualenv" target="_blank">virtualenv</a> builder, ...) and the ability to use a Python axis in multi-configuration projects (for testing on multiple versions of Python).
+</div>
