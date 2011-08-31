@@ -39,7 +39,7 @@
 	<scm>
 		<connection>scm:git:git://github.com/shiningpanda/shiningpanda-plugin.git</connection>
 		<developerConnection>scm:git:git@github.com:shiningpanda/shiningpanda-plugin.git</developerConnection>
-		<url>https://github.com/jenkinsci/shiningpanda-plugin</url>
+		<url>https://github.com/shiningpanda/shiningpanda-plugin</url>
 	</scm>
 
 </project>
