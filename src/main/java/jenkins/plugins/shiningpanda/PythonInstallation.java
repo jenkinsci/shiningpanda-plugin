@@ -80,6 +80,9 @@ public abstract class PythonInstallation extends ToolInstallation implements Env
                 exe = getExeFile("python3");
                 if (exe.exists())
                     return exe.getPath();
+                exe = getExeFile("pypy");
+                if (exe.exists())
+                    return exe.getPath();
                 return null;
             }
         });
