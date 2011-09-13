@@ -1,0 +1,27 @@
+<settings>
+  <pluginGroups>
+    <pluginGroup>org.jenkins-ci.tools</pluginGroup>
+  </pluginGroups>
+
+  <profiles>
+    <!-- Give access to Jenkins plugins -->
+    <profile>
+      <id>jenkins</id>
+      <activation>
+        <activeByDefault>true</activeByDefault> <!-- change this to false, if you don't like to have it on per default -->
+      </activation>
+      <repositories>
+        <repository>
+          <id>maven.jenkins-ci.org</id>
+          <url>http://maven.jenkins-ci.org/content/groups/artifacts/</url>
+        </repository>
+      </repositories>      
+      <pluginRepositories>
+        <pluginRepository>
+          <id>maven.jenkins-ci.org</id>
+          <url>http://maven.jenkins-ci.org/content/groups/artifacts/</url>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+  </profiles>
+</settings>
