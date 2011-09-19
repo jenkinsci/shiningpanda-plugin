@@ -20,7 +20,6 @@ package jenkins.plugins.shiningpanda;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.Util;
 import hudson.model.Item;
 import hudson.model.TaskListener;
 import hudson.model.AbstractBuild;
@@ -130,11 +129,8 @@ public class CustomVirtualenvBuilder extends PythonBuilder
             // server, so needs to be protected
             if (!project.hasPermission(Item.CONFIGURE))
                 return FormValidation.ok();
-            // Check that path specified
-            if (Util.fixEmptyAndTrim(value.getPath()) == null)
-                return FormValidation.error(Messages.CustomVirtualenvBuilder_HomeDirectoryRequired());
-            // Do not need to check more as files are located on slaves
-            return FormValidation.ok();
+            // Validate PYTHON home
+            return ShiningPandaUtil.validatePythonHome(value);
         }
     }
 
@@ -151,7 +147,13 @@ public class CustomVirtualenvBuilder extends PythonBuilder
             TaskListener listener) throws InterruptedException, IOException
     {
         // Create a new virtual environment and set the environment
-        getVirtualenv(getHome(), build, node, listener, envVars).setEnvironment(envVars, getPathSeparator(launcher));
+        VirtualenvInstallation vi = getVirtualenv(getHome(), build, node, listener, envVars);
+        // Validate PYTHONHOME once all variable were expanded
+        if (!ShiningPandaUtil.validatePythonHome(vi, listener))
+            // No need to go further
+            return false;
+        // Set the environment
+        vi.setEnvironment(envVars, getPathSeparator(launcher));
         // Environment ready
         return true;
     }

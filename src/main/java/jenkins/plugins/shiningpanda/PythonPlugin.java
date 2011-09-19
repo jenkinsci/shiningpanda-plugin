@@ -19,35 +19,7 @@ package jenkins.plugins.shiningpanda;
 
 import hudson.Plugin;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 public class PythonPlugin extends Plugin
 {
 
-    private static final Logger LOGGER = Logger.getLogger(PythonPlugin.class.getName());
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see hudson.Plugin#start()
-     */
-    @Override
-    public void start() throws Exception
-    {
-        LOGGER.log(Level.INFO, "Starting ShiningPanda Python plugin");
-        super.start();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see hudson.Plugin#stop()
-     */
-    @Override
-    public void stop() throws Exception
-    {
-        LOGGER.log(Level.INFO, "Stopping ShiningPanda Python plugin");
-        super.stop();
-    }
 }

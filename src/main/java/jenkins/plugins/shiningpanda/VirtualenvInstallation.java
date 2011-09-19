@@ -30,10 +30,10 @@ public class VirtualenvInstallation extends PythonInstallation
 {
 
     /**
-     * Constructor using field
+     * Constructor using field.
      * 
      * @param home
-     *            The home folder for this VIRTUALENV installation
+     *            The home folder for this VIRTUALENV installation.
      */
     public VirtualenvInstallation(String home)
     {

@@ -67,8 +67,6 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
      *            The home folder for this VIRTUALENV
      * @param clear
      *            Must the VIRTUALENV be cleared on each build?
-     * @param noSitePackages
-     *            Check if include packages from standard PYTHON
      * @param useDistribute
      *            Choose between SETUPTOOLS and DISTRIBUTE
      * @param command
@@ -136,6 +134,10 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
         // VIRTUALENV
         if (pi != null)
         {
+            // Validate PYTHONHOME
+            if (!ShiningPandaUtil.validatePythonHome(pi, listener))
+                // Can't go further as PYTHONHOME is not valid
+                return false;
             // Check that executable exists
             String pythonExe = pi.getExecutable(launcher);
             if (pythonExe == null)
@@ -154,26 +156,27 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
         FilePath virtualenv = new FilePath(ws, getRemoteHome(launcher));
         // Get the VIRTUALENV
         VirtualenvInstallation vi = getVirtualenv(virtualenv.getRemote(), build, node, listener, envVars);
+        // Validate installation
+        if (!ShiningPandaUtil.validatePythonHome(vi, listener))
+            // Can't go further
+            return false;
         // Check that in workspace
         if (!vi.isInWorkspace(ws))
         {
+            // Log
             listener.fatalError(Messages.VirtualenvBuilder_NotInWorkspace(vi.getHome(), ws.getRemote()));
+            // Can't go further
             return false;
         }
         // Get the path separator
         String pathSeparator = getPathSeparator(launcher);
-        // Check that not a file
-        if (virtualenv.exists() && !virtualenv.isDirectory())
-        {
-            listener.fatalError(Messages.VirtualenvBuilder_VirtualenvHomeIsAFile(virtualenv.getRemote()));
-            return false;
-        }
         // Get the time stamp file in VIRTUALENV
         FilePath timestamp = new FilePath(virtualenv, ".timestamp");
         // time stamp
         boolean outdated = timestamp.lastModified() < build.getParent().getConfigFile().getFile().lastModified();
         // Clean folder if required
         if (virtualenv.exists() && (clear || outdated))
+            // Delete the VIRTUALENV folder
             virtualenv.deleteRecursive();
         // Flag that show if the VIRTUALENV was created
         boolean created = false;

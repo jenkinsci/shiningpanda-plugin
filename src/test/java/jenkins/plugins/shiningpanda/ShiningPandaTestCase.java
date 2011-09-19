@@ -34,6 +34,11 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
     private final static String PYPY_HOME_KEY = "PyPy.Home";
 
     /**
+     * Key for Virtualenv's home in test.properties file.
+     */
+    private final static String VIRTUALENV_HOME_KEY = "Virtualenv.Home";
+
+    /**
      * Name of CPython 2.x.
      */
     private final static String CPYTHON_2_NAME = "CPython-2";
@@ -114,6 +119,17 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
     protected String getCPython3Home() throws IOException
     {
         return getTestProperty(CPYTHON_3_HOME_KEY);
+    }
+
+    /**
+     * Get the Virtualenv's home
+     * 
+     * @return The home folder.
+     * @throws IOException
+     */
+    protected String getVirtualenvHome() throws IOException
+    {
+        return getTestProperty(VIRTUALENV_HOME_KEY);
     }
 
     /**

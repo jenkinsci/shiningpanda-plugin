@@ -57,9 +57,14 @@ public class StandardPythonBuilder extends InstalledPythonBuilder
     protected boolean setEnvironment(EnvVars envVars, AbstractBuild<?, ?> build, Node node, Launcher launcher,
             TaskListener listener) throws InterruptedException, IOException
     {
+        // Get the PYTHON installation
         StandardPythonInstallation pi = getPython(build, node, listener, envVars);
         if (pi != null)
         {
+            // Validate PYTHONHOME
+            if (!ShiningPandaUtil.validatePythonHome(pi, listener))
+                // Can't go further as PYTHONHOME is not valid
+                return false;
             String exe = pi.getExecutable(launcher);
             if (exe == null)
             {

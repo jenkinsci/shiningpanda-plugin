@@ -194,15 +194,8 @@ public final class StandardPythonInstallation extends PythonInstallation
             // server, so needs to be protected
             if (!Hudson.getInstance().hasPermission(Hudson.ADMINISTER))
                 return FormValidation.ok();
-            // Check that folder specified
-            if (Util.fixEmptyAndTrim(value.getPath()) == null)
-                return FormValidation.error(Messages.StandardPythonInstallation_PythonDirectoryRequired());
-            // Check that folder exists
-            if (!value.isDirectory())
-                // Only a warning as installation can be on slaves
-                return FormValidation.warning(Messages.StandardPythonInstallation_NotADirectory(value));
-            // All fine
-            return FormValidation.ok();
+            // Validate PYTHON home
+            return ShiningPandaUtil.validatePythonHome(value);
         }
 
         /**
