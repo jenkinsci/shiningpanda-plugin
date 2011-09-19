@@ -39,6 +39,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public abstract class PythonBuilder extends Builder implements Serializable
 {
@@ -136,9 +137,18 @@ public abstract class PythonBuilder extends Builder implements Serializable
             int r;
             try
             {
+                // Get the environment variables for this build
                 EnvVars envVars = build.getEnvironment(listener);
+                // Add build variables, such as the user defined text axis for
+                // matrix builds
+                for (Map.Entry<String, String> e : build.getBuildVariables().entrySet())
+                    // Add the variable
+                    envVars.put(e.getKey(), e.getValue());
+                // Set the environment of this specific builder
                 if (!setEnvironment(envVars, build, Computer.currentComputer().getNode(), launcher, listener))
+                    // If fails to set the environment, make the build fail
                     return false;
+                // Start command line
                 r = launcher.launch().cmds(buildCommandLine(script)).envs(envVars).stdout(listener).pwd(ws).join();
             }
             catch (IOException e)

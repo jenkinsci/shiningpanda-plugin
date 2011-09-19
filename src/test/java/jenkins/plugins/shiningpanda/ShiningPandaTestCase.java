@@ -6,6 +6,7 @@ import hudson.model.Item;
 import hudson.tasks.Builder;
 
 import java.beans.PropertyDescriptor;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
@@ -13,6 +14,7 @@ import java.lang.reflect.Field;
 import java.util.Properties;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.io.FileUtils;
 import org.jvnet.hudson.test.HudsonTestCase;
 
 public abstract class ShiningPandaTestCase extends HudsonTestCase
@@ -32,11 +34,6 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      * Key for PyPy's home in test.properties file.
      */
     private final static String PYPY_HOME_KEY = "PyPy.Home";
-
-    /**
-     * Key for Virtualenv's home in test.properties file.
-     */
-    private final static String VIRTUALENV_HOME_KEY = "Virtualenv.Home";
 
     /**
      * Name of CPython 2.x.
@@ -129,11 +126,43 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      */
     protected String getVirtualenvHome() throws IOException
     {
-        return getTestProperty(VIRTUALENV_HOME_KEY);
+        return new File("target", "virtualenv").getAbsolutePath();
     }
 
     /**
-     * Configure a Python installation.
+     * Create a VIRTUALENV.
+     * 
+     * @param home
+     *            The home of this VIRTUALENV.
+     * @return The home of the VIRTUALENV
+     * @throws Exception
+     */
+    protected String createVirtualenv(String home) throws Exception
+    {
+        File file = new File(home);
+        if (file.isDirectory())
+            FileUtils.deleteDirectory(file);
+        if (file.isFile())
+            file.delete();
+        ProcessBuilder pb = new ProcessBuilder("virtualenv", home);
+        Process process = pb.start();
+        assertEquals(0, process.waitFor());
+        return home;
+    }
+
+    /**
+     * Create a default VIRTUALENV.
+     * 
+     * @return The home of this VIRTUALENV
+     * @throws Exception
+     */
+    protected String createVirtualenv() throws Exception
+    {
+        return createVirtualenv(getVirtualenvHome());
+    }
+
+    /**
+     * Configure a PYTHON installation.
      * 
      * @param name
      *            The name of the installation.

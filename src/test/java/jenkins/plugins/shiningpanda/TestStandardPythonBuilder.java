@@ -1,5 +1,12 @@
 package jenkins.plugins.shiningpanda;
 
+import java.util.List;
+
+import hudson.matrix.AxisList;
+import hudson.matrix.MatrixBuild;
+import hudson.matrix.MatrixProject;
+import hudson.matrix.MatrixRun;
+import hudson.matrix.TextAxis;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 
@@ -32,5 +39,21 @@ public class TestStandardPythonBuilder extends ShiningPandaTestCase
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
         assertTrue(log.contains("Whitespace not allowed in PYTHONHOME"));
+    }
+
+    public void testTextAxisAvailable() throws Exception
+    {
+        StandardPythonInstallation installation = configureCPython2();
+        StandardPythonBuilder builder = new StandardPythonBuilder(installation.getName(), "echo \"Welcome $TOTO\"");
+        MatrixProject project = createMatrixProject();
+        AxisList axes = new AxisList(new PythonAxis(new String[] { installation.getName(), }), new TextAxis("TOTO", "TUTU"));
+        project.setAxes(axes);
+        project.getBuildersList().add(builder);
+        MatrixBuild build = project.scheduleBuild2(0).get();
+        List<MatrixRun> runs = build.getRuns();
+        assertEquals(1, runs.size());
+        MatrixRun run = runs.get(0);
+        String log = FileUtils.readFileToString(run.getLogFile());
+        assertTrue("TextAxis value not available in builder", log.contains("Welcome TUTU"));
     }
 }
