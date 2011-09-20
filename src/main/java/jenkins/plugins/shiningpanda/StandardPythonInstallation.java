@@ -21,7 +21,6 @@ import hudson.CopyOnWrite;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.Util;
 import hudson.model.TaskListener;
 import hudson.model.Hudson;
 import hudson.model.Node;
@@ -206,14 +205,8 @@ public final class StandardPythonInstallation extends PythonInstallation
          */
         public FormValidation doCheckName(@QueryParameter String value)
         {
-            // Check that name specified
-            if (Util.fixEmptyAndTrim(value) == null)
-                return FormValidation.error(Messages.StandardPythonInstallation_NameRequired());
-            // Check that not reserved
-            if (PythonInstallation.defaultInstallationName.equals(value))
-                return FormValidation.error(Messages.StandardPythonInstallation_NameReserved());
-            // Successfully validated
-            return FormValidation.ok();
+            // Validate PYTHON name
+            return ShiningPandaUtil.validatePythonName(value);
         }
     }
 }

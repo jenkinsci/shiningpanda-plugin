@@ -15,6 +15,7 @@ import java.util.Properties;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
 import org.jvnet.hudson.test.HudsonTestCase;
 
 public abstract class ShiningPandaTestCase extends HudsonTestCase
@@ -124,9 +125,66 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      * @return The home folder.
      * @throws IOException
      */
-    protected String getVirtualenvHome() throws IOException
+    protected File getVirtualenvHome() throws IOException
     {
-        return new File("target", "virtualenv").getAbsolutePath();
+        return new File("target", "virtualenv").getAbsoluteFile();
+    }
+
+    /**
+     * Delete a VIRTUALENV.
+     * 
+     * @param home
+     *            The home folder of the VIRTUALENV.
+     * @throws IOException
+     */
+    protected void deleteVirtualenv(File home) throws IOException
+    {
+        // Check if exists
+        if (!home.exists())
+            return;
+        // Do not follow symbolic links
+        IOFileFilter filter = new IOFileFilter()
+        {
+            /*
+             * (non-Javadoc)
+             * 
+             * @see
+             * org.apache.commons.io.filefilter.IOFileFilter#accept(java.io.
+             * File, java.lang.String)
+             */
+            public boolean accept(File dir, String name)
+            {
+                return accept(dir);
+            }
+
+            /*
+             * (non-Javadoc)
+             * 
+             * @see
+             * org.apache.commons.io.filefilter.IOFileFilter#accept(java.io.
+             * File)
+             */
+            public boolean accept(File file)
+            {
+                try
+                {
+                    return !FileUtils.isSymlink(file);
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+        };
+        // Go threw the selected files to set write permission
+        for (File file : FileUtils.listFiles(home, filter, filter))
+        {
+            // Set write permission
+            file.setWritable(true);
+        }
+        // Delete the directory
+        FileUtils.deleteDirectory(home);
     }
 
     /**
@@ -137,14 +195,10 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      * @return The home of the VIRTUALENV
      * @throws Exception
      */
-    protected String createVirtualenv(String home) throws Exception
+    protected File createVirtualenv(File home) throws Exception
     {
-        File file = new File(home);
-        if (file.isDirectory())
-            FileUtils.deleteDirectory(file);
-        if (file.isFile())
-            file.delete();
-        ProcessBuilder pb = new ProcessBuilder("virtualenv", home);
+        deleteVirtualenv(home);
+        ProcessBuilder pb = new ProcessBuilder("virtualenv", home.getAbsolutePath());
         Process process = pb.start();
         assertEquals(0, process.waitFor());
         return home;
@@ -156,7 +210,7 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      * @return The home of this VIRTUALENV
      * @throws Exception
      */
-    protected String createVirtualenv() throws Exception
+    protected File createVirtualenv() throws Exception
     {
         return createVirtualenv(getVirtualenvHome());
     }

@@ -25,6 +25,32 @@ public class ShiningPandaUtil
     }
 
     /**
+     * Validate PYTHON name: check that specified, is not reserved and has no
+     * whitespace in it.
+     * 
+     * @param name
+     *            The PYTHON name to validate.
+     * @return The validation result.
+     */
+    public static FormValidation validatePythonName(String name)
+    {
+        // Trim name
+        String fixName = Util.fixEmptyAndTrim(name);
+        // Check that folder specified
+        if (fixName == null)
+            return FormValidation.error(Messages.ShiningPandaUtil_PythonNameRequired());
+        // Check that path does not contains some whitespace chars
+        if (hasWhitespace(fixName))
+            return FormValidation.error(Messages.ShiningPandaUtil_PythonNameHasWhitespace(fixName));
+        // Check that not reserved
+        if (PythonInstallation.defaultInstallationName.equals(fixName))
+            return FormValidation.error(Messages
+                    .ShiningPandaUtil_PythonNameReserved(PythonInstallation.defaultInstallationName));
+        // Seems fine
+        return FormValidation.ok();
+    }
+
+    /**
      * Validate PYTHON home: check that specified, exists and has no whitespace
      * in it.
      * 
@@ -35,17 +61,17 @@ public class ShiningPandaUtil
     public static FormValidation validatePythonHome(File home)
     {
         // Trim home
-        String sHome = Util.fixEmptyAndTrim(home.getPath());
+        String fixHome = Util.fixEmptyAndTrim(home.getPath());
         // Check that folder specified
-        if (sHome == null)
-            return FormValidation.error(Messages.ShiningPandaUtil_PythonHomeRequired_Short());
+        if (fixHome == null)
+            return FormValidation.error(Messages.ShiningPandaUtil_PythonHomeRequired());
         // Check that folder exists. If not exists, just display a warning
         // as installation can be on slaves
         if (!home.isDirectory())
-            return FormValidation.warning(Messages.ShiningPandaUtil_PythonHomeNotADirectory(sHome));
+            return FormValidation.warning(Messages.ShiningPandaUtil_PythonHomeNotADirectory(fixHome));
         // Check that path does not contains some whitespace chars
-        if (hasWhitespace(sHome))
-            return FormValidation.error(Messages.ShiningPandaUtil_PythonHomeHasWhitespace_Short(sHome));
+        if (hasWhitespace(fixHome))
+            return FormValidation.error(Messages.ShiningPandaUtil_PythonHomeHasWhitespace(fixHome));
         // Seems fine
         return FormValidation.ok();
     }
@@ -67,7 +93,7 @@ public class ShiningPandaUtil
         if (home == null)
         {
             // Log
-            listener.fatalError(Messages.ShiningPandaUtil_PythonHomeRequired_Short());
+            listener.fatalError(Messages.ShiningPandaUtil_PythonHomeRequired());
             // Invalid PYTHONHOME
             return false;
         }
@@ -75,7 +101,7 @@ public class ShiningPandaUtil
         if (hasWhitespace(home))
         {
             // Log
-            listener.fatalError(Messages.ShiningPandaUtil_PythonHomeHasWhitespace_Long(home));
+            listener.fatalError(Messages.ShiningPandaUtil_PythonHomeHasWhitespace(home));
             // Invalid PYTHONHOME
             return false;
         }

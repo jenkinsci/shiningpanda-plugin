@@ -1,14 +1,14 @@
 package jenkins.plugins.shiningpanda;
 
-import java.util.List;
-
 import hudson.matrix.AxisList;
+import hudson.matrix.MatrixRun;
 import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixProject;
-import hudson.matrix.MatrixRun;
 import hudson.matrix.TextAxis;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
+
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
@@ -36,13 +36,14 @@ public class TestCustomVirtualenvBuilder extends ShiningPandaTestCase
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
-        assertTrue(log.contains("Whitespace not allowed in PYTHONHOME"));
+        assertTrue(log.contains(Messages.ShiningPandaUtil_PythonHomeHasWhitespace("")));
     }
 
     public void testTextAxisAvailable() throws Exception
     {
         StandardPythonInstallation installation = configureCPython2();
-        CustomVirtualenvBuilder builder = new CustomVirtualenvBuilder(createVirtualenv(), "echo \"Welcome $TOTO\"");
+        CustomVirtualenvBuilder builder = new CustomVirtualenvBuilder(createVirtualenv().getAbsolutePath(),
+                "echo \"Welcome $TOTO\"");
         MatrixProject project = createMatrixProject();
         AxisList axes = new AxisList(new PythonAxis(new String[] { installation.getName(), }), new TextAxis("TOTO", "TUTU"));
         project.setAxes(axes);
