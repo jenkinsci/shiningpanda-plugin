@@ -33,6 +33,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <f:entry field="clear" title="${%Clear}" help="/plugin/shiningpanda/help/VirtualenvBuilder/help-clear.html">
     <f:checkbox checked="${it.clear}" />
   </f:entry>
+  <f:entry field="noSitePackages" title="${%No site packages}" help="/plugin/shiningpanda/help/VirtualenvBuilder/help-noSitePackages.html">
+    <f:checkbox checked="${it.noSitePackages}" />
+  </f:entry>
   <f:entry title="${%Package manager}" help="/plugin/shiningpanda/help/VirtualenvBuilder/help-useDistribute.html">
     <f:radio name="useDistribute" value="true" checked="${ instance==null || instance.useDistribute==true }" />
     <label class="attach-previous">${%Distribute}</label>

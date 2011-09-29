@@ -59,6 +59,11 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
     public boolean useDistribute;
 
     /**
+     * Must be public else not available in Jelly
+     */
+    public boolean noSitePackages;
+
+    /**
      * Constructor using fields
      * 
      * @param pythonName
@@ -69,11 +74,14 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
      *            Must the VIRTUALENV be cleared on each build?
      * @param useDistribute
      *            Choose between SETUPTOOLS and DISTRIBUTE
+     * @param noSitePackages
+     *            Do not include the contents of site-packages when creating
+     *            the virtual environment
      * @param command
      *            The command to execute
      */
     @DataBoundConstructor
-    public VirtualenvBuilder(String pythonName, String home, boolean clear, boolean useDistribute, String command)
+    public VirtualenvBuilder(String pythonName, String home, boolean clear, boolean useDistribute, boolean noSitePackages, String command)
     {
         // Call super
         super(pythonName, command);
@@ -81,6 +89,7 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
         this.home = home;
         this.clear = clear;
         this.useDistribute = useDistribute;
+        this.noSitePackages = noSitePackages;
     }
 
     /**
@@ -205,6 +214,9 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
             // Add distribute option
             if (useDistribute)
                 args.add("--distribute");
+            // Add no site packages option
+            if (noSitePackages)
+                args.add("--no-site-packages");
             // Path to the VIRTUALENV
             args.add(virtualenv.getRemote());
             // Get the execution environment for the VIRTUALENV creation
