@@ -75,13 +75,14 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
      * @param useDistribute
      *            Choose between SETUPTOOLS and DISTRIBUTE
      * @param noSitePackages
-     *            Do not include the contents of site-packages when creating
-     *            the virtual environment
+     *            Do not include the contents of site-packages when creating the
+     *            virtual environment
      * @param command
      *            The command to execute
      */
     @DataBoundConstructor
-    public VirtualenvBuilder(String pythonName, String home, boolean clear, boolean useDistribute, boolean noSitePackages, String command)
+    public VirtualenvBuilder(String pythonName, String home, boolean clear, boolean useDistribute, boolean noSitePackages,
+            String command)
     {
         // Call super
         super(pythonName, command);
@@ -215,7 +216,7 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
             if (useDistribute)
                 args.add("--distribute");
             // Add no site packages option
-            if (noSitePackages)
+            if (noSitePackages && !PythonPlugin.HOSTED)
                 args.add("--no-site-packages");
             // Path to the VIRTUALENV
             args.add(virtualenv.getRemote());
@@ -256,6 +257,12 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
     @Extension
     public static final class DescriptorImpl extends InstalledPythonBuildStepDescriptor
     {
+
+        /**
+         * Let Jelly access the hosted flag.
+         */
+        public static boolean HOSTED = PythonPlugin.HOSTED;
+
         /*
          * (non-Javadoc)
          * 

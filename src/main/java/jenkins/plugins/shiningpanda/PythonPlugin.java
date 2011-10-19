@@ -22,4 +22,9 @@ import hudson.Plugin;
 public class PythonPlugin extends Plugin
 {
 
+    /**
+     * Is JENKINS hosted on shiningpanda.com?
+     */
+    public static boolean HOSTED = Boolean.getBoolean(PythonPlugin.class.getName() + ".hosted");
+
 }
