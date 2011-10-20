@@ -17,21 +17,21 @@ public class TestCustomVirtualenvBuilder extends ShiningPandaTestCase
 
     public void testRoundTripFreeStyle() throws Exception
     {
-        CustomVirtualenvBuilder before = new CustomVirtualenvBuilder("/tmp/custom", "echo hello");
+        CustomVirtualenvBuilder before = new CustomVirtualenvBuilder("/tmp/custom", true, "echo hello");
         CustomVirtualenvBuilder after = configFreeStyleRoundtrip(before);
-        assertEqualBeans2(before, after, "home,command");
+        assertEqualBeans2(before, after, "home,ignoreExitCode,command");
     }
 
     public void testRoundTripMatrix() throws Exception
     {
-        CustomVirtualenvBuilder before = new CustomVirtualenvBuilder("/tmp/custom", "echo hello");
+        CustomVirtualenvBuilder before = new CustomVirtualenvBuilder("/tmp/custom", false, "echo hello");
         CustomVirtualenvBuilder after = configMatrixRoundtrip(before);
-        assertEqualBeans2(before, after, "home,command");
+        assertEqualBeans2(before, after, "home,ignoreExitCode,command");
     }
 
     public void testHomeWithSpace() throws Exception
     {
-        CustomVirtualenvBuilder builder = new CustomVirtualenvBuilder("/tmp/bad move", "echo hello");
+        CustomVirtualenvBuilder builder = new CustomVirtualenvBuilder("/tmp/bad move", false, "echo hello");
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -42,7 +42,7 @@ public class TestCustomVirtualenvBuilder extends ShiningPandaTestCase
     public void testTextAxisAvailable() throws Exception
     {
         StandardPythonInstallation installation = configureCPython2();
-        CustomVirtualenvBuilder builder = new CustomVirtualenvBuilder(createVirtualenv().getAbsolutePath(),
+        CustomVirtualenvBuilder builder = new CustomVirtualenvBuilder(createVirtualenv().getAbsolutePath(), false,
                 "echo \"Welcome $TOTO\"");
         MatrixProject project = createMatrixProject();
         AxisList axes = new AxisList(new PythonAxis(new String[] { installation.getName(), }), new TextAxis("TOTO", "TUTU"));
@@ -55,4 +55,27 @@ public class TestCustomVirtualenvBuilder extends ShiningPandaTestCase
         String log = FileUtils.readFileToString(run.getLogFile());
         assertTrue("TextAxis value not available in builder", log.contains("Welcome TUTU"));
     }
+
+    public void testIgnoreExitCode() throws Exception
+    {
+        CustomVirtualenvBuilder builder = new CustomVirtualenvBuilder(createVirtualenv().getAbsolutePath(), true,
+                "ls foobartrucmuch");
+        FreeStyleProject project = createFreeStyleProject();
+        project.getBuildersList().add(builder);
+        FreeStyleBuild build = project.scheduleBuild2(0).get();
+        String log = FileUtils.readFileToString(build.getLogFile());
+        assertTrue("This build should have been successful", log.contains("SUCCESS"));
+    }
+
+    public void testConsiderExitCode() throws Exception
+    {
+        CustomVirtualenvBuilder builder = new CustomVirtualenvBuilder(createVirtualenv().getAbsolutePath(), false,
+                "ls foobartrucmuch");
+        FreeStyleProject project = createFreeStyleProject();
+        project.getBuildersList().add(builder);
+        FreeStyleBuild build = project.scheduleBuild2(0).get();
+        String log = FileUtils.readFileToString(build.getLogFile());
+        assertTrue("This build should have failed", log.contains("FAILURE"));
+    }
+
 }

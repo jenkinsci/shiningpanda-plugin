@@ -39,11 +39,6 @@ public abstract class PythonInstallation extends ToolInstallation implements Env
 {
 
     /**
-     * Name of the default installation
-     */
-    public final static String defaultInstallationName = "(Default)";
-
-    /**
      * Constructor using fields
      * 
      * @param name

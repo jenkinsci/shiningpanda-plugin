@@ -46,7 +46,7 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
     /**
      * Home folder for this VIRTUALENV
      */
-    protected final String home;
+    public final String home;
 
     /**
      * Must be public else not available in Jelly
@@ -77,15 +77,18 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
      * @param noSitePackages
      *            Do not include the contents of site-packages when creating the
      *            virtual environment
+     * @param ignoreExitCode
+     *            Do not consider the build as a failure if any of the commands
+     *            exits with a non-zero exit code
      * @param command
      *            The command to execute
      */
     @DataBoundConstructor
     public VirtualenvBuilder(String pythonName, String home, boolean clear, boolean useDistribute, boolean noSitePackages,
-            String command)
+            boolean ignoreExitCode, String command)
     {
         // Call super
-        super(pythonName, command);
+        super(pythonName, ignoreExitCode, command);
         // Store fields
         this.home = home;
         this.clear = clear;
@@ -140,27 +143,17 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
         FilePath ws = build.getWorkspace();
         // Get the PYTHON to create this VIRTUALENV
         StandardPythonInstallation pi = getPython(build, node, listener, envVars);
-        // If got a PYTHON, check that executable exists and is not already a
-        // VIRTUALENV
-        if (pi != null)
+        // Validate PYTHON installation
+        if (!ShiningPandaUtil.validatePythonInstallation(pi, launcher, listener))
+            // Can't go further as PYTHON installation is not valid
+            return false;
+        // Check that not already a VIRTUALENV
+        if (pi.isVirtualenv(launcher))
         {
-            // Validate PYTHONHOME
-            if (!ShiningPandaUtil.validatePythonHome(pi, listener))
-                // Can't go further as PYTHONHOME is not valid
-                return false;
-            // Check that executable exists
-            String pythonExe = pi.getExecutable(launcher);
-            if (pythonExe == null)
-            {
-                listener.fatalError(Messages.VirtualenvBuilder_NoPythonExecutable(pi.getHome()));
-                return false;
-            }
-            // Check that not a VIRTUALENV
-            if (pi.isVirtualenv(launcher))
-            {
-                listener.fatalError(Messages.VirtualenvBuilder_AlreadyAVirtualenv(pi.getHome()));
-                return false;
-            }
+            // Log
+            listener.fatalError(Messages.VirtualenvBuilder_AlreadyAVirtualenv(pi.getHome()));
+            // Already a VIRTUALENV, can not process further
+            return false;
         }
         // Check if must clean the folder
         FilePath virtualenv = new FilePath(ws, getRemoteHome(launcher));
@@ -199,16 +192,15 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
             List<String> args = new ArrayList<String>();
             // If no PYTHON installation specified, use simple executable name
             String virtualenvExe = "virtualenv";
-            // Check that VIRTUALENV executable exists if PYTHON installation
-            // provided
-            if (pi != null)
+            // Get VIRTUALENV executable
+            virtualenvExe = pi.getVirtualenvExecutable(launcher);
+            // Check that executable exists
+            if (virtualenvExe == null)
             {
-                virtualenvExe = pi.getVirtualenvExecutable(launcher);
-                if (virtualenvExe == null)
-                {
-                    listener.fatalError(Messages.VirtualenvBuilder_NoVirtualenvExecutable(pi.getHome()));
-                    return false;
-                }
+                // Log
+                listener.fatalError(Messages.VirtualenvBuilder_NoVirtualenvExecutable(pi.getHome()));
+                // No VIRTUALeNV executable, no need to go further
+                return false;
             }
             // Add call to VIRTUALENV
             args.add(virtualenvExe);
@@ -222,21 +214,28 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
             args.add(virtualenv.getRemote());
             // Get the execution environment for the VIRTUALENV creation
             EnvVars piEnvVars = build.getEnvironment(listener);
-            if (pi != null)
-                pi.setEnvironment(piEnvVars, pathSeparator);
+            // Set the PYTHON environment
+            pi.setEnvironment(piEnvVars, pathSeparator);
             // Start creation and check successful
-            int returnCode = launcher.launch().cmds(args).envs(piEnvVars).stdout(listener).pwd(build.getWorkspace()).join();
-            if (returnCode != 0)
+            int exitCode = launcher.launch().cmds(args).envs(piEnvVars).stdout(listener).pwd(build.getWorkspace()).join();
+            // Check exit code
+            if (exitCode != 0)
             {
-                listener.fatalError(Messages.VirtualenvBuilder_VirtualenvFailed(returnCode));
+                // Log
+                listener.fatalError(Messages.VirtualenvBuilder_VirtualenvFailed(exitCode));
+                // Do not go further, creation failed
                 return false;
             }
         }
-        // Check that VIRTUALENV executable exists
+        // Get VIRTUALENV PYTHON executable
         String virtualenvPythonExe = vi.getExecutable(launcher);
+        // Check that this executable exists
         if (virtualenvPythonExe == null)
         {
+            // Log
             listener.fatalError(Messages.VirtualenvBuilder_NoVirtualenvPythonExecutable(vi.getHome()));
+            // The VIRTUALENV PYTHON executable does not exist, no need to go
+            // further
             return false;
         }
         // Set time stamp if just created (wanted to check the executable

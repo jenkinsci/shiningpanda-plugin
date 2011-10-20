@@ -42,33 +42,26 @@ public class CustomVirtualenvBuilder extends PythonBuilder
     /**
      * Home directory for the VIRTUALENV
      */
-    private final String home;
+    public final String home;
 
     /**
      * Constructor using fields
      * 
      * @param home
      *            The home directory for VIRTUALENV
+     * @param ignoreExitCode
+     *            Do not consider the build as a failure if any of the commands
+     *            exits with a non-zero exit code
      * @param command
      *            The command to execute
      */
     @DataBoundConstructor
-    public CustomVirtualenvBuilder(String home, String command)
+    public CustomVirtualenvBuilder(String home, boolean ignoreExitCode, String command)
     {
         // Call super
-        super(command);
+        super(ignoreExitCode, command);
         // Store the home directory
         this.home = home;
-    }
-
-    /**
-     * Get the home directory for this VIRTUALENV
-     * 
-     * @return The home directory
-     */
-    public String getHome()
-    {
-        return home;
     }
 
     private static final long serialVersionUID = 1L;
@@ -147,7 +140,7 @@ public class CustomVirtualenvBuilder extends PythonBuilder
             TaskListener listener) throws InterruptedException, IOException
     {
         // Create a new virtual environment and set the environment
-        VirtualenvInstallation vi = getVirtualenv(getHome(), build, node, listener, envVars);
+        VirtualenvInstallation vi = getVirtualenv(home, build, node, listener, envVars);
         // Validate PYTHONHOME once all variable were expanded
         if (!ShiningPandaUtil.validatePythonHome(vi, listener))
             // No need to go further

@@ -27,11 +27,6 @@ public abstract class InstalledPythonBuildStepDescriptor extends BuildStepDescri
 {
 
     /**
-     * Name of the default PYTHON
-     */
-    public final static String defaultInstallationName = PythonInstallation.defaultInstallationName;
-
-    /**
      * Flag to determine if PYTHON selection is let to user (useful for build
      * matrix)
      */
@@ -55,8 +50,8 @@ public abstract class InstalledPythonBuildStepDescriptor extends BuildStepDescri
     {
         // Set the flag (dirty to do this here, but do not know where to do it)
         showInstallations = !jobType.equals(MatrixProject.class);
-        // Always applicable
-        return true;
+        // If there's no PYTHON configured, there's no point in PYTHON builders
+        return getInstallations().length != 0;
     }
 
     /**

@@ -36,41 +36,39 @@ import hudson.tasks.Shell;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 public abstract class PythonBuilder extends Builder implements Serializable
 {
 
     /**
+     * Do not consider the build as a failure if any of the commands exits with
+     * a non-zero exit code.
+     */
+    public final boolean ignoreExitCode;
+
+    /**
      * The command to execute in the PYTHON environment
      */
-    protected final String command;
+    public final String command;
 
     /**
      * Constructor using fields
      * 
+     * @param ignoreExitCode
+     *            Do not consider the build as a failure if any of the commands
+     *            exits with a non-zero exit code
      * @param command
      *            The command to execute in PYTHON environment
      */
-    public PythonBuilder(String command)
+    public PythonBuilder(boolean ignoreExitCode, String command)
     {
         // Call super
         super();
+        // Store the ignore flag
+        this.ignoreExitCode = ignoreExitCode;
         // Normalize and store the command
         this.command = fixCrLf(command);
-    }
-
-    /**
-     * Get the command to execute in PYTHON environment
-     * 
-     * @return The command
-     */
-    public final String getCommand()
-    {
-        return command;
     }
 
     /**
@@ -214,13 +212,8 @@ public abstract class PythonBuilder extends Builder implements Serializable
      */
     private static String addCrForNonASCII(String s)
     {
-        if (!s.startsWith("#!"))
-        {
-            if (s.indexOf('\n') != 0)
-            {
-                return "\n" + s;
-            }
-        }
+        if (s.indexOf('\n') != 0)
+            return "\n" + s;
         return s;
     }
 
@@ -233,20 +226,7 @@ public abstract class PythonBuilder extends Builder implements Serializable
      */
     public String[] buildCommandLine(FilePath script)
     {
-        if (command.startsWith("#!"))
-        {
-            // Interpreter override
-            int end = command.indexOf('\n');
-            if (end < 0)
-                end = command.length();
-            List<String> args = new ArrayList<String>();
-            args.addAll(Arrays.asList(Util.tokenize(command.substring(0, end).trim())));
-            args.add(script.getRemote());
-            args.set(0, args.get(0).substring(2)); // trim off "#!"
-            return args.toArray(new String[args.size()]);
-        }
-        else
-            return new String[] { getShell(script.getChannel()), "-xe", script.getRemote() };
+        return new String[] { getShell(script.getChannel()), ignoreExitCode ? "-x" : "-xe", script.getRemote() };
     }
 
     /**
@@ -268,7 +248,7 @@ public abstract class PythonBuilder extends Builder implements Serializable
      */
     protected String getContents()
     {
-        return addCrForNonASCII(fixCrLf(command));
+        return addCrForNonASCII(fixCrLf(command)) + "\n" + "exit 0";
     }
 
     /**

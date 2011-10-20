@@ -30,20 +30,23 @@ public abstract class InstalledPythonBuilder extends PythonBuilder
     /**
      * Name of the PYTHON to invoke
      */
-    protected final String pythonName;
+    public final String pythonName;
 
     /**
      * Constructor using fields
      * 
      * @param pythonName
      *            The name of the PYTHON to invoke
+     * @param ignoreExitCode
+     *            Do not consider the build as a failure if any of the commands
+     *            exits with a non-zero exit code
      * @param command
      *            The command to execute in this PYTHON environment
      */
-    public InstalledPythonBuilder(String pythonName, String command)
+    public InstalledPythonBuilder(String pythonName, boolean ignoreExitCode, String command)
     {
         // Call super
-        super(command);
+        super(ignoreExitCode, command);
         // Store the name of the PYTHON to invoke
         this.pythonName = pythonName;
     }
@@ -57,22 +60,16 @@ public abstract class InstalledPythonBuilder extends PythonBuilder
      */
     public StandardPythonInstallation getPython(String name)
     {
+        // Go threw the installations
         for (StandardPythonInstallation pi : getDescriptor().getInstallations())
         {
+            // Check if the name match the current installation name
             if (name != null && name.equals(pi.getName()))
+                // If yes, we found it
                 return pi;
         }
+        // No installation matching the provided name
         return null;
-    }
-
-    /**
-     * Get the PYTHON to invoke, or null if not found
-     * 
-     * @return The PYTHON installation
-     */
-    public StandardPythonInstallation getPython()
-    {
-        return getPython(pythonName);
     }
 
     /**
@@ -94,25 +91,42 @@ public abstract class InstalledPythonBuilder extends PythonBuilder
     public StandardPythonInstallation getPython(AbstractBuild<?, ?> build, Node node, TaskListener listener, EnvVars envVars)
             throws InterruptedException, IOException
     {
+        // Get the PYTHON name
+        String name = pythonName;
         // Get PYTHON
-        StandardPythonInstallation pi = getPython();
+        StandardPythonInstallation pi = getPython(name);
         // If unable to get it, check if variables if name is provided by matrix
         // project
-        if (pi == null)
-            pi = getPython(build.getBuildVariables().get(PythonAxis.KEY));
-        // If still no PYTHON, get the default one (the first in the list)
-        if (pi == null)
+        if (pi == null && build.getBuildVariables().containsKey(PythonAxis.KEY))
         {
+            // Get the PYTHON name provided by the AXIS
+            name = build.getBuildVariables().get(PythonAxis.KEY);
+            // Get the PYTHON matching the AXIS
+            pi = getPython(name);
+        }
+        // If still no PYTHON, get the default one (the first in the list)
+        if (pi == null && name != null)
+        {
+            // Get the list of installations
             StandardPythonInstallation[] pis = getDescriptor().getInstallations();
+            // Check if at least one installation
             if (pis.length != 0)
+            {
+                // Get the first one
                 pi = pis[0];
+                // Log that not using the defined one
+                listener.error(Messages.InstalledPythonBuilder_InstallationNotFound(name, pi.getName()));
+            }
         }
         // Can be still null if no PYTHON registered
         if (pi != null)
         {
+            // Configure for the node
             pi = pi.forNode(node, listener);
+            // Configure for the environment
             pi = pi.forEnvironment(envVars);
         }
+        // Return the installation
         return pi;
     }
 
@@ -124,6 +138,7 @@ public abstract class InstalledPythonBuilder extends PythonBuilder
     @Override
     public InstalledPythonBuildStepDescriptor getDescriptor()
     {
+        // Return the descriptor
         return (InstalledPythonBuildStepDescriptor) super.getDescriptor();
     }
 

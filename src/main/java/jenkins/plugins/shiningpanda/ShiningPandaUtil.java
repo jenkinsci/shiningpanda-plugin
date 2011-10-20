@@ -1,10 +1,12 @@
 package jenkins.plugins.shiningpanda;
 
+import hudson.Launcher;
 import hudson.Util;
 import hudson.model.TaskListener;
 import hudson.util.FormValidation;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 public class ShiningPandaUtil
@@ -42,10 +44,6 @@ public class ShiningPandaUtil
         // Check that path does not contains some whitespace chars
         if (hasWhitespace(fixName))
             return FormValidation.error(Messages.ShiningPandaUtil_PythonNameHasWhitespace(fixName));
-        // Check that not reserved
-        if (PythonInstallation.defaultInstallationName.equals(fixName))
-            return FormValidation.error(Messages
-                    .ShiningPandaUtil_PythonNameReserved(PythonInstallation.defaultInstallationName));
         // Seems fine
         return FormValidation.ok();
     }
@@ -80,7 +78,7 @@ public class ShiningPandaUtil
      * Validate the PYTHONHOME once all variable expanded.
      * 
      * @param installation
-     *            The Python installation to check.
+     *            The PYTHON installation to check.
      * @param listener
      *            The listener to display error messages.
      * @return True if validated, else false.
@@ -109,4 +107,45 @@ public class ShiningPandaUtil
         return true;
     }
 
+    /**
+     * Validate the PYTHONHOME once all variable expanded.
+     * 
+     * @param installation
+     *            The PYTHON installation to check.
+     * @param launcher
+     *            The launcher.
+     * @param listener
+     *            The listener to display error messages.
+     * @return True if validated, else false.
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public static boolean validatePythonInstallation(PythonInstallation installation, Launcher launcher, TaskListener listener)
+            throws IOException, InterruptedException
+    {
+        // Check if installation exists
+        if (installation == null)
+        {
+            // Log
+            listener.fatalError(Messages.ShiningPandaUtil_PythonInstallationNotFound());
+            // No installation configured in JENKINS management page
+            return false;
+        }
+        // Check PYTHONHOME
+        if (!validatePythonHome(installation, listener))
+            // Fail to validate PYTHON installation
+            return false;
+        // Get the executable
+        String exe = installation.getExecutable(launcher);
+        // Check if executable exists
+        if (exe == null)
+        {
+            // Log
+            listener.fatalError(Messages.ShiningPandaUtil_PythonExeNotFound(installation.getHome()));
+            // Executable not found
+            return false;
+        }
+        // Seems fine
+        return true;
+    }
 }

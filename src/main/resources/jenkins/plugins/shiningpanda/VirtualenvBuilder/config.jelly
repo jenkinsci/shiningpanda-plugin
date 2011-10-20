@@ -20,7 +20,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <j:if test="${!empty(descriptor.installations) &amp;&amp; descriptor.showInstallations}">
     <f:entry title="${%Python Version}" help="/plugin/shiningpanda/help/InstalledPythonBuilder/help-pythonName.html">
       <select class="setting-input" name="pythonName">
-        <option value="${descriptor.defaultInstallationName}">(${%Default})</option>
         <j:forEach var="inst" items="${descriptor.installations}">
           <f:option selected="${inst.name==instance.python.name}" value="${inst.name}">${inst.name}</f:option>
         </j:forEach>
@@ -51,6 +50,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <st:nbsp />
     <f:radio name="useDistribute" value="false" checked="${ instance!=null and instance.useDistribute==false }"/>
     <label class="attach-previous">${%Setuptools}</label>
+  </f:entry>
+  <f:entry field="ignoreExitCode" title="${%Ignore exit code}" help="/plugin/shiningpanda/help/PythonBuilder/help-ignoreExitCode.html">
+    <f:checkbox checked="${it.ignoreExitCode}" />
   </f:entry>
   <f:entry title="${%Command}" help="/plugin/shiningpanda/help/PythonBuilder/help-command.html">
     <f:textarea field="command" class="fixed-width" />

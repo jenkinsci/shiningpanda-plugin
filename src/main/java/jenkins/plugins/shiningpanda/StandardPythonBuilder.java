@@ -36,13 +36,16 @@ public class StandardPythonBuilder extends InstalledPythonBuilder
      * 
      * @param pythonName
      *            The name of the PYTHON
+     * @param ignoreExitCode
+     *            Do not consider the build as a failure if any of the commands
+     *            exits with a non-zero exit code
      * @param command
      *            The command to execute in PYTHON environment
      */
     @DataBoundConstructor
-    public StandardPythonBuilder(String pythonName, String command)
+    public StandardPythonBuilder(String pythonName, boolean ignoreExitCode, String command)
     {
-        super(pythonName, command);
+        super(pythonName, ignoreExitCode, command);
     }
 
     /*
@@ -59,20 +62,13 @@ public class StandardPythonBuilder extends InstalledPythonBuilder
     {
         // Get the PYTHON installation
         StandardPythonInstallation pi = getPython(build, node, listener, envVars);
-        if (pi != null)
-        {
-            // Validate PYTHONHOME
-            if (!ShiningPandaUtil.validatePythonHome(pi, listener))
-                // Can't go further as PYTHONHOME is not valid
-                return false;
-            String exe = pi.getExecutable(launcher);
-            if (exe == null)
-            {
-                listener.fatalError(Messages.StandardPythonBuilder_NoExecutable(pi.getHome()));
-                return false;
-            }
-            pi.setEnvironment(envVars, getPathSeparator(launcher));
-        }
+        // Validate PYTHON installation
+        if (!ShiningPandaUtil.validatePythonInstallation(pi, launcher, listener))
+            // Can't go further as PYTHON installation is not valid
+            return false;
+        // Set PYTHON environment
+        pi.setEnvironment(envVars, getPathSeparator(launcher));
+        // Ready to go
         return true;
     }
 
