@@ -25,7 +25,7 @@ public class TestCustomVirtualenvBuilder extends ShiningPandaTestCase
     public void testRoundTripMatrix() throws Exception
     {
         CustomVirtualenvBuilder before = new CustomVirtualenvBuilder("/tmp/custom", false, "echo hello");
-        CustomVirtualenvBuilder after = configMatrixRoundtrip(before);
+        CustomVirtualenvBuilder after = configPythonMatrixRoundtrip(before);
         assertEqualBeans2(before, after, "home,ignoreExitCode,command");
     }
 

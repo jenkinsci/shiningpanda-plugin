@@ -1,3 +1,4 @@
 CPython.2.Home = /opt/local/Library/Frameworks/Python.framework/Versions/2.7
 CPython.3.Home = /opt/local/Library/Frameworks/Python.framework/Versions/3.2
 PyPy.Home = /opt/local
+Jython.Home = /opt/local

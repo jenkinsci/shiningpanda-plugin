@@ -26,7 +26,7 @@ public class TestStandardPythonBuilder extends ShiningPandaTestCase
     public void testRoundTripMatrix() throws Exception
     {
         StandardPythonBuilder before = new StandardPythonBuilder("foobar", false, "echo hello");
-        StandardPythonBuilder after = configMatrixRoundtrip(before);
+        StandardPythonBuilder after = configPythonMatrixRoundtrip(before);
         assertEqualBeans2(before, after, "command,ignoreExitCode");
     }
 

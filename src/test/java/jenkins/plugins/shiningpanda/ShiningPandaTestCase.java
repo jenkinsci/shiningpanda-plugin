@@ -13,6 +13,9 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.Properties;
 
+import jenkins.plugins.shiningpanda.tox.ToxEnv;
+import jenkins.plugins.shiningpanda.tox.ToxAxis;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -37,6 +40,11 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
     private final static String PYPY_HOME_KEY = "PyPy.Home";
 
     /**
+     * Key for Jython's home in test.properties file.
+     */
+    private final static String JYTHON_HOME_KEY = "Jython.Home";
+
+    /**
      * Name of CPython 2.x.
      */
     private final static String CPYTHON_2_NAME = "CPython-2";
@@ -50,6 +58,11 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      * Name of PyPy.
      */
     private final static String PYPY_NAME = "PyPy";
+
+    /**
+     * Name of Jython
+     */
+    private final static String JYTHON_NAME = "Jython";
 
     /**
      * Load the test properties. First load the test.properties.model file, and
@@ -106,6 +119,17 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
     protected String getPyPyHome() throws IOException
     {
         return getTestProperty(PYPY_HOME_KEY);
+    }
+
+    /**
+     * Get the Jython's home.
+     * 
+     * @return The home folder.
+     * @throws IOException
+     */
+    protected String getJythonHome() throws IOException
+    {
+        return getTestProperty(JYTHON_HOME_KEY);
     }
 
     /**
@@ -274,6 +298,17 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
     }
 
     /**
+     * Configure a Jython installation.
+     * 
+     * @return The installation.
+     * @throws Exception
+     */
+    protected StandardPythonInstallation configureJython() throws Exception
+    {
+        return configurePython(JYTHON_NAME, getJythonHome());
+    }
+
+    /**
      * Configure all Python installations.
      * 
      * @return List of Python installations.
@@ -322,8 +357,8 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
     }
 
     /**
-     * Performs a configuration round-trip testing for a builder on free-style
-     * project.
+     * Performs a configuration round-trip testing for a builder on a matrix
+     * project with a Python axis.
      * 
      * @param before
      *            The builder.
@@ -331,11 +366,31 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    protected <B extends Builder> B configMatrixRoundtrip(B before) throws Exception
+    protected <B extends Builder> B configPythonMatrixRoundtrip(B before) throws Exception
     {
         configureAllPythons();
         MatrixProject p = createMatrixProject();
-        p.setAxes(new AxisList(new PythonAxis(new String[] { CPYTHON_2_NAME, CPYTHON_3_NAME, PYPY_NAME })));
+        p.setAxes(new AxisList(new PythonAxis(new String[] { CPYTHON_2_NAME, CPYTHON_3_NAME, PYPY_NAME, JYTHON_NAME })));
+        p.getBuildersList().add(before);
+        configRoundtrip((Item) p);
+        return (B) p.getBuildersList().get(before.getClass());
+    }
+
+    /**
+     * Performs a configuration round-trip testing for a builder on a matrix
+     * project with a Tox axis.
+     * 
+     * @param before
+     *            The builder.
+     * @return The reloaded builder.
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    protected <B extends Builder> B configToxMatrixRoundtrip(B before) throws Exception
+    {
+        configureAllPythons();
+        MatrixProject p = createMatrixProject();
+        p.setAxes(new AxisList(new ToxAxis(new String[] { ToxEnv.py27, ToxEnv.py32, ToxEnv.pypy, ToxEnv.jython })));
         p.getBuildersList().add(before);
         configRoundtrip((Item) p);
         return (B) p.getBuildersList().get(before.getClass());

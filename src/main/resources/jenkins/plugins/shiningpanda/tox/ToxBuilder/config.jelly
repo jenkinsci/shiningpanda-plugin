@@ -1,0 +1,29 @@
+<!--
+ShiningPanda plug-in for Jenkins
+Copyright (C) 2011 ShiningPanda S.A.S.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+-->
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <f:entry field="toxIni" title="${%Configuration file}" help="/plugin/shiningpanda/help/ToxBuilder/help-toxIni.html">
+    <f:textbox default="tox.ini"/>
+  </f:entry>
+  <f:entry field="posArgs" title="${%Positional arguments}" help="/plugin/shiningpanda/help/ToxBuilder/help-posArgs.html">
+    <f:expandableTextbox/>
+  </f:entry>
+  <f:entry field="recreate" title="${%Recreate}" help="/plugin/shiningpanda/help/ToxBuilder/help-recreate.html">
+    <f:checkbox checked="${it.recreate}" />
+  </f:entry>
+</j:jelly>
