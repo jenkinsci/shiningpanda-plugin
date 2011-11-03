@@ -107,7 +107,7 @@ public class ToxBuilder extends Builder implements Serializable
         {
             // Get the environment variables for this build
             EnvVars envVars = build.getEnvironment(listener);
-            // Check that no PYTHONHOME entry
+            // Check that no PYTHONHOME entry (see https://bitbucket.org/hpk42/tox/issue/17/)
             if (envVars.containsKey("PYTHONHOME"))
             {
                 // Log
@@ -131,7 +131,7 @@ public class ToxBuilder extends Builder implements Serializable
                 // No TOX executable, no need to go further
                 return false;
             }
-            // Delete PYTHONHOME, else TOX will fail
+            // Delete PYTHONHOME, else TOX will fail (see https://bitbucket.org/hpk42/tox/issue/17/)
             envVars.remove("PYTHONHOME");
             // Start command line
             r = launcher.launch().cmds(buildCommandLine(toxInstallation.getToxExecutable(launcher))).envs(envVars)
