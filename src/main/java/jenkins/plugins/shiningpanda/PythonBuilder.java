@@ -27,13 +27,11 @@ import hudson.model.AbstractBuild;
 import hudson.model.Computer;
 import hudson.model.Hudson;
 import hudson.model.Node;
-import hudson.remoting.Callable;
 import hudson.remoting.VirtualChannel;
 import hudson.tasks.Builder;
 import hudson.tasks.Messages;
 import hudson.tasks.Shell;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
@@ -259,27 +257,6 @@ public abstract class PythonBuilder extends Builder implements Serializable
     protected String getFileExtension()
     {
         return ".sh";
-    }
-
-    /**
-     * Get the path separator of the node where the build runs
-     * 
-     * @param launcher
-     *            The task launcher
-     * @return The remote path separator
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    @SuppressWarnings("serial")
-    public String getPathSeparator(Launcher launcher) throws IOException, InterruptedException
-    {
-        return launcher.getChannel().call(new Callable<String, IOException>()
-        {
-            public String call() throws IOException
-            {
-                return File.pathSeparator;
-            }
-        });
     }
 
     /**

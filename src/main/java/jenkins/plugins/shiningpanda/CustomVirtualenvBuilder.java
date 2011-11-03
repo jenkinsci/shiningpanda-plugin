@@ -146,7 +146,7 @@ public class CustomVirtualenvBuilder extends PythonBuilder
             // No need to go further
             return false;
         // Set the environment
-        vi.setEnvironment(envVars, getPathSeparator(launcher));
+        vi.setEnvironment(envVars, ShiningPandaUtil.getPathSeparator(launcher));
         // Environment ready
         return true;
     }

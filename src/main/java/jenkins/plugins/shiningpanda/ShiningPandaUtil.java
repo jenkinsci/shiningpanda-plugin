@@ -3,6 +3,7 @@ package jenkins.plugins.shiningpanda;
 import hudson.Launcher;
 import hudson.Util;
 import hudson.model.TaskListener;
+import hudson.remoting.Callable;
 import hudson.util.FormValidation;
 
 import java.io.File;
@@ -147,5 +148,26 @@ public class ShiningPandaUtil
         }
         // Seems fine
         return true;
+    }
+
+    /**
+     * Get the path separator of the node where the build runs
+     * 
+     * @param launcher
+     *            The task launcher
+     * @return The remote path separator
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @SuppressWarnings("serial")
+    public static String getPathSeparator(Launcher launcher) throws IOException, InterruptedException
+    {
+        return launcher.getChannel().call(new Callable<String, IOException>()
+        {
+            public String call() throws IOException
+            {
+                return File.pathSeparator;
+            }
+        });
     }
 }

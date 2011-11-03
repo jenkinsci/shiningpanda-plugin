@@ -20,9 +20,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <f:entry field="toxIni" title="${%Configuration file}" help="/plugin/shiningpanda/help/ToxBuilder/help-toxIni.html">
     <f:textbox default="tox.ini"/>
   </f:entry>
-  <f:entry field="posArgs" title="${%Positional arguments}" help="/plugin/shiningpanda/help/ToxBuilder/help-posArgs.html">
-    <f:expandableTextbox/>
-  </f:entry>
   <f:entry field="recreate" title="${%Recreate}" help="/plugin/shiningpanda/help/ToxBuilder/help-recreate.html">
     <f:checkbox checked="${it.recreate}" />
   </f:entry>

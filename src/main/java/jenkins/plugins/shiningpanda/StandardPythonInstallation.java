@@ -90,6 +90,30 @@ public final class StandardPythonInstallation extends PythonInstallation
         });
     }
 
+    /**
+     * Get the TOX executable in this PYTHON installation
+     * 
+     * @param launcher
+     *            The task launcher
+     * @return The full path to the executable if exists
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @SuppressWarnings("serial")
+    public String getToxExecutable(Launcher launcher) throws IOException, InterruptedException
+    {
+        return launcher.getChannel().call(new Callable<String, IOException>()
+        {
+            public String call() throws IOException
+            {
+                File exe = getExeFile("tox");
+                if (exe.exists())
+                    return exe.getPath();
+                return null;
+            }
+        });
+    }
+
     private static final long serialVersionUID = 1L;
 
     /**

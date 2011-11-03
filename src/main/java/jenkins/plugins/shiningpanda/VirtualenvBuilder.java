@@ -22,7 +22,6 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
-import hudson.model.Item;
 import hudson.model.TaskListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
@@ -172,7 +171,7 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
             return false;
         }
         // Get the path separator
-        String pathSeparator = getPathSeparator(launcher);
+        String pathSeparator = ShiningPandaUtil.getPathSeparator(launcher);
         // Get the time stamp file in VIRTUALENV
         FilePath timestamp = new FilePath(virtualenv, ".timestamp");
         // time stamp
@@ -199,7 +198,7 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
             {
                 // Log
                 listener.fatalError(Messages.VirtualenvBuilder_NoVirtualenvExecutable(pi.getHome()));
-                // No VIRTUALeNV executable, no need to go further
+                // No VIRTUALENV executable, no need to go further
                 return false;
             }
             // Add call to VIRTUALENV
@@ -296,10 +295,6 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
         public FormValidation doCheckHome(@SuppressWarnings("rawtypes") @AncestorInPath AbstractProject project,
                 @QueryParameter File value)
         {
-            // This can be used to check the existence of a file on the
-            // server, so needs to be protected
-            if (!project.hasPermission(Item.CONFIGURE))
-                return FormValidation.ok();
             // Check that path specified
             if (Util.fixEmptyAndTrim(value.getPath()) == null)
                 return FormValidation.error(Messages.VirtualenvBuilder_HomeDirectoryRequired());

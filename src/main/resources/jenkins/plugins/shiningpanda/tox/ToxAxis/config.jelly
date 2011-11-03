@@ -16,13 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
-  <f:entry title="${%Default test environments}" help="/plugin/shiningpanda/help/PythonAxis/help-toxenv.html">
+  <f:entry title="${%Default environments}" help="/plugin/shiningpanda/help/PythonAxis/help-toxenv.html">
     <j:forEach var="toxenv" items="${descriptor.toxenv.defaults}">
       <f:checkbox name="values" json="${toxenv}" checked="${instance.values.contains(toxenv)}" title="${toxenv}" />
       <st:nbsp/>
     </j:forEach>
   </f:entry>
-  <f:entry field="extraValueString" title="${%Custom test environments}" help="/plugin/shiningpanda/help/PythonAxis/help-customToxenv.html">
+  <f:entry field="extraValueString" title="${%Custom environments}" help="/plugin/shiningpanda/help/ToxAxis/help-customToxenv.html">
     <f:expandableTextbox/>
   </f:entry>
 </j:jelly>  

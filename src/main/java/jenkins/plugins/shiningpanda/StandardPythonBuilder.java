@@ -67,7 +67,7 @@ public class StandardPythonBuilder extends InstalledPythonBuilder
             // Can't go further as PYTHON installation is not valid
             return false;
         // Set PYTHON environment
-        pi.setEnvironment(envVars, getPathSeparator(launcher));
+        pi.setEnvironment(envVars, ShiningPandaUtil.getPathSeparator(launcher));
         // Ready to go
         return true;
     }
