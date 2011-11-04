@@ -18,9 +18,52 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
   <f:entry help="/plugin/shiningpanda/help/PythonAxis/help-python.html">
-    <j:forEach var="${descriptor.pythonVar}" items="${descriptor.installations}">
-      <f:checkbox name="values" json="${python.name}" checked="${instance.values.contains(python.name)}" title="${python.name}" />
-      <st:nbsp/>
-    </j:forEach>
+    <j:choose>
+      <j:when test="${descriptor.HOSTED}">
+        <div class="yahooTree pythonAxis-tree" style="border: 1px solid gray; height: 10em; overflow:auto;" values="${instance.treeValueString}" />
+        <script>
+          hudsonRules["DIV.pythonAxis-tree"] = function(e) {
+            var tree = new YAHOO.widget.TreeView(e);
+            
+            var interpreters = {};
+            <j:forEach var="interpreter" items="${descriptor.tree.getInterpreters(descriptor.installations)}">
+              interpreters[<j:out value="${descriptor.jsStringEscape(interpreter)}"/>] = new YAHOO.widget.TextNode(<j:out value="${descriptor.jsStringEscape(interpreter)}"/>, tree.getRoot(), false);
+            </j:forEach>
+    
+            var values = (e.getAttribute("values") || "").split("/");
+            function has(v) {
+              return values.include(v) ? 'checked="checked" ' : "";
+            }
+            <j:forEach var="installation" items="${descriptor.installations}">
+              new YAHOO.widget.HTMLNode(<j:out value="${descriptor.buildCheckBox(installation)}"/>, interpreters[<j:out value="${descriptor.jsStringEscape(descriptor.tree.getInterpreter(installation))}"/>], false);
+            </j:forEach>
+    
+            tree.draw();
+            <!--
+              force the rendering of HTML, so that input fields are there
+              even when the form is submitted without this tree expanded.
+             -->
+            tree.expandAll();
+            tree.collapseAll();
+    
+            <!--
+              cancel the event.
+    
+              from http://yuilibrary.com/forum/viewtopic.php?f=89&t=8209&p=26239&hilit=HTMLNode#p26239
+              "To prevent toggling and allow the link to work, add a listener to the clickEvent on that tree and simply return false"
+            -->
+            tree.subscribe("clickEvent", function(node) {
+                return false;
+            });
+          };
+        </script>
+      </j:when>
+      <j:otherwise>
+        <j:forEach var="python" items="${descriptor.installations}">
+          <f:checkbox name="values" json="${python.name}" checked="${instance.values.contains(python.name)}" title="${python.name}" />
+          <st:nbsp/>
+        </j:forEach>
+      </j:otherwise>
+    </j:choose>
   </f:entry>
 </j:jelly>

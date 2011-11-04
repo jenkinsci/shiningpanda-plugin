@@ -18,6 +18,8 @@
 package jenkins.plugins.shiningpanda;
 
 import hudson.Extension;
+import hudson.Functions;
+import hudson.Util;
 import hudson.matrix.Axis;
 import hudson.matrix.AxisDescriptor;
 import hudson.tools.ToolInstallation;
@@ -46,6 +48,11 @@ public class PythonAxis extends Axis
         super(KEY, Arrays.asList(values));
     }
 
+    public String getTreeValueString()
+    {
+        return Util.join(getValues(), "/");
+    }
+
     /**
      * Descriptor for this axis.
      */
@@ -54,9 +61,14 @@ public class PythonAxis extends Axis
     {
 
         /**
-         * Let the key available in Jelly
+         * Let Jelly access the hosted flag.
          */
-        public static final String pythonVar = KEY;
+        public static boolean HOSTED = PythonPlugin.HOSTED;
+
+        /**
+         * Store a tree helper.
+         */
+        public static PythonAxisTree tree = new PythonAxisTree();
 
         /*
          * (non-Javadoc)
@@ -100,6 +112,47 @@ public class PythonAxis extends Axis
         public StandardPythonInstallation[] getInstallations()
         {
             return ToolInstallation.all().get(StandardPythonInstallation.DescriptorImpl.class).getInstallations();
+        }
+
+        /**
+         * Escape strings
+         * 
+         * @param body
+         *            The body
+         * @param args
+         *            The arguments
+         * @return The escaped string
+         */
+        public String jsStringEscape(String body, Object... args)
+        {
+            return '\"' + Functions.jsStringEscape(String.format(body, args)) + '\"';
+        }
+
+        /**
+         * Escape strings
+         * 
+         * @param body
+         *            The body
+         * @return The escaped string
+         */
+        public String jsStringEscape(String body)
+        {
+            return jsStringEscape(body, new Object[] {});
+        }
+
+        /**
+         * Build the tree check box
+         * 
+         * @param installation
+         *            The PYTHON installation
+         * @return The HTML
+         */
+        public String buildCheckBox(PythonInstallation installation)
+        {
+            return jsStringEscape("<input type='checkbox' name='values' json='%s' ",
+                    Functions.htmlAttributeEscape(installation.getName()))
+                    + String.format("+has(%s)+", jsStringEscape(installation.getName()))
+                    + jsStringEscape("/><label class='attach-previous'>%s</label>", tree.getVersion(installation));
         }
     }
 
