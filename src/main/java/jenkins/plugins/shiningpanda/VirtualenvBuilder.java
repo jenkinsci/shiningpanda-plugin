@@ -32,9 +32,14 @@ import hudson.util.FormValidation;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import jenkins.model.Jenkins;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.FileFileFilter;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -209,6 +214,10 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
             // Add no site packages option
             if (noSitePackages && !PythonPlugin.HOSTED)
                 args.add("--no-site-packages");
+            // Get the extra search directories
+            for (String extraSearchDir : getExtraSearchDirs(node))
+                // Add it in command line
+                args.add("--extra-search-dir=" + extraSearchDir);
             // Path to the VIRTUALENV
             args.add(virtualenv.getRemote());
             // Get the execution environment for the VIRTUALENV creation
@@ -240,11 +249,68 @@ public class VirtualenvBuilder extends InstalledPythonBuilder
         // Set time stamp if just created (wanted to check the executable
         // existence)
         if (created)
+            // Touch the file
             timestamp.touch(System.currentTimeMillis());
         // Set the build environment
         vi.setEnvironment(envVars, pathSeparator);
         // Success
         return true;
+    }
+
+    /**
+     * Directory to look for SETUPTOOLS/DISTRIBUTE/PIP distributions in
+     * 
+     * @param node
+     *            The node where the execution takes place
+     * @return The list of extra folders
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    private Set<String> getExtraSearchDirs(Node node) throws IOException, InterruptedException
+    {
+        // Store folders
+        Set<String> extraSearchDirs = new HashSet<String>();
+        // Get the folder on master hosting the packages
+        FilePath masterPackages = Jenkins.getInstance().getRootPath().child("shiningpanda").child("packages");
+        // Check if this folder exists. If does not exist, no need to go
+        // further.
+        if (masterPackages.isDirectory())
+        {
+            // Get the list of the file to send on slave
+            List<FilePath> masterFiles = masterPackages.list(FileFileFilter.FILE);
+            // Check if at least one file
+            if (masterFiles.size() != 0)
+            {
+                // Check if the target node is the master node
+                if (Jenkins.getInstance() == node)
+                    // Add the master path to the list
+                    extraSearchDirs.add(masterPackages.getRemote());
+                // Else transfer the files
+                else
+                {
+                    // Get the slave packages
+                    FilePath slavePackages = node.getRootPath().child("shiningpanda").child("packages");
+                    // Create the folder if not exists
+                    if (!slavePackages.exists())
+                        // Not exists, create it
+                        slavePackages.mkdirs();
+                    // Go threw the files
+                    for (FilePath masterFile : masterFiles)
+                    {
+                        // Get the corresponding slave file
+                        FilePath slaveFile = slavePackages.child(masterFile.getName());
+                        // Check that not exists
+                        if (!slaveFile.exists())
+                            // Copy the file
+                            masterFile.copyTo(slaveFile);
+                    }
+                    // Add the slave path to the list
+                    extraSearchDirs.add(slavePackages.getRemote());
+                }
+            }
+        }
+        // Return the set of extra folders to add
+        return extraSearchDirs;
     }
 
     private static final long serialVersionUID = 1L;
