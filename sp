@@ -6,6 +6,9 @@ case $1 in
     test-debug)
         mvn -Dmaven.surefire.debug -Dtest=jenkins.plugins.shiningpanda.$2
         ;;
+    test)
+        mvn -Dtest=jenkins.plugins.shiningpanda.$2
+        ;;
     run-hosted)
         mvn clean hpi:run -Djenkins.plugins.shiningpanda.PythonPlugin.hosted=true
         ;;

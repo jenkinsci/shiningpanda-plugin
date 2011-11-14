@@ -13,8 +13,9 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.Properties;
 
-import jenkins.plugins.shiningpanda.tox.ToxEnv;
-import jenkins.plugins.shiningpanda.tox.ToxAxis;
+import jenkins.plugins.shiningpanda.matrix.PythonAxis;
+import jenkins.plugins.shiningpanda.matrix.ToxAxis;
+import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.FileUtils;
@@ -221,10 +222,15 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      */
     protected File createVirtualenv(File home) throws Exception
     {
+        // Clean
         deleteVirtualenv(home);
+        // Create a process to create the VIRTUALENV
         ProcessBuilder pb = new ProcessBuilder("virtualenv", home.getAbsolutePath());
+        // Start the process
         Process process = pb.start();
+        // Check exit code
         assertEquals(0, process.waitFor());
+        // Return the home folder
         return home;
     }
 
@@ -248,17 +254,17 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      *            The home folder for this installation.
      * @return
      */
-    protected StandardPythonInstallation configurePython(String name, String home)
+    protected PythonInstallation configurePython(String name, String home)
     {
-        StandardPythonInstallation[] installations = getPythonInstallations();
-        StandardPythonInstallation[] newIntallations = new StandardPythonInstallation[installations.length + 1];
+        PythonInstallation[] installations = getPythonInstallations();
+        PythonInstallation[] newIntallations = new PythonInstallation[installations.length + 1];
         int index = 0;
-        for (StandardPythonInstallation installation : installations)
+        for (PythonInstallation installation : installations)
         {
             newIntallations[index] = installation;
             index++;
         }
-        StandardPythonInstallation newInstallation = new StandardPythonInstallation(name, home, NO_PROPERTIES);
+        PythonInstallation newInstallation = new PythonInstallation(name, home, NO_PROPERTIES);
         newIntallations[index] = newInstallation;
         getPythonInstallationDescriptor().setInstallations(newIntallations);
         return newInstallation;
@@ -270,7 +276,7 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      * @return The installation.
      * @throws Exception
      */
-    protected StandardPythonInstallation configureCPython2() throws Exception
+    protected PythonInstallation configureCPython2() throws Exception
     {
         return configurePython(CPYTHON_2_NAME, getCPython2Home());
     }
@@ -281,7 +287,7 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      * @return The installation.
      * @throws Exception
      */
-    protected StandardPythonInstallation configureCPython3() throws Exception
+    protected PythonInstallation configureCPython3() throws Exception
     {
         return configurePython(CPYTHON_3_NAME, getCPython3Home());
     }
@@ -292,7 +298,7 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      * @return The installation.
      * @throws Exception
      */
-    protected StandardPythonInstallation configurePyPy() throws Exception
+    protected PythonInstallation configurePyPy() throws Exception
     {
         return configurePython(PYPY_NAME, getPyPyHome());
     }
@@ -303,7 +309,7 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      * @return The installation.
      * @throws Exception
      */
-    protected StandardPythonInstallation configureJython() throws Exception
+    protected PythonInstallation configureJython() throws Exception
     {
         return configurePython(JYTHON_NAME, getJythonHome());
     }
@@ -314,7 +320,7 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      * @return List of Python installations.
      * @throws Exception
      */
-    protected StandardPythonInstallation[] configureAllPythons() throws Exception
+    protected PythonInstallation[] configureAllPythons() throws Exception
     {
         configureCPython2();
         configureCPython3();
@@ -327,9 +333,9 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      * 
      * @return The descriptor.
      */
-    protected StandardPythonInstallation.DescriptorImpl getPythonInstallationDescriptor()
+    protected PythonInstallation.DescriptorImpl getPythonInstallationDescriptor()
     {
-        return hudson.getDescriptorByType(StandardPythonInstallation.DescriptorImpl.class);
+        return hudson.getDescriptorByType(PythonInstallation.DescriptorImpl.class);
     }
 
     /**
@@ -337,7 +343,7 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      * 
      * @return The list of installations.
      */
-    protected StandardPythonInstallation[] getPythonInstallations()
+    protected PythonInstallation[] getPythonInstallations()
     {
         return getPythonInstallationDescriptor().getInstallations();
     }
@@ -390,7 +396,7 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
     {
         configureAllPythons();
         MatrixProject p = createMatrixProject();
-        p.setAxes(new AxisList(new ToxAxis(new String[] { ToxEnv.py27, ToxEnv.py32, ToxEnv.pypy, ToxEnv.jython })));
+        p.setAxes(new AxisList(new ToxAxis(new String[] { "py27", "py32", "pypy", "jython" })));
         p.getBuildersList().add(before);
         configRoundtrip((Item) p);
         return (B) p.getBuildersList().get(before.getClass());
