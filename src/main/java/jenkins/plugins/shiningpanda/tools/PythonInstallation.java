@@ -20,6 +20,7 @@ package jenkins.plugins.shiningpanda.tools;
 import hudson.CopyOnWrite;
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.Launcher;
 import hudson.Util;
 import hudson.model.EnvironmentSpecific;
 import hudson.model.TaskListener;
@@ -124,6 +125,20 @@ public class PythonInstallation extends ToolInstallation implements EnvironmentS
     public Python toInterpreter(VirtualChannel channel) throws IOException, InterruptedException
     {
         return Python.fromInstallation(channel, this);
+    }
+
+    /**
+     * Get the related interpreter.
+     * 
+     * @param launcher
+     *            The launcher
+     * @return The interpreter if exists, else null
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public Python toInterpreter(Launcher launcher) throws IOException, InterruptedException
+    {
+        return toInterpreter(launcher.getChannel());
     }
 
     /**

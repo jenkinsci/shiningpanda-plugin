@@ -19,7 +19,6 @@ package jenkins.plugins.shiningpanda.builders;
 
 import hudson.EnvVars;
 import hudson.Extension;
-import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.Item;
@@ -34,8 +33,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import jenkins.plugins.shiningpanda.Messages;
-import jenkins.plugins.shiningpanda.command.Command;
-import jenkins.plugins.shiningpanda.interpreters.Virtualenv;
+import jenkins.plugins.shiningpanda.interpreters.Python;
 import jenkins.plugins.shiningpanda.util.BuilderUtil;
 import jenkins.plugins.shiningpanda.util.FormValidationUtil;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
@@ -44,7 +42,7 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
-public class CustomVirtualenvBuilder extends Builder implements Serializable
+public class CustomPythonBuilder extends Builder implements Serializable
 {
 
     /**
@@ -53,15 +51,15 @@ public class CustomVirtualenvBuilder extends Builder implements Serializable
     public final String home;
 
     /**
+     * The command to execute in the PYTHON environment
+     */
+    public final String command;
+
+    /**
      * Do not consider the build as a failure if any of the commands exits with
      * a non-zero exit code.
      */
     public final boolean ignoreExitCode;
-
-    /**
-     * The command to execute in the PYTHON environment
-     */
-    public final String command;
 
     /**
      * Constructor using fields
@@ -75,7 +73,7 @@ public class CustomVirtualenvBuilder extends Builder implements Serializable
      *            The command to execute
      */
     @DataBoundConstructor
-    public CustomVirtualenvBuilder(String home, String command, boolean ignoreExitCode)
+    public CustomPythonBuilder(String home, String command, boolean ignoreExitCode)
     {
         // Call super
         super();
@@ -102,13 +100,14 @@ public class CustomVirtualenvBuilder extends Builder implements Serializable
         Workspace workspace = Workspace.fromHome(build.getWorkspace());
         // Get the environment variables for this build
         EnvVars environment = BuilderUtil.getEnvironment(build, listener);
-        // Expand the HOME folder with these variables
-        Virtualenv virtualenv = new Virtualenv(new FilePath(launcher.getChannel(), environment.expand(home)));
-        // Set the VIRTUALENV variables
-        environment.putAll(virtualenv.getEnvironment());
-        // Set the environment of this specific builder
-        return Command.get(workspace.isUnix(), command, ignoreExitCode).launch(launcher, listener, environment,
-                workspace.getHome());
+        // Get the interpreter
+        Python interpreter = BuilderUtil.getInterpreter(launcher, listener, environment.expand(home));
+        // Check if got an interpreter
+        if (interpreter == null)
+            // Failed to get the interpreter, no need to go further
+            return false;
+        // Launch script
+        return BuilderUtil.launch(launcher, listener, environment, workspace, interpreter, command, ignoreExitCode);
     }
 
     private static final long serialVersionUID = 1L;

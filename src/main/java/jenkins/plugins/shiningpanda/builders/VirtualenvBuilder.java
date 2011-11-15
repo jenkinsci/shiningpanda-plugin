@@ -34,10 +34,8 @@ import java.io.Serializable;
 
 import jenkins.plugins.shiningpanda.Messages;
 import jenkins.plugins.shiningpanda.ShiningPanda;
-import jenkins.plugins.shiningpanda.command.Command;
 import jenkins.plugins.shiningpanda.interpreters.Python;
 import jenkins.plugins.shiningpanda.interpreters.Virtualenv;
-import jenkins.plugins.shiningpanda.matrix.PythonAxis;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 import jenkins.plugins.shiningpanda.util.BuilderUtil;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
@@ -138,6 +136,13 @@ public class VirtualenvBuilder extends Builder implements Serializable
         return home;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * hudson.tasks.BuildStepCompatibilityLayer#perform(hudson.model.AbstractBuild
+     * , hudson.Launcher, hudson.model.BuildListener)
+     */
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException,
             IOException
@@ -146,29 +151,28 @@ public class VirtualenvBuilder extends Builder implements Serializable
         Workspace workspace = Workspace.fromHome(build.getWorkspace());
         // Get the environment variables for this build
         EnvVars environment = BuilderUtil.getEnvironment(build, listener);
-        // Get the name of the PYTHON to use
-        String name = BuilderUtil.isMatrix(build) ? environment.get(PythonAxis.KEY) : pythonName;
-        // Expand the HOME folder with these variables
-        PythonInstallation installation = PythonInstallation.fromName(name);
-        //
+        // Get the PYTHON installation to use
+        PythonInstallation installation = BuilderUtil.getInstallation(build, listener, environment, pythonName);
+        // Check if an installation was found
         if (installation == null)
+            // If not installation found, do not continue the build
             return false;
         // Get the PYTHON
-        Python interpreter = installation.forBuild(listener, environment).toInterpreter(launcher.getChannel());
-        // Check if valid
+        Python interpreter = BuilderUtil.getInterpreter(launcher, listener, installation.getHome());
+        // Check if found an interpreter
         if (interpreter == null)
+            // If no interpreter found, no need to continue
             return false;
-        // Create VIRTUALENV
+        // Create a VIRTUALENV
         Virtualenv virtualenv = new Virtualenv(launcher, getHome(), environment);
-
+        // Check if clean required or if configuration changed
         if (clear || virtualenv.isOutdated(BuilderUtil.lastConfigure(build)))
+            // A new environment is required
             if (!virtualenv.create(launcher, listener, workspace, interpreter, useDistribute, noSitePackages))
+                // Failed to create the environment, do not continue
                 return false;
-
-        environment.overrideAll(virtualenv.getEnvironment());
-        // Set the environment of this specific builder
-        return Command.get(workspace.isUnix(), command, ignoreExitCode).launch(launcher, listener, environment,
-                workspace.getHome());
+        // Launch script
+        return BuilderUtil.launch(launcher, listener, environment, workspace, virtualenv, command, ignoreExitCode);
     }
 
     private static final long serialVersionUID = 1L;

@@ -1,4 +1,7 @@
 #!/bin/sh
+unset PYTHONHOME
+unset VIRTUAL_ENV
+unset JYTHON_HOME
 case $1 in
     eclipse)
         mvn -DdownloadSources=true -DdownloadJavadocs=true -DoutputDirectory=target/eclipse-classes eclipse:eclipse

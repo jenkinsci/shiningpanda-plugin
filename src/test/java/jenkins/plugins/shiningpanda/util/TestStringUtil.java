@@ -13,4 +13,9 @@ public class TestStringUtil extends TestCase
         assertFalse("should not have whitespace", StringUtil.hasWhitespace("hello_world"));
     }
 
+    public void testFixCrLf() throws Exception
+    {
+        assertEquals("\nabc\ndef\n", StringUtil.fixCrLf("\r\nabc\r\ndef\r\n"));
+    }
+
 }

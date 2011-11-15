@@ -30,16 +30,14 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import jenkins.plugins.shiningpanda.Messages;
-import jenkins.plugins.shiningpanda.command.Command;
 import jenkins.plugins.shiningpanda.interpreters.Python;
-import jenkins.plugins.shiningpanda.matrix.PythonAxis;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 import jenkins.plugins.shiningpanda.util.BuilderUtil;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
-public class StandardPythonBuilder extends Builder implements Serializable
+public class PythonBuilder extends Builder implements Serializable
 {
 
     /**
@@ -70,7 +68,7 @@ public class StandardPythonBuilder extends Builder implements Serializable
      *            The command to execute in PYTHON environment
      */
     @DataBoundConstructor
-    public StandardPythonBuilder(String pythonName, String command, boolean ignoreExitCode)
+    public PythonBuilder(String pythonName, String command, boolean ignoreExitCode)
     {
         // Call super
         super();
@@ -82,6 +80,13 @@ public class StandardPythonBuilder extends Builder implements Serializable
         this.ignoreExitCode = ignoreExitCode;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * hudson.tasks.BuildStepCompatibilityLayer#perform(hudson.model.AbstractBuild
+     * , hudson.Launcher, hudson.model.BuildListener)
+     */
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException,
             IOException
@@ -90,22 +95,20 @@ public class StandardPythonBuilder extends Builder implements Serializable
         Workspace workspace = Workspace.fromHome(build.getWorkspace());
         // Get the environment variables for this build
         EnvVars environment = BuilderUtil.getEnvironment(build, listener);
-        // Expand the HOME folder with these variables
-        PythonInstallation installation = PythonInstallation.fromName(BuilderUtil.isMatrix(build) ? environment
-                .get(PythonAxis.KEY) : pythonName);
-        //
+        // Get the PYTHON installation to use
+        PythonInstallation installation = BuilderUtil.getInstallation(build, listener, environment, pythonName);
+        // Check if an installation was found
         if (installation == null)
+            // If not installation found, do not continue the build
             return false;
-        // Get the PYTHON
-        Python interpreter = installation.forBuild(listener, environment).toInterpreter(launcher.getChannel());
-        // Check if valid
+        // Get the interpreter
+        Python interpreter = BuilderUtil.getInterpreter(launcher, listener, installation.getHome());
+        // Check if got an interpreter
         if (interpreter == null)
+            // If no interpreter found, do not continue the build
             return false;
-        // Set the VIRTUALENV variables
-        environment.overrideAll(interpreter.getEnvironment());
-        // Set the environment of this specific builder
-        return Command.get(workspace.isUnix(), command, ignoreExitCode).launch(launcher, listener, environment,
-                workspace.getHome());
+        // Launch the process
+        return BuilderUtil.launch(launcher, listener, environment, workspace, interpreter, command, ignoreExitCode);
     }
 
     private static final long serialVersionUID = 1L;
@@ -159,6 +162,17 @@ public class StandardPythonBuilder extends Builder implements Serializable
             // If there's no PYTHON configured, there's no point in PYTHON
             // builders
             return !PythonInstallation.isEmpty();
+        }
+
+        /**
+         * Get the PYTHON installations.
+         * 
+         * @return The list of installations
+         */
+        public PythonInstallation[] getInstallations()
+        {
+            // Delegate
+            return PythonInstallation.list();
         }
     }
 }

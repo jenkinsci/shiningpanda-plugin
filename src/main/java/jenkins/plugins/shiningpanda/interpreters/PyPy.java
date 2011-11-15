@@ -17,10 +17,11 @@
  */
 package jenkins.plugins.shiningpanda.interpreters;
 
-import hudson.EnvVars;
 import hudson.FilePath;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import jenkins.plugins.shiningpanda.util.FilePathUtil;
 
@@ -53,14 +54,14 @@ public class PyPy extends Python
     }
 
     @Override
-    public EnvVars getEnvironment(boolean withHomeVar) throws IOException, InterruptedException
+    public Map<String, String> getEnvironment(boolean withHomeVar) throws IOException, InterruptedException
     {
-        EnvVars envVars = new EnvVars();
-        envVars.put("PYTHONHOME", getHome().getRemote());
+        Map<String, String> environment = new HashMap<String, String>();
+        environment.put("PYTHONHOME", getHome().getRemote());
         if (isWindows())
-            envVars.put("PATH+", getHome().getRemote() + ";" + join("bin").getRemote());
+            environment.put("PATH+", getHome().getRemote() + ";" + join("bin").getRemote());
         else
-            envVars.put("PATH+", join("bin").getRemote());
-        return envVars;
+            environment.put("PATH+", join("bin").getRemote());
+        return environment;
     }
 }

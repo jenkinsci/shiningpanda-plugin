@@ -1,5 +1,6 @@
 package jenkins.plugins.shiningpanda;
 
+import hudson.FilePath;
 import hudson.matrix.AxisList;
 import hudson.matrix.MatrixProject;
 import hudson.model.Item;
@@ -16,10 +17,14 @@ import java.util.Properties;
 import jenkins.plugins.shiningpanda.matrix.PythonAxis;
 import jenkins.plugins.shiningpanda.matrix.ToxAxis;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
+import jenkins.plugins.shiningpanda.workspace.MasterWorkspace;
+import jenkins.plugins.shiningpanda.workspace.SlaveWorkspace;
+import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.lang.StringUtils;
 import org.jvnet.hudson.test.HudsonTestCase;
 
 public abstract class ShiningPandaTestCase extends HudsonTestCase
@@ -476,5 +481,120 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
 
             assertEquals("Property " + p + " is different", lp, rp);
         }
+    }
+
+    public Workspace getWorkspace(String name) throws IOException
+    {
+        return Workspace.fromHome(new FilePath(createTempDir(name)));
+    }
+
+    public Workspace getWorkspace() throws IOException
+    {
+        return getWorkspace("workspace");
+    }
+
+    public MasterWorkspace getMasterWorkspace(String name) throws IOException
+    {
+        return new MasterWorkspace(new FilePath(createTempDir(name)));
+    }
+
+    public MasterWorkspace getMasterWorkspace() throws IOException
+    {
+        return getMasterWorkspace("masterWorkspace");
+    }
+
+    public SlaveWorkspace getSlaveWorkspace(String name) throws IOException
+    {
+        return new SlaveWorkspace(new FilePath(createTempDir(name)));
+    }
+
+    public SlaveWorkspace getSlaveWorkspace() throws IOException
+    {
+        return getSlaveWorkspace("slaveWorkspace");
+    }
+
+    public File getPackagesDir()
+    {
+        return new File(jenkins.getRootDir(), "shiningpanda" + File.separator + "packages");
+    }
+
+    public File createPackagesDir()
+    {
+        File packagesDir = getPackagesDir();
+        packagesDir.mkdirs();
+        return packagesDir;
+    }
+
+    public File getTempDir(String... parts)
+    {
+        return new File("target", "temp" + File.separator + StringUtils.join(parts, File.separator)).getAbsoluteFile();
+    }
+
+    public File createTempDir(String... parts) throws IOException
+    {
+        File tempDir = getTempDir(parts);
+        FileUtils.deleteDirectory(tempDir);
+        tempDir.mkdirs();
+        return tempDir;
+    }
+
+    public File toFile(FilePath filePath)
+    {
+        return new File(filePath.getRemote());
+    }
+
+    public void assertFile(File file)
+    {
+        assertTrue("file does not exist: " + file.getAbsolutePath(), file.isFile());
+    }
+
+    public void assertFile(FilePath filePath)
+    {
+        assertFile(toFile(filePath));
+    }
+
+    public void assertDirectory(File file)
+    {
+        assertTrue("directory does not exist: " + file.getAbsolutePath(), file.isDirectory());
+    }
+
+    public void assertDirectory(FilePath filePath)
+    {
+        assertDirectory(toFile(filePath));
+    }
+
+    public void assertNotExists(File file)
+    {
+        assertFalse("file exists: " + file.getAbsolutePath(), file.exists());
+    }
+
+    public void assertNotExists(FilePath filePath)
+    {
+        assertNotExists(toFile(filePath));
+    }
+
+    public void assertContentEquals(File file1, File file2)
+    {
+        assertFile(file1);
+        assertFile(file2);
+        try
+        {
+            assertEquals("file content differ: " + file1.getAbsolutePath() + " != " + file2.getAbsolutePath(),
+                    FileUtils.readFileToString(file1), FileUtils.readFileToString(file2));
+        }
+        catch (IOException e)
+        {
+            fail("failed to read file content: " + e.getMessage());
+        }
+    }
+
+    public void assertContentEquals(FilePath filePath1, FilePath filePath2)
+    {
+        assertContentEquals(toFile(filePath1), toFile(filePath2));
+    }
+
+    public FilePath getFilePath(String pathname)
+    {
+        return new FilePath(new File(pathname));
     }
 }

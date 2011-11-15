@@ -108,6 +108,17 @@ public class PythonAxis extends Axis
         }
 
         /**
+         * Get the list of PYTHON installations.
+         * 
+         * @return The list of installations
+         */
+        public PythonInstallation[] getInstallations()
+        {
+            // Delegate
+            return PythonInstallation.list();
+        }
+
+        /**
          * Escape strings
          * 
          * @param body

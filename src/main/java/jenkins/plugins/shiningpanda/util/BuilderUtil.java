@@ -18,6 +18,8 @@
 package jenkins.plugins.shiningpanda.util;
 
 import hudson.EnvVars;
+import hudson.FilePath;
+import hudson.Launcher;
 import hudson.matrix.MatrixRun;
 import hudson.matrix.MatrixProject;
 import hudson.model.BuildListener;
@@ -25,6 +27,12 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 
 import java.io.IOException;
+
+import jenkins.plugins.shiningpanda.command.Command;
+import jenkins.plugins.shiningpanda.interpreters.Python;
+import jenkins.plugins.shiningpanda.matrix.PythonAxis;
+import jenkins.plugins.shiningpanda.tools.PythonInstallation;
+import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 public class BuilderUtil
 {
@@ -85,5 +93,124 @@ public class BuilderUtil
         environment.overrideAll(build.getBuildVariables());
         // Return the consolidated environment
         return environment;
+    }
+
+    /**
+     * Get the PYTHON installation.
+     * 
+     * @param build
+     *            The build
+     * @param listener
+     *            The listener
+     * @param environment
+     *            The environment
+     * @param name
+     *            The name
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static PythonInstallation getInstallation(AbstractBuild<?, ?> build, BuildListener listener, EnvVars environment,
+            String name) throws IOException, InterruptedException
+    {
+        // Check if this is a matrix build
+        if (isMatrix(build))
+        {
+            // Check if the environment contains a PYTHON axis key
+            if (!environment.containsKey(PythonAxis.KEY))
+            {
+                // If not, log
+                listener.fatalError("pas cool");
+                // Return null to stop the build
+                return null;
+            }
+            // Get the name from the environment
+            name = environment.get(PythonAxis.KEY);
+        }
+        // Check if the name exists
+        if (name == null)
+        {
+            // Log the error
+            listener.fatalError("pas cool");
+            return null;
+        }
+        // Expand the HOME folder with these variables
+        PythonInstallation installation = PythonInstallation.fromName(name);
+        // Check if found an installation
+        if (installation == null)
+            // Failed to find the installation, do not continue
+            return null;
+        // Get the installation for this build
+        return installation.forBuild(listener, environment);
+    }
+
+    /**
+     * Get an interpreter.
+     * 
+     * @param launcher
+     *            The launcher
+     * @param listener
+     *            The listener
+     * @param home
+     *            The home of the interpreter
+     * @return The interpreter if exists, else null
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static Python getInterpreter(Launcher launcher, BuildListener listener, String home) throws IOException,
+            InterruptedException
+    {
+        // Get an interpreter given its home
+        Python interpreter = Python.fromHome(new FilePath(launcher.getChannel(), home));
+        // Check if found an interpreter and if this interpreter is valid
+        if (interpreter == null || !interpreter.isValid())
+        {
+            // Log
+            listener.fatalError("invalid interpreter: " + (interpreter == null ? home : interpreter.getHome().getRemote()));
+            // Invalid
+            return null;
+        }
+        // Check if has white space in its home path
+        if (StringUtil.hasWhitespace(interpreter.getHome().getRemote()))
+        {
+            // Log
+            listener.fatalError("Whitespace characters are not allowed in PYTHONHOME: "
+                    + (interpreter == null ? home : interpreter.getHome().getRemote()));
+            // Invalid
+            return null;
+        }
+        // This is a valid interpreter
+        return interpreter;
+    }
+
+    /**
+     * Launch a command.
+     * 
+     * @param launcher
+     *            The launcher
+     * @param listener
+     *            The build listener
+     * @param environment
+     *            The environment
+     * @param workspace
+     *            The workspace
+     * @param interpreter
+     *            The interpreter
+     * @param command
+     *            The command to execute
+     * @param ignoreExitCode
+     *            Is the exit code ignored?
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static boolean launch(Launcher launcher, BuildListener listener, EnvVars environment, Workspace workspace,
+            Python interpreter, String command, boolean ignoreExitCode) throws IOException, InterruptedException
+    {
+        // Set the interpreter environment
+        environment.overrideAll(interpreter.getEnvironment());
+        // Launch the script
+        return Command.get(workspace.isUnix(), command, ignoreExitCode).launch(launcher, listener, environment,
+                workspace.getHome());
     }
 }

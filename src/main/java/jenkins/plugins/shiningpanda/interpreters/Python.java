@@ -27,6 +27,7 @@ import hudson.tasks.Messages;
 import hudson.util.ArgumentListBuilder;
 
 import java.io.IOException;
+import java.util.Map;
 
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 import jenkins.plugins.shiningpanda.util.FilePathUtil;
@@ -247,9 +248,9 @@ public abstract class Python
     // libVars.add("DYLD_LIBRARY_PATH");
     // libVars.add("LIBPATH");
     // libVars.add("SHLIB_PATH");
-    public abstract EnvVars getEnvironment(boolean withHomeVar) throws IOException, InterruptedException;
+    public abstract Map<String, String> getEnvironment(boolean withHomeVar) throws IOException, InterruptedException;
 
-    public EnvVars getEnvironment() throws IOException, InterruptedException
+    public Map<String, String> getEnvironment() throws IOException, InterruptedException
     {
         return getEnvironment(true);
     }

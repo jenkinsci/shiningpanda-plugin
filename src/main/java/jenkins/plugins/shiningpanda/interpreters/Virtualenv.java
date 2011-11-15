@@ -26,6 +26,8 @@ import hudson.tasks.Messages;
 import hudson.util.ArgumentListBuilder;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import jenkins.plugins.shiningpanda.ShiningPanda;
 import jenkins.plugins.shiningpanda.util.FilePathUtil;
@@ -81,22 +83,22 @@ public class Virtualenv extends Python
      * jenkins.plugins.shiningpanda.interpreters.Python#getEnvironment(boolean)
      */
     @Override
-    public EnvVars getEnvironment(boolean withHomeVar) throws IOException, InterruptedException
+    public Map<String, String> getEnvironment(boolean withHomeVar) throws IOException, InterruptedException
     {
-        EnvVars envVars = new EnvVars();
-        envVars.put("PYTHONHOME", null);
-        envVars.put("JYTHON_HOME", null);
-        envVars.put("VIRTUAL_ENV", getHome().getRemote());
+        Map<String, String> environment = new HashMap<String, String>();
+        environment.put("PYTHONHOME", null);
+        environment.put("JYTHON_HOME", null);
+        environment.put("VIRTUAL_ENV", getHome().getRemote());
         if (isWindows())
         {
             if (join("bin", "activate.bat").exists())
-                envVars.put("PATH+", join("bin").getRemote());
+                environment.put("PATH+", join("bin").getRemote());
             else
-                envVars.put("PATH+", join("Scripts").getRemote());
+                environment.put("PATH+", join("Scripts").getRemote());
         }
         else
-            envVars.put("PATH+", join("bin").getRemote());
-        return envVars;
+            environment.put("PATH+", join("bin").getRemote());
+        return environment;
     }
 
     /*
