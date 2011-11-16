@@ -66,7 +66,7 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
     private final static String PYPY_NAME = "PyPy";
 
     /**
-     * Name of Jython
+     * Name of JYTHON.
      */
     private final static String JYTHON_NAME = "Jython";
 
@@ -240,17 +240,6 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
     }
 
     /**
-     * Create a default VIRTUALENV.
-     * 
-     * @return The home of this VIRTUALENV
-     * @throws Exception
-     */
-    protected File createVirtualenv() throws Exception
-    {
-        return createVirtualenv(getVirtualenvHome());
-    }
-
-    /**
      * Configure a PYTHON installation.
      * 
      * @param name
@@ -309,7 +298,7 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
     }
 
     /**
-     * Configure a Jython installation.
+     * Configure a JYTHON installation.
      * 
      * @return The installation.
      * @throws Exception
@@ -483,41 +472,93 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
         }
     }
 
+    /**
+     * Create a workspace.
+     * 
+     * @param name
+     *            Appended to the temporary folder, it give the home folder
+     * @return The workspace
+     * @throws IOException
+     */
     public Workspace getWorkspace(String name) throws IOException
     {
         return Workspace.fromHome(new FilePath(createTempDir(name)));
     }
 
+    /**
+     * Create a workspace.
+     * 
+     * @return The workspace
+     * @throws IOException
+     */
     public Workspace getWorkspace() throws IOException
     {
         return getWorkspace("workspace");
     }
 
+    /**
+     * Create a master workspace.
+     * 
+     * @param name
+     *            Appended to the temporary folder, it give the home folder
+     * @return The workspace
+     * @throws IOException
+     */
     public MasterWorkspace getMasterWorkspace(String name) throws IOException
     {
         return new MasterWorkspace(new FilePath(createTempDir(name)));
     }
 
+    /**
+     * Create a master workspace.
+     * 
+     * @return The workspace
+     * @throws IOException
+     */
     public MasterWorkspace getMasterWorkspace() throws IOException
     {
         return getMasterWorkspace("masterWorkspace");
     }
 
+    /**
+     * Create a slave workspace.
+     * 
+     * @param name
+     *            Appended to the temporary folder, it give the home folder
+     * @return The workspace
+     * @throws IOException
+     */
     public SlaveWorkspace getSlaveWorkspace(String name) throws IOException
     {
         return new SlaveWorkspace(new FilePath(createTempDir(name)));
     }
 
+    /**
+     * Create a slave workspace.
+     * 
+     * @return The workspace
+     * @throws IOException
+     */
     public SlaveWorkspace getSlaveWorkspace() throws IOException
     {
         return getSlaveWorkspace("slaveWorkspace");
     }
 
+    /**
+     * Get the packages directory.
+     * 
+     * @return The package directory
+     */
     public File getPackagesDir()
     {
         return new File(jenkins.getRootDir(), "shiningpanda" + File.separator + "packages");
     }
 
+    /**
+     * Create the packages directory.
+     * 
+     * @return The packages directory
+     */
     public File createPackagesDir()
     {
         File packagesDir = getPackagesDir();
@@ -525,11 +566,25 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
         return packagesDir;
     }
 
+    /**
+     * Get a temporary directory.
+     * 
+     * @param parts
+     *            The path parts to add to the base temporary directory
+     * @return The temporary directory
+     */
     public File getTempDir(String... parts)
     {
         return new File("target", "temp" + File.separator + StringUtils.join(parts, File.separator)).getAbsoluteFile();
     }
 
+    /**
+     * Create a temporary directory.
+     * 
+     * @param parts
+     *            The path parts to add to the base temporary directory
+     * @return The temporary directory
+     */
     public File createTempDir(String... parts) throws IOException
     {
         File tempDir = getTempDir(parts);
@@ -538,41 +593,92 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
         return tempDir;
     }
 
+    /**
+     * Convert a FilePath to a File.
+     * 
+     * @param filePath
+     *            The FilePath to convert
+     * @return The resulting file
+     */
     public File toFile(FilePath filePath)
     {
         return new File(filePath.getRemote());
     }
 
+    /**
+     * Assert that file exists
+     * 
+     * @param file
+     *            The file to check
+     */
     public void assertFile(File file)
     {
         assertTrue("file does not exist: " + file.getAbsolutePath(), file.isFile());
     }
 
+    /**
+     * Assert that file exists
+     * 
+     * @param filePath
+     *            The file to check
+     */
     public void assertFile(FilePath filePath)
     {
         assertFile(toFile(filePath));
     }
 
+    /**
+     * Assert that directory exists
+     * 
+     * @param file
+     *            The directory to check
+     */
     public void assertDirectory(File file)
     {
         assertTrue("directory does not exist: " + file.getAbsolutePath(), file.isDirectory());
     }
 
+    /**
+     * Assert that directory exists
+     * 
+     * @param filePath
+     *            The directory to check
+     */
     public void assertDirectory(FilePath filePath)
     {
         assertDirectory(toFile(filePath));
     }
 
+    /**
+     * Assert that file does not exist
+     * 
+     * @param file
+     *            The file to check
+     */
     public void assertNotExists(File file)
     {
         assertFalse("file exists: " + file.getAbsolutePath(), file.exists());
     }
 
+    /**
+     * Assert that file does not exist
+     * 
+     * @param filePath
+     *            The file to check
+     */
     public void assertNotExists(FilePath filePath)
     {
         assertNotExists(toFile(filePath));
     }
 
+    /**
+     * Check that files contains the same thing.
+     * 
+     * @param file1
+     *            The first file
+     * @param file2
+     *            The second file
+     */
     public void assertContentEquals(File file1, File file2)
     {
         assertFile(file1);
@@ -588,11 +694,26 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
         }
     }
 
+    /**
+     * Check that files contains the same thing.
+     * 
+     * @param file1
+     *            The first file
+     * @param file2
+     *            The second file
+     */
     public void assertContentEquals(FilePath filePath1, FilePath filePath2)
     {
         assertContentEquals(toFile(filePath1), toFile(filePath2));
     }
 
+    /**
+     * Get a FilePath given a path as string
+     * 
+     * @param pathname
+     *            The path
+     * @return The file object
+     */
     public FilePath getFilePath(String pathname)
     {
         return new FilePath(new File(pathname));

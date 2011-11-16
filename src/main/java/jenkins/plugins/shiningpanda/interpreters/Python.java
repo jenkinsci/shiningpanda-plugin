@@ -17,21 +17,12 @@
  */
 package jenkins.plugins.shiningpanda.interpreters;
 
-import hudson.EnvVars;
 import hudson.FilePath;
-import hudson.Launcher;
-import hudson.Util;
-import hudson.model.TaskListener;
-import hudson.remoting.VirtualChannel;
-import hudson.tasks.Messages;
-import hudson.util.ArgumentListBuilder;
 
 import java.io.IOException;
 import java.util.Map;
 
-import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 import jenkins.plugins.shiningpanda.util.FilePathUtil;
-import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 public abstract class Python
 {
@@ -46,13 +37,15 @@ public abstract class Python
      * 
      * @param home
      *            The home folder
+     * @throws InterruptedException
+     * @throws IOException
      */
-    protected Python(FilePath home)
+    protected Python(FilePath home) throws IOException, InterruptedException
     {
         // Call super
         super();
-        // Store home folder
-        setHome(home);
+        // Store home folder with its absolute form
+        setHome(home.absolutize());
     }
 
     /**
@@ -177,99 +170,26 @@ public abstract class Python
     public abstract FilePath getExecutable() throws IOException, InterruptedException;
 
     /**
-     * Get the path of the required executable.
+     * Get the environment for this interpreter.
      * 
-     * @param executable
-     *            The required executable
-     * @return The executable file if exists, else null
+     * @param includeHomeVar
+     *            If true, add home variable such as PYTHONHOME
+     * @return The environment
      * @throws IOException
      * @throws InterruptedException
      */
-    protected FilePath getExecutable(String executable) throws IOException, InterruptedException
-    {
-        // Check if on Windows
-        if (isWindows())
-            // If on Windows, add
-            return FilePathUtil.isFileOrNull(join("bin", executable + ".exe"), join("Scripts", executable + ".exe"));
-        return FilePathUtil.isFileOrNull(join("bin", executable));
-    }
+    public abstract Map<String, String> getEnvironment(boolean includeHomeVar) throws IOException, InterruptedException;
 
-    public FilePath getToxExecutable() throws IOException, InterruptedException
-    {
-        return getExecutable("tox");
-    }
-
-    public FilePath getPipExecutable() throws IOException, InterruptedException
-    {
-        return getExecutable("pip");
-    }
-
-    protected boolean execute(Launcher launcher, TaskListener listener, Workspace workspace, ArgumentListBuilder args)
-            throws InterruptedException
-    {
-        int r;
-        try
-        {
-            r = launcher.launch().cmds(workspace.isUnix() ? args : args.toWindowsCommand()).envs(getEnvironment())
-                    .stdout(listener).pwd(workspace.getHome()).join();
-        }
-        catch (IOException e)
-        {
-            Util.displayIOException(e, listener);
-            e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_CommandFailed()));
-            r = -1;
-        }
-        return r == 0;
-    }
-
-    public boolean pipInstall(Launcher launcher, TaskListener listener, Workspace workspace, String packageName)
-            throws InterruptedException, IOException
-    {
-        ArgumentListBuilder args = new ArgumentListBuilder();
-        args.add(getPipExecutable().getRemote());
-        args.add("install");
-        args.add(packageName);
-        return execute(launcher, listener, workspace, args);
-    }
-
-    public boolean tox(Launcher launcher, TaskListener listener, Workspace workspace, String toxIni, boolean recreate)
-            throws InterruptedException, IOException
-    {
-        ArgumentListBuilder args = new ArgumentListBuilder();
-        args.add(getToxExecutable().getRemote());
-        args.add("-c");
-        args.add(toxIni);
-        if (recreate)
-            args.add("--recreate");
-        return execute(launcher, listener, workspace, args);
-    }
-
-    // libVars.add("LD_LIBRARY_PATH");
-    // libVars.add("DYLD_LIBRARY_PATH");
-    // libVars.add("LIBPATH");
-    // libVars.add("SHLIB_PATH");
-    public abstract Map<String, String> getEnvironment(boolean withHomeVar) throws IOException, InterruptedException;
-
+    /**
+     * Get the environment for this interpreter with the home variable defined.
+     * 
+     * @return The environment
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public Map<String, String> getEnvironment() throws IOException, InterruptedException
     {
         return getEnvironment(true);
-    }
-
-    /**
-     * Create a PYTHON interpreter from an installation.
-     * 
-     * @param channel
-     *            The channel
-     * @param installation
-     *            The installation
-     * @return The interpreter if exists, else null
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    public static Python fromInstallation(VirtualChannel channel, PythonInstallation installation) throws IOException,
-            InterruptedException
-    {
-        return fromHome(new FilePath(channel, installation.getHome()));
     }
 
     /**

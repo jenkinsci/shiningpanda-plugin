@@ -33,35 +33,65 @@ public class PyPy extends Python
      * 
      * @param home
      *            The home folder
+     * @throws InterruptedException
+     * @throws IOException
      */
-    protected PyPy(FilePath home)
+    protected PyPy(FilePath home) throws IOException, InterruptedException
     {
         super(home);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see jenkins.plugins.shiningpanda.interpreters.Python#isPyPy()
+     */
     @Override
     public PyPy isPyPy()
     {
         return this;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see jenkins.plugins.shiningpanda.interpreters.Python#getExecutable()
+     */
     @Override
     public FilePath getExecutable() throws IOException, InterruptedException
     {
+        // Check if on Windows
         if (isWindows())
+            // If on windows look for executables in home folder
             return FilePathUtil.isFileOrNull(join("pypy-c.exe"), join("pypy.exe"));
+        // Else look in bin folder
         return FilePathUtil.isFileOrNull(join("bin", "pypy-c"), join("bin", "pypy"));
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * jenkins.plugins.shiningpanda.interpreters.Python#getEnvironment(boolean)
+     */
     @Override
-    public Map<String, String> getEnvironment(boolean withHomeVar) throws IOException, InterruptedException
+    public Map<String, String> getEnvironment(boolean includeHomeVar) throws IOException, InterruptedException
     {
+        // Store the environment
         Map<String, String> environment = new HashMap<String, String>();
-        environment.put("PYTHONHOME", getHome().getRemote());
+        // Check if home variable required
+        if (includeHomeVar)
+            // Define PYTHONHOME
+            environment.put("PYTHONHOME", getHome().getRemote());
+        // Check if on Windows
         if (isWindows())
+            // If on Windows add home folder and bin folder in PATH
             environment.put("PATH+", getHome().getRemote() + ";" + join("bin").getRemote());
+        // Handle UNIX
         else
+            // Add bin folder in PATH
             environment.put("PATH+", join("bin").getRemote());
+        // Return environment
         return environment;
     }
 }

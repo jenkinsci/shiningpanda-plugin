@@ -17,10 +17,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-  <f:entry field="toxIni" title="${%Configuration file}" help="/plugin/shiningpanda/help/ToxBuilder/help-toxIni.html">
+  <f:entry field="toxIni" title="${%Configuration file}" help="/plugin/shiningpanda/help/builders/ToxBuilder/help-toxIni.html">
     <f:textbox default="tox.ini"/>
   </f:entry>
-  <f:entry field="recreate" title="${%Recreate}" help="/plugin/shiningpanda/help/ToxBuilder/help-recreate.html">
+  <f:entry field="recreate" title="${%Recreate}" help="/plugin/shiningpanda/help/builders/ToxBuilder/help-recreate.html">
     <f:checkbox checked="${it.recreate}" />
   </f:entry>
 </j:jelly>

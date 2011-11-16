@@ -26,10 +26,16 @@ import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import jenkins.model.Jenkins;
+import jenkins.plugins.shiningpanda.Messages;
 import jenkins.plugins.shiningpanda.command.Command;
 import jenkins.plugins.shiningpanda.interpreters.Python;
+import jenkins.plugins.shiningpanda.interpreters.Virtualenv;
 import jenkins.plugins.shiningpanda.matrix.PythonAxis;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
@@ -46,7 +52,12 @@ public class BuilderUtil
      */
     public static long lastConfigure(AbstractBuild<?, ?> build)
     {
-        return build.getParent().getConfigFile().getFile().lastModified();
+        // Get the last modification date of the build configuration
+        long lastJobConfigure = build.getParent().getConfigFile().getFile().lastModified();
+        // Get the last modification of the global configuration file
+        long lastJenkinsConfigure = new File(Jenkins.getInstance().getRootDir(), "config.xml").lastModified();
+        // Get the newer of the two
+        return Math.max(lastJobConfigure, lastJenkinsConfigure);
     }
 
     /**
@@ -120,7 +131,7 @@ public class BuilderUtil
             if (!environment.containsKey(PythonAxis.KEY))
             {
                 // If not, log
-                listener.fatalError("pas cool");
+                listener.fatalError(Messages.BuilderUtil_PythonAxis_Required());
                 // Return null to stop the build
                 return null;
             }
@@ -131,15 +142,20 @@ public class BuilderUtil
         if (name == null)
         {
             // Log the error
-            listener.fatalError("pas cool");
+            listener.fatalError(Messages.BuilderUtil_Installation_NameNotFound());
+            // Do not continue the build
             return null;
         }
         // Expand the HOME folder with these variables
         PythonInstallation installation = PythonInstallation.fromName(name);
         // Check if found an installation
         if (installation == null)
+        {
+            // Log
+            listener.fatalError(Messages.BuilderUtil_Installation_NotFound(name));
             // Failed to find the installation, do not continue
             return null;
+        }
         // Get the installation for this build
         return installation.forBuild(listener, environment);
     }
@@ -166,7 +182,8 @@ public class BuilderUtil
         if (interpreter == null || !interpreter.isValid())
         {
             // Log
-            listener.fatalError("invalid interpreter: " + (interpreter == null ? home : interpreter.getHome().getRemote()));
+            listener.fatalError(Messages.BuilderUtil_Interpreter_Invalid(interpreter == null ? home : interpreter.getHome()
+                    .getRemote()));
             // Invalid
             return null;
         }
@@ -174,13 +191,40 @@ public class BuilderUtil
         if (StringUtil.hasWhitespace(interpreter.getHome().getRemote()))
         {
             // Log
-            listener.fatalError("Whitespace characters are not allowed in PYTHONHOME: "
-                    + (interpreter == null ? home : interpreter.getHome().getRemote()));
+            listener.fatalError(Messages.BuilderUtil_Interpreter_WhitespaceNotAllowed(interpreter == null ? home : interpreter
+                    .getHome().getRemote()));
             // Invalid
             return null;
         }
         // This is a valid interpreter
         return interpreter;
+    }
+
+    /**
+     * Get a VIRTUALENV from its home folder.
+     * 
+     * @param listener
+     *            The listener
+     * @param home
+     *            The home folder
+     * @return The VIRTUALENV
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static Virtualenv getVirtualenv(BuildListener listener, FilePath home) throws IOException, InterruptedException
+    {
+        // Create the VIRTUAL environment
+        Virtualenv virtualenv = new Virtualenv(home);
+        // Check if has white space in its home path
+        if (StringUtil.hasWhitespace(virtualenv.getHome().getRemote()))
+        {
+            // Log
+            listener.fatalError(Messages.BuilderUtil_Interpreter_WhitespaceNotAllowed(virtualenv.getHome().getRemote()));
+            // Invalid
+            return null;
+        }
+        // Return the VIRTUALENV
+        return virtualenv;
     }
 
     /**
@@ -212,5 +256,67 @@ public class BuilderUtil
         // Launch the script
         return Command.get(workspace.isUnix(), command, ignoreExitCode).launch(launcher, listener, environment,
                 workspace.getHome());
+    }
+
+    /**
+     * Get the first available interpreter on the executor.
+     * 
+     * @param launcher
+     *            The launcher
+     * @param listener
+     *            The build listener
+     * @param environment
+     *            The environment
+     * @return The first available interpreter
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static Python getInterpreter(Launcher launcher, BuildListener listener, EnvVars environment) throws IOException,
+            InterruptedException
+    {
+        // Get the list of existing interpreter
+        List<Python> interpreters = getInterpreters(launcher, listener, environment);
+        // Check if at least one found
+        if (!interpreters.isEmpty())
+            // Return the first one
+            return interpreters.get(0);
+        // Failed to found one
+        listener.fatalError(Messages.BuilderUtil_NoInterpreterFound());
+        // Return null
+        return null;
+    }
+
+    /**
+     * Get the list of the valid interpreter on an executor.
+     * 
+     * @param launcher
+     *            The launcher
+     * @param listener
+     *            The build listener
+     * @param environment
+     *            The environment
+     * @return The list of available interpreter
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static List<Python> getInterpreters(Launcher launcher, BuildListener listener, EnvVars environment)
+            throws IOException, InterruptedException
+    {
+        // Create the interpreter list
+        List<Python> interpreters = new ArrayList<Python>();
+        // Go threw all PYTHON installations
+        for (PythonInstallation installation : PythonInstallation.list())
+        {
+            // Convert for the build
+            installation = installation.forBuild(listener, environment);
+            // Get an interpreter given its home
+            Python interpreter = Python.fromHome(new FilePath(launcher.getChannel(), installation.getHome()));
+            // Check if exists, is valid and has no whitespace in its home
+            if (interpreter != null && interpreter.isValid() && StringUtil.hasWhitespace(interpreter.getHome().getRemote()))
+                // Add the interpreter
+                interpreters.add(interpreter);
+        }
+        // Return the list of interpreters
+        return interpreters;
     }
 }

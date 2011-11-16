@@ -19,9 +19,13 @@ package jenkins.plugins.shiningpanda.builders;
 
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
+import hudson.init.InitMilestone;
+import hudson.init.Initializer;
 import hudson.model.BuildListener;
+import hudson.model.Items;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.tasks.BuildStepDescriptor;
@@ -38,10 +42,10 @@ import jenkins.plugins.shiningpanda.interpreters.Python;
 import jenkins.plugins.shiningpanda.interpreters.Virtualenv;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 import jenkins.plugins.shiningpanda.util.BuilderUtil;
+import jenkins.plugins.shiningpanda.util.EnvVarsUtil;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 import org.apache.commons.io.FilenameUtils;
-import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
@@ -148,7 +152,7 @@ public class VirtualenvBuilder extends Builder implements Serializable
             IOException
     {
         // Get the workspace
-        Workspace workspace = Workspace.fromHome(build.getWorkspace());
+        Workspace workspace = Workspace.fromBuild(build);
         // Get the environment variables for this build
         EnvVars environment = BuilderUtil.getEnvironment(build, listener);
         // Get the PYTHON installation to use
@@ -164,11 +168,16 @@ public class VirtualenvBuilder extends Builder implements Serializable
             // If no interpreter found, no need to continue
             return false;
         // Create a VIRTUALENV
-        Virtualenv virtualenv = new Virtualenv(launcher, getHome(), environment);
+        Virtualenv virtualenv = BuilderUtil.getVirtualenv(listener,
+                new FilePath(workspace.getHome(), environment.expand(getHome())));
+        // Check if this is a valid VIRTUALENV
+        if (virtualenv == null)
+            // Invalid VIRTUALENV, do not continue
+            return false;
         // Check if clean required or if configuration changed
         if (clear || virtualenv.isOutdated(BuilderUtil.lastConfigure(build)))
             // A new environment is required
-            if (!virtualenv.create(launcher, listener, workspace, interpreter, useDistribute, noSitePackages))
+            if (!virtualenv.create(launcher, listener, environment, workspace, interpreter, useDistribute, noSitePackages))
                 // Failed to create the environment, do not continue
                 return false;
         // Launch script
@@ -214,7 +223,7 @@ public class VirtualenvBuilder extends Builder implements Serializable
         @Override
         public String getHelpFile()
         {
-            return "/plugin/shiningpanda/help/VirtualenvBuilder/help.html";
+            return "/plugin/shiningpanda/help/builders/VirtualenvBuilder/help.html";
         }
 
         /*
@@ -235,26 +244,49 @@ public class VirtualenvBuilder extends Builder implements Serializable
         }
 
         /**
-         * Checks if the VIRTUALENV home is valid
+         * Checks if the VIRTUALENV home is valid.
          * 
-         * @param project
-         *            The linked project, to check permissions
          * @param value
          *            The value to check
          * @return The validation result
          */
-        public FormValidation doCheckHome(@SuppressWarnings("rawtypes") @AncestorInPath AbstractProject project,
-                @QueryParameter File value)
+        public FormValidation doCheckHome(@QueryParameter String value)
         {
-            // Check that path specified
-            if (Util.fixEmptyAndTrim(value.getPath()) == null)
-                return FormValidation.error(Messages.VirtualenvBuilder_HomeDirectoryRequired());
+            // Get the file value as a string
+            String home = Util.fixEmptyAndTrim(value);
+            // Check is a value was provided
+            if (home == null)
+                // Value is required
+                return FormValidation.error(Messages.VirtualenvBuilder_Home_Required());
+            // Try to expand the variables
+            home = EnvVarsUtil.expand(home);
             // Check that path is relative in workspace
-            File expanded = new File(Util.replaceMacro(value.getPath(), EnvVars.masterEnvVars));
-            if (expanded.isAbsolute() || FilenameUtils.normalize(expanded.getPath()) == null)
-                return FormValidation.error(Messages.VirtualenvBuilder_HomeNotRelative());
+            if (new File(home).isAbsolute() || FilenameUtils.normalize(home) == null)
+                // Not relative, this is an error
+                return FormValidation.error(Messages.VirtualenvBuilder_Home_RelativePathRequired());
             // Do not need to check more as files are located on slaves
             return FormValidation.ok();
+        }
+
+        /**
+         * Get the PYTHON installations.
+         * 
+         * @return The list of installations
+         */
+        public PythonInstallation[] getInstallations()
+        {
+            // Delegate
+            return PythonInstallation.list();
+        }
+
+        /**
+         * Enable backward compatibility.
+         */
+        @Initializer(before = InitMilestone.PLUGINS_STARTED)
+        public static void compatibility()
+        {
+            // VirtualenvBuilder is now in a builders package
+            Items.XSTREAM2.addCompatibilityAlias("jenkins.plugins.shiningpanda.VirtualenvBuilder", VirtualenvBuilder.class);
         }
     }
 }

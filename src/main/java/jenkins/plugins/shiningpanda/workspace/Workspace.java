@@ -18,12 +18,12 @@
 package jenkins.plugins.shiningpanda.workspace;
 
 import hudson.FilePath;
+import hudson.model.AbstractBuild;
 
 import java.io.File;
 import java.io.IOException;
 
 import jenkins.model.Jenkins;
-import jenkins.plugins.shiningpanda.interpreters.Virtualenv;
 import jenkins.plugins.shiningpanda.util.FilePathUtil;
 
 public abstract class Workspace
@@ -169,14 +169,14 @@ public abstract class Workspace
     public abstract FilePath getPackagesDir() throws IOException, InterruptedException;
 
     /**
-     * Get the VIRTUALENV for this workspace where TOX (or other tools) can be
-     * installed.
+     * Get the VIRTUALENV home for this workspace, where TOX (or other tools)
+     * can be installed for instance.
      * 
      * @return The VIRTUALENV
      */
-    public Virtualenv getVirtualenv()
+    public FilePath getVirtualenvHome()
     {
-        return new Virtualenv(new FilePath(getCache(), "env"));
+        return new FilePath(getCache(), "env");
     }
 
     /**
@@ -189,5 +189,17 @@ public abstract class Workspace
     public static Workspace fromHome(FilePath home)
     {
         return home.isRemote() ? new SlaveWorkspace(home) : new MasterWorkspace(home);
+    }
+
+    /**
+     * Create a workspace from the build.
+     * 
+     * @param build
+     *            The build
+     * @return The workspace
+     */
+    public static Workspace fromBuild(AbstractBuild<?, ?> build)
+    {
+        return fromHome(build.getWorkspace());
     }
 }

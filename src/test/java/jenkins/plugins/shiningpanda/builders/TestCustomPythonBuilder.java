@@ -40,7 +40,7 @@ public class TestCustomPythonBuilder extends ShiningPandaTestCase
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
-        assertTrue(log.contains(Messages.ShiningPandaUtil_PythonHomeHasWhitespace("")));
+        assertTrue(log.contains(Messages.BuilderUtil_Interpreter_WhitespaceNotAllowed("")));
     }
 
     public void testTextAxisAvailable() throws Exception

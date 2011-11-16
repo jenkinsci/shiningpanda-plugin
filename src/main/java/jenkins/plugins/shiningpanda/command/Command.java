@@ -216,7 +216,7 @@ public abstract class Command
      *            The content of the script to execute
      * @param ignoreExitCode
      *            Is exit code ignored?
-     * @return
+     * @return The command object
      */
     public static Command get(boolean isUnix, String command, boolean ignoreExitCode)
     {

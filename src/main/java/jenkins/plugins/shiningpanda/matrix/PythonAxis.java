@@ -20,8 +20,12 @@ package jenkins.plugins.shiningpanda.matrix;
 import hudson.Extension;
 import hudson.Functions;
 import hudson.Util;
+import hudson.init.InitMilestone;
+import hudson.init.Initializer;
 import hudson.matrix.Axis;
 import hudson.matrix.AxisDescriptor;
+import hudson.model.Items;
+import hudson.model.Run;
 
 import java.util.Arrays;
 
@@ -37,7 +41,7 @@ public class PythonAxis extends Axis
     /**
      * Configuration name for this axis
      */
-    public static final String KEY = "python";
+    public static final String KEY = "PYTHON";
 
     /**
      * Constructor using fields
@@ -51,6 +55,11 @@ public class PythonAxis extends Axis
         super(KEY, Arrays.asList(values));
     }
 
+    /**
+     * Get this axis values for tree handling.
+     * 
+     * @return The joined values
+     */
     public String getTreeValueString()
     {
         return Util.join(getValues(), "/");
@@ -71,7 +80,7 @@ public class PythonAxis extends Axis
         /**
          * Store a tree helper.
          */
-        public static PythonAxisTree tree = new PythonAxisTree();
+        public static PythonAxisTree TREE = new PythonAxisTree();
 
         /*
          * (non-Javadoc)
@@ -156,7 +165,20 @@ public class PythonAxis extends Axis
             return jsStringEscape("<input type='checkbox' name='values' json='%s' ",
                     Functions.htmlAttributeEscape(installation.getName()))
                     + String.format("+has(%s)+", jsStringEscape(installation.getName()))
-                    + jsStringEscape("/><label class='attach-previous'>%s</label>", tree.getVersion(installation));
+                    + jsStringEscape("/><label class='attach-previous'>%s</label>", TREE.getVersion(installation));
+        }
+
+        /**
+         * Enable backward compatibility.
+         */
+        @Initializer(before = InitMilestone.PLUGINS_STARTED)
+        public static void compatibility()
+        {
+            // PythonAxis is now in a matrix package. Compatibility with
+            // configuration...
+            Items.XSTREAM2.addCompatibilityAlias("jenkins.plugins.shiningpanda.PythonAxis", PythonAxis.class);
+            // ... and with builds
+            Run.XSTREAM2.addCompatibilityAlias("jenkins.plugins.shiningpanda.PythonAxis", PythonAxis.class);
         }
     }
 

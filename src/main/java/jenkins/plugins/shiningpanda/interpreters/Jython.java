@@ -17,7 +17,6 @@
  */
 package jenkins.plugins.shiningpanda.interpreters;
 
-import hudson.EnvVars;
 import hudson.FilePath;
 
 import java.io.IOException;
@@ -34,8 +33,10 @@ public class Jython extends Python
      * 
      * @param home
      *            The home folder
+     * @throws InterruptedException
+     * @throws IOException
      */
-    protected Jython(FilePath home)
+    protected Jython(FilePath home) throws IOException, InterruptedException
     {
         super(home);
     }
@@ -59,19 +60,32 @@ public class Jython extends Python
     @Override
     public FilePath getExecutable() throws IOException, InterruptedException
     {
-        // On windows this is jython.bat
+        // Check if on Windows
         if (isWindows())
+            // On windows this is jython.bat
             return FilePathUtil.isFileOrNull(join("bin", "jython.bat"));
         // On UNIX no extension
         return FilePathUtil.isFileOrNull(join("bin", "jython"));
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * jenkins.plugins.shiningpanda.interpreters.Python#getEnvironment(boolean)
+     */
     @Override
-    public Map<String, String> getEnvironment(boolean withHomeVar) throws IOException, InterruptedException
+    public Map<String, String> getEnvironment(boolean includeHomeVar) throws IOException, InterruptedException
     {
+        // Store the environment
         Map<String, String> environment = new HashMap<String, String>();
-        environment.put("JYTHON_HOME", getHome().getRemote());
+        // Check if home variable is required
+        if (includeHomeVar)
+            // If required define JYTHON_HOME
+            environment.put("JYTHON_HOME", getHome().getRemote());
+        // Add the bin folder in the PATH
         environment.put("PATH+", join("bin").getRemote());
+        // Return the environment
         return environment;
     }
 

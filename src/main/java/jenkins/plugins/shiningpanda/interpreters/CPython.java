@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import jenkins.plugins.shiningpanda.util.EnvVarsUtil;
 import jenkins.plugins.shiningpanda.util.FilePathUtil;
 
 public class CPython extends Python
@@ -33,8 +34,10 @@ public class CPython extends Python
      * 
      * @param home
      *            The home folder
+     * @throws InterruptedException
+     * @throws IOException
      */
-    protected CPython(FilePath home)
+    protected CPython(FilePath home) throws IOException, InterruptedException
     {
         super(home);
     }
@@ -58,22 +61,43 @@ public class CPython extends Python
     @Override
     public FilePath getExecutable() throws IOException, InterruptedException
     {
-        // If on Windows, look for python.exe
+        // Check if on Windows
         if (isWindows())
+            // If on Windows, look for python.exe
             return FilePathUtil.isFileOrNull(join("python.exe"));
         // If on UNIX, this can be PYTHON 3 or PYTHON 2
         return FilePathUtil.isFileOrNull(join("bin", "python3"), join("bin", "python"));
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * jenkins.plugins.shiningpanda.interpreters.Python#getEnvironment(boolean)
+     */
     @Override
-    public Map<String, String> getEnvironment(boolean withHomeVar) throws IOException, InterruptedException
+    public Map<String, String> getEnvironment(boolean includeHomeVar) throws IOException, InterruptedException
     {
+        // Store the environment
         Map<String, String> environment = new HashMap<String, String>();
-        environment.put("PYTHONHOME", getHome().getRemote());
+        // Check if home variable required
+        if (includeHomeVar)
+            // If required define PYTHONHOME
+            environment.put("PYTHONHOME", getHome().getRemote());
+        // Check if on Windows
         if (isWindows())
+            // If on Windows add the home folder and the scripts folder in the
+            // PATH
             environment.put("PATH+", getHome().getRemote() + ";" + join("Scripts").getRemote());
+        // Handle UNIX case
         else
+        {
+            // Add the bin folder in the PATH
             environment.put("PATH+", join("bin").getRemote());
+            // Add the library folder in the path to look for libraries
+            environment.putAll(EnvVarsUtil.getLibs(join("lib")));
+        }
+        // Return the environment
         return environment;
     }
 

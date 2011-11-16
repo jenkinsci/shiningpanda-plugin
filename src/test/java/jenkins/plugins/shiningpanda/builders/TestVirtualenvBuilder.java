@@ -8,6 +8,7 @@ import hudson.matrix.TextAxis;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 
+import java.io.File;
 import java.util.List;
 
 import jenkins.plugins.shiningpanda.Messages;
@@ -25,25 +26,26 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder before = new VirtualenvBuilder(installation.getName(), "env2", true, false, true, "echo hello", true);
         VirtualenvBuilder after = configFreeStyleRoundtrip(before);
-        assertEqualBeans2(before, after, "home,clear,useDistribute,noSitePackages,ignoreExitCode,command,pythonName");
+        assertEqualBeans2(before, after, "pythonName,home,clear,useDistribute,noSitePackages,command,ignoreExitCode");
     }
 
     public void testRoundTripMatrix() throws Exception
     {
         VirtualenvBuilder before = new VirtualenvBuilder("foobar", "env2", true, false, true, "echo hello", false);
         VirtualenvBuilder after = configPythonMatrixRoundtrip(before);
-        assertEqualBeans2(before, after, "home,clear,useDistribute,noSitePackages,ignoreExitCode,command");
+        assertEqualBeans2(before, after, "home,clear,useDistribute,noSitePackages,command,ignoreExitCode");
     }
 
     public void testStandardPythonHomeWithSpace() throws Exception
     {
-        PythonInstallation installation = configurePython("Python", "/tmp/bad move");
+        File virtualenv = createVirtualenv(getTempDir("bad move"));
+        PythonInstallation installation = configurePython("Python", virtualenv.getAbsolutePath());
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", false, true, true, "echo hello", false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
-        assertTrue(log.contains(Messages.ShiningPandaUtil_PythonHomeHasWhitespace("")));
+        assertTrue(log.contains(Messages.BuilderUtil_Interpreter_WhitespaceNotAllowed("")));
     }
 
     public void testVirtualenvHomeWithSpace() throws Exception
@@ -55,7 +57,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
-        assertTrue(log.contains(Messages.ShiningPandaUtil_PythonHomeHasWhitespace("")));
+        assertTrue(log.contains(Messages.BuilderUtil_Interpreter_WhitespaceNotAllowed("")));
     }
 
     public void testTextAxisAvailable() throws Exception
@@ -76,24 +78,25 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
 
     public void testInvalidPythonName() throws Exception
     {
-        PythonInstallation installation = configureCPython2();
-        String pythonName = "Toto";
-        VirtualenvBuilder builder = new VirtualenvBuilder(pythonName, "env", true, true, true, "echo \"Welcome $TOTO\"", false);
+        configureCPython2();
+        String name = "Toto";
+        VirtualenvBuilder builder = new VirtualenvBuilder(name, "env", true, true, true, "echo \"Welcome $TOTO\"", false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
-        assertTrue(log.contains(Messages.InstalledPythonBuilder_InstallationNotFound(pythonName, installation.getName())));
+        assertTrue(log.contains(Messages.BuilderUtil_Installation_NotFound(name)));
     }
 
     public void testNoPython() throws Exception
     {
-        VirtualenvBuilder builder = new VirtualenvBuilder("Toto", "env", true, true, true, "echo \"Welcome $TOTO\"", false);
+        String name = "Toto";
+        VirtualenvBuilder builder = new VirtualenvBuilder(name, "env", true, true, true, "echo \"Welcome $TOTO\"", false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
-        assertTrue(log.contains(Messages.ShiningPandaUtil_PythonInstallationNotFound()));
+        assertTrue(log.contains(Messages.BuilderUtil_Installation_NotFound(name)));
     }
 
     public void testNoPythonAxis() throws Exception
@@ -109,7 +112,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
         assertEquals(1, runs.size());
         MatrixRun run = runs.get(0);
         String log = FileUtils.readFileToString(run.getLogFile());
-        assertTrue(log.contains(Messages.ShiningPandaUtil_PythonInstallationNotFound()));
+        assertTrue(log.contains(Messages.BuilderUtil_PythonAxis_Required()));
     }
 
     public void testIgnoreExitCode() throws Exception

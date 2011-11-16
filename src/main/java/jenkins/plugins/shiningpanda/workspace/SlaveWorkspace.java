@@ -54,7 +54,7 @@ public class SlaveWorkspace extends Workspace
     @Override
     public FilePath getVirtualenvPy() throws IOException, InterruptedException
     {
-        return FilePathUtil.synchronize(getMasterVirtualenvPy(), new FilePath(packages, VIRTUALENV));
+        return FilePathUtil.synchronize(getMasterVirtualenvPy(), new FilePath(getCache(), VIRTUALENV));
     }
 
     /*

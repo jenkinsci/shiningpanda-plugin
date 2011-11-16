@@ -20,27 +20,25 @@ package jenkins.plugins.shiningpanda.tools;
 import hudson.CopyOnWrite;
 import hudson.EnvVars;
 import hudson.Extension;
-import hudson.Launcher;
 import hudson.Util;
+import hudson.init.InitMilestone;
+import hudson.init.Initializer;
 import hudson.model.EnvironmentSpecific;
+import hudson.model.Items;
 import hudson.model.TaskListener;
 import hudson.model.Computer;
-import hudson.model.Hudson;
 import hudson.model.Node;
-import hudson.remoting.VirtualChannel;
 import hudson.slaves.NodeSpecific;
 import hudson.tools.ToolDescriptor;
 import hudson.tools.ToolProperty;
 import hudson.tools.ToolInstallation;
 import hudson.util.FormValidation;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
+import jenkins.model.Jenkins;
 import jenkins.plugins.shiningpanda.Messages;
-import jenkins.plugins.shiningpanda.interpreters.Python;
 import jenkins.plugins.shiningpanda.util.FormValidationUtil;
 import jenkins.plugins.shiningpanda.util.StringUtil;
 
@@ -111,88 +109,6 @@ public class PythonInstallation extends ToolInstallation implements EnvironmentS
     public PythonInstallation forBuild(TaskListener listener, EnvVars environment) throws IOException, InterruptedException
     {
         return forNode(Computer.currentComputer().getNode(), listener).forEnvironment(environment);
-    }
-
-    /**
-     * Get the related interpreter.
-     * 
-     * @param channel
-     *            The channel
-     * @return The interpreter if exists, else null
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    public Python toInterpreter(VirtualChannel channel) throws IOException, InterruptedException
-    {
-        return Python.fromInstallation(channel, this);
-    }
-
-    /**
-     * Get the related interpreter.
-     * 
-     * @param launcher
-     *            The launcher
-     * @return The interpreter if exists, else null
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    public Python toInterpreter(Launcher launcher) throws IOException, InterruptedException
-    {
-        return toInterpreter(launcher.getChannel());
-    }
-
-    /**
-     * Get the first existing PYTHON interpreter
-     * 
-     * @param channel
-     *            The channel
-     * @param listener
-     *            The build listener
-     * @param environment
-     *            The environment
-     * @return The PYTHON interpreter or null if not exist
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    public static Python getInterpreter(VirtualChannel channel, TaskListener listener, EnvVars environment) throws IOException,
-            InterruptedException
-    {
-        // Get the list of existing interpreter
-        List<Python> interpreters = getInterpreters(channel, listener, environment);
-        // Get the first one or return null
-        return interpreters.isEmpty() ? null : interpreters.get(0);
-    }
-
-    /**
-     * Get the list of existing interpreters.
-     * 
-     * @param channel
-     *            The channel
-     * @param listener
-     *            The build listener
-     * @param environment
-     *            The environment
-     * @return The list of PYTHON interpreters
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    public static List<Python> getInterpreters(VirtualChannel channel, TaskListener listener, EnvVars environment)
-            throws IOException, InterruptedException
-    {
-        // Create the interpreter list
-        List<Python> interpreters = new ArrayList<Python>();
-        // Go threw all PYTHON installations
-        for (PythonInstallation installation : list())
-        {
-            // Convert the installation for the current executor and get the
-            // related interpreter
-            Python interpreter = installation.forBuild(listener, environment).toInterpreter(channel);
-            // Check if the interpreter exists. If it is, add it to the list
-            if (interpreter != null)
-                interpreters.add(interpreter);
-        }
-        // Return the list of interpreters
-        return interpreters;
     }
 
     /**
@@ -277,7 +193,7 @@ public class PythonInstallation extends ToolInstallation implements EnvironmentS
         @Override
         public String getDisplayName()
         {
-            return Messages.StandardPythonInstallation_DisplayName();
+            return Messages.PythonInstallation_DisplayName();
         }
 
         /*
@@ -306,14 +222,15 @@ public class PythonInstallation extends ToolInstallation implements EnvironmentS
         /**
          * Checks if the PYTHONHOME is valid
          * 
-         * @param The
-         *            value to check
+         * @param value
+         *            The value to check
          */
-        public FormValidation doCheckHome(@QueryParameter File value)
+        public FormValidation doCheckHome(@QueryParameter String value)
         {
             // This can be used to check the existence of a file on the
             // server, so needs to be protected
-            if (!Hudson.getInstance().hasPermission(Hudson.ADMINISTER))
+            if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER))
+                // Do not perform the validation
                 return FormValidation.ok();
             // Validate PYTHON home
             return FormValidationUtil.validatePythonHome(value);
@@ -328,15 +245,28 @@ public class PythonInstallation extends ToolInstallation implements EnvironmentS
         public FormValidation doCheckName(@QueryParameter String value)
         {
             // Trim name
-            String fixName = Util.fixEmptyAndTrim(value);
+            String name = Util.fixEmptyAndTrim(value);
             // Check that folder specified
-            if (fixName == null)
-                return FormValidation.error(Messages.ShiningPandaUtil_PythonNameRequired());
+            if (name == null)
+                // Folder is required
+                return FormValidation.error(Messages.PythonInstallation_Name_Required());
             // Check that path does not contains some whitespace chars
-            if (StringUtil.hasWhitespace(fixName))
-                return FormValidation.error(Messages.ShiningPandaUtil_PythonNameHasWhitespace(fixName));
+            if (StringUtil.hasWhitespace(name))
+                // Whitespace are not allowed
+                return FormValidation.error(Messages.PythonInstallation_Name_WhitespaceNotAllowed());
             // Seems fine
             return FormValidation.ok();
+        }
+
+        /**
+         * Enable backward compatibility.
+         */
+        @Initializer(before = InitMilestone.PLUGINS_STARTED)
+        public static void compatibility()
+        {
+            // StandardPythonInstallation becomes PythonInstallation
+            Items.XSTREAM2.addCompatibilityAlias("jenkins.plugins.shiningpanda.StandardPythonInstallation",
+                    PythonInstallation.class);
         }
     }
 

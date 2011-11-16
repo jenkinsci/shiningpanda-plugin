@@ -1,7 +1,6 @@
 package jenkins.plugins.shiningpanda.builders;
 
 import jenkins.plugins.shiningpanda.ShiningPandaTestCase;
-import jenkins.plugins.shiningpanda.builders.ToxBuilder;
 
 public class TestToxBuilder extends ShiningPandaTestCase
 {

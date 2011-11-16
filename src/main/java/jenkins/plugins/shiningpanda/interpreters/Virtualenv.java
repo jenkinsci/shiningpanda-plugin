@@ -20,9 +20,7 @@ package jenkins.plugins.shiningpanda.interpreters;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.Util;
 import hudson.model.TaskListener;
-import hudson.tasks.Messages;
 import hudson.util.ArgumentListBuilder;
 
 import java.io.IOException;
@@ -30,7 +28,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jenkins.plugins.shiningpanda.ShiningPanda;
+import jenkins.plugins.shiningpanda.util.EnvVarsUtil;
 import jenkins.plugins.shiningpanda.util.FilePathUtil;
+import jenkins.plugins.shiningpanda.util.LauncherUtil;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 public class Virtualenv extends Python
@@ -41,15 +41,12 @@ public class Virtualenv extends Python
      * 
      * @param home
      *            The home folder
+     * @throws InterruptedException
+     * @throws IOException
      */
-    public Virtualenv(FilePath home)
+    public Virtualenv(FilePath home) throws IOException, InterruptedException
     {
         super(home);
-    }
-
-    public Virtualenv(Launcher launcher, String home, EnvVars environment)
-    {
-        super(new FilePath(launcher.getChannel(), environment.expand(home)));
     }
 
     /*
@@ -83,21 +80,37 @@ public class Virtualenv extends Python
      * jenkins.plugins.shiningpanda.interpreters.Python#getEnvironment(boolean)
      */
     @Override
-    public Map<String, String> getEnvironment(boolean withHomeVar) throws IOException, InterruptedException
+    public Map<String, String> getEnvironment(boolean includeHomeVar) throws IOException, InterruptedException
     {
+        // Store the environment
         Map<String, String> environment = new HashMap<String, String>();
-        environment.put("PYTHONHOME", null);
-        environment.put("JYTHON_HOME", null);
-        environment.put("VIRTUAL_ENV", getHome().getRemote());
+        // Check if home variable required
+        if (includeHomeVar)
+        {
+            // Delete PYTHONHOME variable
+            environment.put("PYTHONHOME", null);
+            // Delete JYTHON_HOME variable
+            environment.put("JYTHON_HOME", null);
+            // Add VIRTUALENV home variable
+            environment.put("VIRTUAL_ENV", getHome().getRemote());
+        }
+        // Check if on Windows
         if (isWindows())
         {
+            // Check if activation script is in a bin folder or in a scripts one
             if (join("bin", "activate.bat").exists())
+                // In bin folder, add this folder to the PATH
                 environment.put("PATH+", join("bin").getRemote());
+            // In a scripts one
             else
+                // Add the scripts folder to the PATH
                 environment.put("PATH+", join("Scripts").getRemote());
+            // Return the environment
+            return environment;
         }
-        else
-            environment.put("PATH+", join("bin").getRemote());
+        // For UNIX add the bin folder in the PATH
+        environment.put("PATH+", join("bin").getRemote());
+        // Return the environment
         return environment;
     }
 
@@ -109,8 +122,12 @@ public class Virtualenv extends Python
     @Override
     public FilePath getExecutable() throws IOException, InterruptedException
     {
+        // Check if on Windows
         if (isWindows())
+            // Look for executables in bin folder if JYTHON, in scripts if
+            // standard interpreter
             return FilePathUtil.existsOrNull(join("bin", "jython.bat"), join("Scripts", "python.exe"));
+        // On UNIX look for executable in bin folder
         return FilePathUtil.existsOrNull(join("bin", "jython"), join("bin", "python"));
     }
 
@@ -163,36 +180,142 @@ public class Virtualenv extends Python
         getHome().deleteRecursive();
     }
 
-    public boolean create(Launcher launcher, TaskListener listener, Workspace workspace, Python interpreter,
-            boolean useDistribute, boolean noSitePackages) throws InterruptedException, IOException
+    /**
+     * Create this VIRTUALENV
+     * 
+     * @param launcher
+     *            The launcher
+     * @param listener
+     *            The listener
+     * @param environment
+     *            The environment
+     * @param workspace
+     *            The workspace
+     * @param interpreter
+     *            The interpreter
+     * @param useDistribute
+     *            Use DISTRIBUTE or SETUPTOOLS?
+     * @param noSitePackages
+     *            Do not use original site packages
+     * @return true if creation was successful, else false
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public boolean create(Launcher launcher, TaskListener listener, EnvVars environment, Workspace workspace,
+            Python interpreter, boolean useDistribute, boolean noSitePackages) throws InterruptedException, IOException
     {
+        // Cleanup
         delete();
+        // Get the arguments for the command line
         ArgumentListBuilder args = new ArgumentListBuilder();
+        // Call PYTHON executable
         args.add(interpreter.getExecutable().getRemote());
+        // Path to the script on local computer
         args.add(workspace.getVirtualenvPy().getRemote());
+        // If use distribute, add the flag
         if (useDistribute)
             args.add("--distribute");
-        // Add no site packages option
+        // If no site package required, add the flag except if hosted by
+        // ShiningPanda (nothing in the site package anyway)
         if (noSitePackages && !ShiningPanda.HOSTED)
             args.add("--no-site-packages");
+        // Get the folder where packages can be found (PIP, ...)
         FilePath extraSearchDir = workspace.getPackagesDir();
+        // If this folder exists, add as search directory
         if (extraSearchDir != null)
-            args.addKeyValuePair("--", "extra-search-dir", extraSearchDir.getRemote(), false);
-        int r;
-        try
-        {
-            r = launcher.launch().cmds(workspace.isUnix() ? args : args.toWindowsCommand()).envs(interpreter.getEnvironment())
-                    .stdout(listener).pwd(workspace.getHome()).join();
-        }
-        catch (IOException e)
-        {
-            Util.displayIOException(e, listener);
-            e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_CommandFailed()));
-            r = -1;
-        }
-        boolean success = r == 0;
+            args.add("--extra-search-dir=" + extraSearchDir.getRemote());
+        // Add the place where to create the environment
+        args.add(getHome().getRemote());
+        // Start creation
+        boolean success = LauncherUtil.launch(launcher, listener, workspace,
+                EnvVarsUtil.override(environment, getEnvironment()), args);
+        // Check if was successful
         if (success)
+            // If successful, set a creation time stamp
             getTimestamp().touch(System.currentTimeMillis());
+        // Return success flag
         return success;
+    }
+
+    /**
+     * Install a package with PIP.
+     * 
+     * @param launcher
+     *            The launcher
+     * @param listener
+     *            The listener
+     * @param environment
+     *            The environment
+     * @param workspace
+     *            The workspace
+     * @param packageName
+     *            The package to install
+     * @return true if installation was successful, else false
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public boolean pipInstall(Launcher launcher, TaskListener listener, EnvVars environment, Workspace workspace,
+            String packageName) throws InterruptedException, IOException
+    {
+        // Create the arguments for the command line
+        ArgumentListBuilder args = new ArgumentListBuilder();
+        // Add path to PYTHON executable
+        args.add(getExecutable().getRemote());
+        // Call PIP via command line
+        args.add("-c");
+        // Command line script to call PIP
+        args.add("import pip; pip.main();");
+        // Require an installation
+        args.add("install");
+        // Get the folder where packages can be found (PIP, ...)
+        FilePath extraSearchDir = workspace.getPackagesDir();
+        // If this folder exists, add as find link
+        if (extraSearchDir != null)
+            args.add("-f").add(workspace.getPackagesDir().toURI().toURL().toExternalForm());
+        // Ask for upgrade
+        args.add("--upgrade");
+        // The package to install
+        args.add(packageName);
+        // Start the process and return status
+        return LauncherUtil.launch(launcher, listener, workspace, EnvVarsUtil.override(environment, getEnvironment()), args);
+    }
+
+    /**
+     * Call TOX.
+     * 
+     * @param launcher
+     *            The launcher
+     * @param listener
+     *            The listener
+     * @param environment
+     *            The environment
+     * @param workspace
+     *            The workspace
+     * @param toxIni
+     *            The tox.ini file
+     * @param recreate
+     *            If true recreate the environments
+     * @return
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public boolean tox(Launcher launcher, TaskListener listener, EnvVars environment, Workspace workspace, String toxIni,
+            boolean recreate) throws InterruptedException, IOException
+    {
+        // Create the arguments for the command line
+        ArgumentListBuilder args = new ArgumentListBuilder();
+        // Add the path to PYTHON executable
+        args.add(getExecutable().getRemote());
+        // Call TOX via command line
+        args.add("-c");
+        // Command line script to call TOX
+        args.add("import tox; tox.cmdline();");
+        // Add the configuration
+        args.add("-c").add(toxIni);
+        // Check if recreation asked
+        if (recreate)
+            args.add("--recreate");
+        // Start the process and return status
+        return LauncherUtil.launch(launcher, listener, workspace, EnvVarsUtil.override(environment, getEnvironment()), args);
     }
 }

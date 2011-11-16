@@ -249,9 +249,10 @@ public class FilePathUtil
                 srcNames.add(srcFile.getName());
             // Delete files in destination folder that don't exist anymore in
             // source folder
-            for (FilePath destFile : dest.list(FileFileFilter.FILE))
-                if (!srcNames.contains(destFile.getName()))
-                    destFile.delete();
+            if (dest.exists())
+                for (FilePath destFile : dest.list(FileFileFilter.FILE))
+                    if (!srcNames.contains(destFile.getName()))
+                        destFile.delete();
             // Synchronize all files
             for (FilePath srcFile : srcFiles)
                 synchronize(srcFile, new FilePath(dest, srcFile.getName()));

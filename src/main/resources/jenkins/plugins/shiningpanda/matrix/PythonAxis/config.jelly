@@ -17,7 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
-  <f:entry help="/plugin/shiningpanda/help/PythonAxis/help-python.html">
+  <f:entry help="/plugin/shiningpanda/help/matrix/PythonAxis/help-python.html">
     <j:choose>
       <j:when test="${descriptor.HOSTED}">
         <div class="yahooTree pythonAxis-tree" style="border: 1px solid gray; height: 10em; overflow:auto;" values="${instance.treeValueString}" />
@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             var tree = new YAHOO.widget.TreeView(e);
             
             var interpreters = {};
-            <j:forEach var="interpreter" items="${descriptor.tree.getInterpreters(descriptor.installations)}">
+            <j:forEach var="interpreter" items="${descriptor.TREE.getInterpreters(descriptor.installations)}">
               interpreters[<j:out value="${descriptor.jsStringEscape(interpreter)}"/>] = new YAHOO.widget.TextNode(<j:out value="${descriptor.jsStringEscape(interpreter)}"/>, tree.getRoot(), false);
             </j:forEach>
     
@@ -35,7 +35,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
               return values.include(v) ? 'checked="checked" ' : "";
             }
             <j:forEach var="installation" items="${descriptor.installations}">
-              new YAHOO.widget.HTMLNode(<j:out value="${descriptor.buildCheckBox(installation)}"/>, interpreters[<j:out value="${descriptor.jsStringEscape(descriptor.tree.getInterpreter(installation))}"/>], false);
+              new YAHOO.widget.HTMLNode(<j:out value="${descriptor.buildCheckBox(installation)}"/>, interpreters[<j:out value="${descriptor.jsStringEscape(descriptor.TREE.getInterpreter(installation))}"/>], false);
             </j:forEach>
     
             tree.draw();
@@ -59,8 +59,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         </script>
       </j:when>
       <j:otherwise>
-        <j:forEach var="python" items="${descriptor.installations}">
-          <f:checkbox name="values" json="${python.name}" checked="${instance.values.contains(python.name)}" title="${python.name}" />
+        <j:forEach var="installation" items="${descriptor.installations}">
+          <f:checkbox name="values" json="${installation.name}" checked="${instance.values.contains(installation.name)}" title="${installation.name}" />
           <st:nbsp/>
         </j:forEach>
       </j:otherwise>

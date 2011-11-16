@@ -28,7 +28,6 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
@@ -41,7 +40,6 @@ import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 import jenkins.plugins.shiningpanda.util.BuilderUtil;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
 
-import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
@@ -69,35 +67,55 @@ public class ToxBuilder extends Builder implements Serializable
         this.recreate = recreate;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * hudson.tasks.BuildStepCompatibilityLayer#perform(hudson.model.AbstractBuild
+     * , hudson.Launcher, hudson.model.BuildListener)
+     */
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException,
             IOException
     {
         // Get the workspace
-        Workspace workspace = Workspace.fromHome(build.getWorkspace());
+        Workspace workspace = Workspace.fromBuild(build);
         // Get the environment variables for this build
         EnvVars environment = BuilderUtil.getEnvironment(build, listener);
-
-        Virtualenv virtualenv = workspace.getVirtualenv();
-
+        // Get a VIRTUALENV to install TOX
+        Virtualenv virtualenv = BuilderUtil.getVirtualenv(listener, workspace.getVirtualenvHome());
+        // Check if is a valid one
+        if (virtualenv == null)
+            // Invalid, no need to go further
+            return false;
+        // Check if out of date to be able to create a new one
         if (virtualenv.isOutdated(BuilderUtil.lastConfigure(build)))
         {
-            Python interpreter = PythonInstallation.getInterpreter(launcher.getChannel(), listener, environment);
+            // Get an interpreter to be able to create the VIRTUALENV
+            Python interpreter = BuilderUtil.getInterpreter(launcher, listener, environment);
+            // Check if found one
             if (interpreter == null)
+                // No interpreter found, no need to continue
                 return false;
-
-            virtualenv.create(launcher, listener, workspace, interpreter, true, true);
+            // Create the VIRTUALENV
+            if (!virtualenv.create(launcher, listener, environment, workspace, interpreter, true, true))
+                // Failed to create the VIRTUALENV, do not continue
+                return false;
         }
-
-        virtualenv.pipInstall(launcher, listener, workspace, "tox");
-
-        List<Python> interpreters = PythonInstallation.getInterpreters(launcher.getChannel(), listener, environment);
+        // Install or upgrade TOX
+        if (!virtualenv.pipInstall(launcher, listener, environment, workspace, "tox"))
+            // Failed to install TOX, do not continue
+            return false;
+        // Get all the available interpreters on the executor
+        List<Python> interpreters = BuilderUtil.getInterpreters(launcher, listener, environment);
+        // Reverse the order to be able to sort the environment variables
         Collections.reverse(interpreters);
+        // Go threw the interpreters to add them in the path
         for (Python interpreter : interpreters)
-        {
-            environment.overrideAll(interpreter.getEnvironment());
-        }
-        return virtualenv.tox(launcher, listener, workspace, toxIni, recreate);
+            // Add the environment without the home variables
+            environment.overrideAll(interpreter.getEnvironment(false));
+        // Launch TOX
+        return virtualenv.tox(launcher, listener, environment, workspace, toxIni, recreate);
     }
 
     private static final long serialVersionUID = 1L;
@@ -127,7 +145,7 @@ public class ToxBuilder extends Builder implements Serializable
         @Override
         public String getHelpFile()
         {
-            return "/plugin/shiningpanda/help/ToxBuilder/help.html";
+            return "/plugin/shiningpanda/help/builders/ToxBuilder/help.html";
         }
 
         /*
@@ -143,20 +161,18 @@ public class ToxBuilder extends Builder implements Serializable
         }
 
         /**
-         * Checks if the TOX configuration file is specified
+         * Checks if the TOX configuration file is specified.
          * 
-         * @param project
-         *            The linked project, to check permissions
          * @param value
          *            The value to check
          * @return The validation result
          */
-        public FormValidation doCheckToxIni(@SuppressWarnings("rawtypes") @AncestorInPath AbstractProject project,
-                @QueryParameter File value)
+        public FormValidation doCheckToxIni(@QueryParameter String value)
         {
             // Check that path is specified
-            if (Util.fixEmptyAndTrim(value.getPath()) == null)
-                return FormValidation.error(Messages.ToxBuilder_ToxIniRequired());
+            if (Util.fixEmptyAndTrim(value) == null)
+                // A tox.ini file is required
+                return FormValidation.error(Messages.ToxBuilder_ToxIni_Required());
             // Do not need to check more as files are located on slaves
             return FormValidation.ok();
         }

@@ -18,18 +18,18 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <j:if test="${!empty(descriptor.installations) &amp;&amp; descriptor.showInstallations}">
-    <f:entry title="${%Python Version}" help="/plugin/shiningpanda/help/InstalledPythonBuilder/help-pythonName.html">
+    <f:entry title="${%Python Version}" help="/plugin/shiningpanda/help/builders/help-pythonName.html">
       <select class="setting-input" name="pythonName">
-        <j:forEach var="inst" items="${descriptor.installations}">
-          <f:option selected="${inst.name==instance.python.name}" value="${inst.name}">${inst.name}</f:option>
+        <j:forEach var="installation" items="${descriptor.installations}">
+          <f:option selected="${installation.name==instance.pythonName}" value="${installation.name}">${installation.name}</f:option>
         </j:forEach>
       </select>
     </f:entry>
   </j:if>
-  <f:entry title="${%Virtualenv home}" help="/plugin/shiningpanda/help/VirtualenvBuilder/help-home.html">
+  <f:entry title="${%Virtualenv home}" help="/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-home.html">
     <f:textbox field="home" default="env"/>
   </f:entry>
-  <f:entry field="clear" title="${%Clear}" help="/plugin/shiningpanda/help/VirtualenvBuilder/help-clear.html">
+  <f:entry field="clear" title="${%Clear}" help="/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-clear.html">
     <f:checkbox checked="${it.clear}" />
   </f:entry>
   <j:choose>
@@ -39,22 +39,22 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
       </f:invisibleEntry>
     </j:when>
     <j:otherwise>
-      <f:entry field="noSitePackages" title="${%No site packages}" help="/plugin/shiningpanda/help/VirtualenvBuilder/help-noSitePackages.html">
+      <f:entry field="noSitePackages" title="${%No site packages}" help="/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-noSitePackages.html">
         <f:checkbox checked="${it.noSitePackages}" />
       </f:entry>
     </j:otherwise>
   </j:choose>
-  <f:entry title="${%Package manager}" help="/plugin/shiningpanda/help/VirtualenvBuilder/help-useDistribute.html">
+  <f:entry title="${%Package manager}" help="/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-useDistribute.html">
     <f:radio name="useDistribute" value="true" checked="${ instance==null || instance.useDistribute==true }" />
     <label class="attach-previous">${%Distribute}</label>
     <st:nbsp />
     <f:radio name="useDistribute" value="false" checked="${ instance!=null and instance.useDistribute==false }"/>
     <label class="attach-previous">${%Setuptools}</label>
   </f:entry>
-  <f:entry field="ignoreExitCode" title="${%Ignore exit code}" help="/plugin/shiningpanda/help/PythonBuilder/help-ignoreExitCode.html">
+  <f:entry field="ignoreExitCode" title="${%Ignore exit code}" help="/plugin/shiningpanda/help/builders/help-ignoreExitCode.html">
     <f:checkbox checked="${it.ignoreExitCode}" />
   </f:entry>
-  <f:entry title="${%Command}" help="/plugin/shiningpanda/help/PythonBuilder/help-command.html">
+  <f:entry title="${%Command}" help="/plugin/shiningpanda/help/builders/help-command.html">
     <f:textarea field="command" class="fixed-width" />
   </f:entry>
 </j:jelly>

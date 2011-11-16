@@ -78,13 +78,21 @@ public class ToxAxis extends Axis
      */
     private static List<String> merge(String[] values, String extraValueString)
     {
+        // Merged values
         List<String> allValues = new ArrayList<String>();
+        // Go threw the default values
         for (String value : Arrays.asList(values))
+            // Check if already contained
             if (!allValues.contains(value))
+                // If not add it
                 allValues.add(value);
+        // Parse the extra values
         for (String value : Util.tokenize(extraValueString))
+            // Check if already contained
             if (!allValues.contains(value))
+                // If not add it
                 allValues.add(value);
+        // Return the merged list
         return allValues;
     }
 
@@ -95,10 +103,15 @@ public class ToxAxis extends Axis
      */
     public String getExtraValueString()
     {
+        // Get the extra values as a string
         List<String> extraValues = new ArrayList<String>();
+        // Go threw the values
         for (String value : getValues())
+            // Check if in default values
             if (!DescriptorImpl.DEFAULTS.contains(value))
+                // If not add it
                 extraValues.add(value);
+        // Join the extra value list to display them as char field
         return StringUtils.join(extraValues, " ");
     }
 

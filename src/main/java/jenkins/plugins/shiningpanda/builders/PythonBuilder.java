@@ -20,7 +20,10 @@ package jenkins.plugins.shiningpanda.builders;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
+import hudson.init.InitMilestone;
+import hudson.init.Initializer;
 import hudson.model.BuildListener;
+import hudson.model.Items;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.tasks.BuildStepDescriptor;
@@ -92,7 +95,7 @@ public class PythonBuilder extends Builder implements Serializable
             IOException
     {
         // Get the workspace
-        Workspace workspace = Workspace.fromHome(build.getWorkspace());
+        Workspace workspace = Workspace.fromBuild(build);
         // Get the environment variables for this build
         EnvVars environment = BuilderUtil.getEnvironment(build, listener);
         // Get the PYTHON installation to use
@@ -134,7 +137,7 @@ public class PythonBuilder extends Builder implements Serializable
         @Override
         public String getDisplayName()
         {
-            return Messages.StandardPythonBuilder_DisplayName();
+            return Messages.PythonBuilder_DisplayName();
         }
 
         /*
@@ -145,7 +148,7 @@ public class PythonBuilder extends Builder implements Serializable
         @Override
         public String getHelpFile()
         {
-            return "/plugin/shiningpanda/help/StandardPythonBuilder/help.html";
+            return "/plugin/shiningpanda/help/builders/PythonBuilder/help.html";
         }
 
         /*
@@ -173,6 +176,16 @@ public class PythonBuilder extends Builder implements Serializable
         {
             // Delegate
             return PythonInstallation.list();
+        }
+
+        /**
+         * Enable backward compatibility.
+         */
+        @Initializer(before = InitMilestone.PLUGINS_STARTED)
+        public static void compatibility()
+        {
+            // StandardPythonBuilder becomes PythonBuilder
+            Items.XSTREAM2.addCompatibilityAlias("jenkins.plugins.shiningpanda.StandardPythonBuilder", PythonBuilder.class);
         }
     }
 }

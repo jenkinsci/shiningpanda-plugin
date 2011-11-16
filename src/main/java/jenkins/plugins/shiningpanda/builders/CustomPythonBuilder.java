@@ -20,15 +20,17 @@ package jenkins.plugins.shiningpanda.builders;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
+import hudson.init.InitMilestone;
+import hudson.init.Initializer;
 import hudson.model.BuildListener;
 import hudson.model.Item;
+import hudson.model.Items;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -97,7 +99,7 @@ public class CustomPythonBuilder extends Builder implements Serializable
             IOException
     {
         // Get the workspace
-        Workspace workspace = Workspace.fromHome(build.getWorkspace());
+        Workspace workspace = Workspace.fromBuild(build);
         // Get the environment variables for this build
         EnvVars environment = BuilderUtil.getEnvironment(build, listener);
         // Get the interpreter
@@ -127,7 +129,7 @@ public class CustomPythonBuilder extends Builder implements Serializable
         @Override
         public String getDisplayName()
         {
-            return Messages.CustomVirtualenvBuilder_DisplayName();
+            return Messages.CustomPythonBuilder_DisplayName();
         }
 
         /*
@@ -138,7 +140,7 @@ public class CustomPythonBuilder extends Builder implements Serializable
         @Override
         public String getHelpFile()
         {
-            return "/plugin/shiningpanda/help/CustomVirtualenvBuilder/help.html";
+            return "/plugin/shiningpanda/help/builders/CustomPythonBuilder/help.html";
         }
 
         /*
@@ -149,6 +151,7 @@ public class CustomPythonBuilder extends Builder implements Serializable
         @Override
         public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> jobType)
         {
+            // Always available
             return true;
         }
 
@@ -162,14 +165,26 @@ public class CustomPythonBuilder extends Builder implements Serializable
          * @return The result of the validation
          */
         public FormValidation doCheckHome(@SuppressWarnings("rawtypes") @AncestorInPath AbstractProject project,
-                @QueryParameter File value)
+                @QueryParameter String value)
         {
             // This can be used to check the existence of a file on the
             // server, so needs to be protected
             if (!project.hasPermission(Item.CONFIGURE))
+                // Do not validate
                 return FormValidation.ok();
             // Validate PYTHON home
             return FormValidationUtil.validatePythonHome(value);
+        }
+
+        /**
+         * Enable backward compatibility.
+         */
+        @Initializer(before = InitMilestone.PLUGINS_STARTED)
+        public static void compatibility()
+        {
+            // CustomVirtualenvBuilder becomes CustomPythonBuilder
+            Items.XSTREAM2.addCompatibilityAlias("jenkins.plugins.shiningpanda.CustomVirtualenvBuilder",
+                    CustomPythonBuilder.class);
         }
     }
 }
