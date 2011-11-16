@@ -18,12 +18,12 @@ import org.apache.commons.io.FileUtils;
 public class TestToxBuilder extends ShiningPandaTestCase
 {
 
-    // public void testRoundTrip() throws Exception
-    // {
-    // ToxBuilder before = new ToxBuilder("toto/tox.ini", true);
-    // ToxBuilder after = configToxMatrixRoundtrip(before);
-    // assertEqualBeans2(before, after, "toxIni,recreate");
-    // }
+    public void testRoundTrip() throws Exception
+    {
+        ToxBuilder before = new ToxBuilder("toto/tox.ini", true);
+        ToxBuilder after = configToxMatrixRoundtrip(before);
+        assertEqualBeans2(before, after, "toxIni,recreate");
+    }
 
     public void testNoAxis() throws Exception
     {
