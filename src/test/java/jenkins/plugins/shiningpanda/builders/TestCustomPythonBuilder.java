@@ -40,7 +40,8 @@ public class TestCustomPythonBuilder extends ShiningPandaTestCase
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
-        assertTrue(log.contains(Messages.BuilderUtil_Interpreter_WhitespaceNotAllowed("")));
+        assertTrue("whitespace should not have been allowed:\n" + log,
+                log.contains(Messages.BuilderUtil_Interpreter_WhitespaceNotAllowed("")));
     }
 
     public void testTextAxisAvailable() throws Exception
@@ -55,7 +56,7 @@ public class TestCustomPythonBuilder extends ShiningPandaTestCase
         assertEquals(1, runs.size());
         MatrixRun run = runs.get(0);
         String log = FileUtils.readFileToString(run.getLogFile());
-        assertTrue("TextAxis value not available in builder", log.contains("Welcome TUTU"));
+        assertTrue("value of text axis not available in builder:\n" + log, log.contains("Welcome TUTU"));
     }
 
     public void testIgnoreExitCode() throws Exception
@@ -65,7 +66,7 @@ public class TestCustomPythonBuilder extends ShiningPandaTestCase
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
-        assertTrue("This build should have been successful", log.contains("SUCCESS"));
+        assertTrue("this build should have been successful:\n" + log, log.contains("SUCCESS"));
     }
 
     public void testConsiderExitCode() throws Exception
@@ -75,7 +76,7 @@ public class TestCustomPythonBuilder extends ShiningPandaTestCase
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
-        assertTrue("This build should have failed", log.contains("FAILURE"));
+        assertTrue("this build should have failed:\n" + log, log.contains("FAILURE"));
     }
 
 }
