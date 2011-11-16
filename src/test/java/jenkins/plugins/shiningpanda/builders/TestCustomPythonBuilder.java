@@ -34,7 +34,7 @@ public class TestCustomPythonBuilder extends ShiningPandaTestCase
 
     public void testHomeWithSpace() throws Exception
     {
-        CustomPythonBuilder builder = new CustomPythonBuilder(createVirtualenv(getTempDir("bad move")).getAbsolutePath(),
+        CustomPythonBuilder builder = new CustomPythonBuilder(createVirtualenv(createTmpDir("bad move")).getAbsolutePath(),
                 "echo hello", false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);

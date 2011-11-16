@@ -150,17 +150,6 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
     }
 
     /**
-     * Get the Virtualenv's home
-     * 
-     * @return The home folder.
-     * @throws IOException
-     */
-    protected File getVirtualenvHome() throws IOException
-    {
-        return new File("target", "virtualenv").getAbsoluteFile();
-    }
-
-    /**
      * Delete a VIRTUALENV.
      * 
      * @param home
@@ -475,38 +464,12 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
     /**
      * Create a workspace.
      * 
-     * @param name
-     *            Appended to the temporary folder, it give the home folder
-     * @return The workspace
-     * @throws IOException
-     */
-    public Workspace getWorkspace(String name) throws IOException
-    {
-        return Workspace.fromHome(new FilePath(createTempDir(name)));
-    }
-
-    /**
-     * Create a workspace.
-     * 
      * @return The workspace
      * @throws IOException
      */
     public Workspace getWorkspace() throws IOException
     {
-        return getWorkspace("workspace");
-    }
-
-    /**
-     * Create a master workspace.
-     * 
-     * @param name
-     *            Appended to the temporary folder, it give the home folder
-     * @return The workspace
-     * @throws IOException
-     */
-    public MasterWorkspace getMasterWorkspace(String name) throws IOException
-    {
-        return new MasterWorkspace(new FilePath(createTempDir(name)));
+        return Workspace.fromHome(new FilePath(createTmpDir()));
     }
 
     /**
@@ -517,20 +480,7 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      */
     public MasterWorkspace getMasterWorkspace() throws IOException
     {
-        return getMasterWorkspace("masterWorkspace");
-    }
-
-    /**
-     * Create a slave workspace.
-     * 
-     * @param name
-     *            Appended to the temporary folder, it give the home folder
-     * @return The workspace
-     * @throws IOException
-     */
-    public SlaveWorkspace getSlaveWorkspace(String name) throws IOException
-    {
-        return new SlaveWorkspace(new FilePath(createTempDir(name)));
+        return new MasterWorkspace(new FilePath(createTmpDir()));
     }
 
     /**
@@ -541,7 +491,7 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      */
     public SlaveWorkspace getSlaveWorkspace() throws IOException
     {
-        return getSlaveWorkspace("slaveWorkspace");
+        return new SlaveWorkspace(new FilePath(createTmpDir()));
     }
 
     /**
@@ -566,31 +516,11 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
         return packagesDir;
     }
 
-    /**
-     * Get a temporary directory.
-     * 
-     * @param parts
-     *            The path parts to add to the base temporary directory
-     * @return The temporary directory
-     */
-    public File getTempDir(String... parts)
+    public File createTmpDir(String... parts) throws IOException
     {
-        return new File("target", "temp" + File.separator + StringUtils.join(parts, File.separator)).getAbsoluteFile();
-    }
-
-    /**
-     * Create a temporary directory.
-     * 
-     * @param parts
-     *            The path parts to add to the base temporary directory
-     * @return The temporary directory
-     */
-    public File createTempDir(String... parts) throws IOException
-    {
-        File tempDir = getTempDir(parts);
-        FileUtils.deleteDirectory(tempDir);
-        tempDir.mkdirs();
-        return tempDir;
+        File file = new File(createTmpDir(), StringUtils.join(parts, File.separator));
+        file.mkdirs();
+        return file;
     }
 
     /**

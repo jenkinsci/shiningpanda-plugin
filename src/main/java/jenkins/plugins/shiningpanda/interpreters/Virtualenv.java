@@ -80,12 +80,12 @@ public class Virtualenv extends Python
      * jenkins.plugins.shiningpanda.interpreters.Python#getEnvironment(boolean)
      */
     @Override
-    public Map<String, String> getEnvironment(boolean includeHomeVar) throws IOException, InterruptedException
+    public Map<String, String> getEnvironment(boolean includeHomeKey) throws IOException, InterruptedException
     {
         // Store the environment
         Map<String, String> environment = new HashMap<String, String>();
         // Check if home variable required
-        if (includeHomeVar)
+        if (includeHomeKey)
         {
             // Delete PYTHONHOME variable
             environment.put("PYTHONHOME", null);

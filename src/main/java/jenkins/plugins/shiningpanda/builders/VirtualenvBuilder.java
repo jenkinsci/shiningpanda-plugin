@@ -155,6 +155,10 @@ public class VirtualenvBuilder extends Builder implements Serializable
         Workspace workspace = Workspace.fromBuild(build);
         // Get the environment variables for this build
         EnvVars environment = BuilderUtil.getEnvironment(build, listener);
+        // Check if this is a valid environment
+        if (environment == null)
+            // Invalid, no need to go further
+            return false;
         // Get the PYTHON installation to use
         PythonInstallation installation = BuilderUtil.getInstallation(build, listener, environment, pythonName);
         // Check if an installation was found

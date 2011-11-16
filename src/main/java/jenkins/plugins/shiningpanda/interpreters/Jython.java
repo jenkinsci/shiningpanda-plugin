@@ -75,12 +75,12 @@ public class Jython extends Python
      * jenkins.plugins.shiningpanda.interpreters.Python#getEnvironment(boolean)
      */
     @Override
-    public Map<String, String> getEnvironment(boolean includeHomeVar) throws IOException, InterruptedException
+    public Map<String, String> getEnvironment(boolean includeHomeKey) throws IOException, InterruptedException
     {
         // Store the environment
         Map<String, String> environment = new HashMap<String, String>();
         // Check if home variable is required
-        if (includeHomeVar)
+        if (includeHomeKey)
             // If required define JYTHON_HOME
             environment.put("JYTHON_HOME", getHome().getRemote());
         // Add the bin folder in the PATH

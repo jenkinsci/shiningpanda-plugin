@@ -36,6 +36,7 @@ import java.util.List;
 import jenkins.plugins.shiningpanda.Messages;
 import jenkins.plugins.shiningpanda.interpreters.Python;
 import jenkins.plugins.shiningpanda.interpreters.Virtualenv;
+import jenkins.plugins.shiningpanda.matrix.ToxAxis;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 import jenkins.plugins.shiningpanda.util.BuilderUtil;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
@@ -82,6 +83,18 @@ public class ToxBuilder extends Builder implements Serializable
         Workspace workspace = Workspace.fromBuild(build);
         // Get the environment variables for this build
         EnvVars environment = BuilderUtil.getEnvironment(build, listener);
+        // Check if this is a valid environment
+        if (environment == null)
+            // Invalid, no need to go further
+            return false;
+        // Check if environment contains a TOX axis
+        if (!environment.containsKey(ToxAxis.KEY))
+        {
+            // Log
+            listener.fatalError(Messages.ToxBuilder_ToxAxis_Required());
+            // No need to go further
+            return false;
+        }
         // Get a VIRTUALENV to install TOX
         Virtualenv virtualenv = BuilderUtil.getVirtualenv(listener, workspace.getVirtualenvHome());
         // Check if is a valid one

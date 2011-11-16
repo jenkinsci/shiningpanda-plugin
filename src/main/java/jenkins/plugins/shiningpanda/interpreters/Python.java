@@ -172,13 +172,13 @@ public abstract class Python
     /**
      * Get the environment for this interpreter.
      * 
-     * @param includeHomeVar
+     * @param includeHomeKey
      *            If true, add home variable such as PYTHONHOME
      * @return The environment
      * @throws IOException
      * @throws InterruptedException
      */
-    public abstract Map<String, String> getEnvironment(boolean includeHomeVar) throws IOException, InterruptedException;
+    public abstract Map<String, String> getEnvironment(boolean includeHomeKey) throws IOException, InterruptedException;
 
     /**
      * Get the environment for this interpreter with the home variable defined.

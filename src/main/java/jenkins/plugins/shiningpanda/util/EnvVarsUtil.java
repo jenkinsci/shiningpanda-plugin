@@ -50,6 +50,16 @@ public class EnvVarsUtil
     }
 
     /**
+     * Return the list of variables used to define an installation home.
+     * 
+     * @return The list of variables
+     */
+    public static String[] getPythonHomeKeys()
+    {
+        return new String[] { "PYTHONHOME", "JYTHON_HOME", "VIRTUAL_ENV" };
+    }
+
+    /**
      * Clone the original environment and override it with additional one
      * (potentially containing some "+").
      * 

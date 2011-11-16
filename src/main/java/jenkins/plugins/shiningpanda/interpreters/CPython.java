@@ -76,12 +76,12 @@ public class CPython extends Python
      * jenkins.plugins.shiningpanda.interpreters.Python#getEnvironment(boolean)
      */
     @Override
-    public Map<String, String> getEnvironment(boolean includeHomeVar) throws IOException, InterruptedException
+    public Map<String, String> getEnvironment(boolean includeHomeKey) throws IOException, InterruptedException
     {
         // Store the environment
         Map<String, String> environment = new HashMap<String, String>();
         // Check if home variable required
-        if (includeHomeVar)
+        if (includeHomeKey)
             // If required define PYTHONHOME
             environment.put("PYTHONHOME", getHome().getRemote());
         // Check if on Windows

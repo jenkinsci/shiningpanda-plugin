@@ -102,6 +102,10 @@ public class CustomPythonBuilder extends Builder implements Serializable
         Workspace workspace = Workspace.fromBuild(build);
         // Get the environment variables for this build
         EnvVars environment = BuilderUtil.getEnvironment(build, listener);
+        // Check if this is a valid environment
+        if (environment == null)
+            // Invalid, no need to go further
+            return false;
         // Get the interpreter
         Python interpreter = BuilderUtil.getInterpreter(launcher, listener, environment.expand(home));
         // Check if got an interpreter

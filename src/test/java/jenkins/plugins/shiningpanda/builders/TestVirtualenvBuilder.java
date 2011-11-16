@@ -38,7 +38,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
 
     public void testStandardPythonHomeWithSpace() throws Exception
     {
-        File virtualenv = createVirtualenv(getTempDir("bad move"));
+        File virtualenv = createVirtualenv(createTmpDir("bad move"));
         PythonInstallation installation = configurePython("Python", virtualenv.getAbsolutePath());
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", false, true, true, "echo hello", false);
         FreeStyleProject project = createFreeStyleProject();

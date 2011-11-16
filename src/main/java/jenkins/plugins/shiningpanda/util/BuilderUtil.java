@@ -102,6 +102,16 @@ public class BuilderUtil
         EnvVars environment = build.getEnvironment(listener);
         // Add build variables, for instance if user defined a text axis
         environment.overrideAll(build.getBuildVariables());
+        // Check if define some nasty variables
+        for (String key : EnvVarsUtil.getPythonHomeKeys())
+            // Check if key is contained
+            if (environment.containsKey(key))
+            {
+                // Log the error
+                listener.fatalError(Messages.BuilderUtil_PythonHomeKeyFound(key));
+                // Notify to do not continue the build
+                return null;
+            }
         // Return the consolidated environment
         return environment;
     }
@@ -312,7 +322,7 @@ public class BuilderUtil
             // Get an interpreter given its home
             Python interpreter = Python.fromHome(new FilePath(launcher.getChannel(), installation.getHome()));
             // Check if exists, is valid and has no whitespace in its home
-            if (interpreter != null && interpreter.isValid() && StringUtil.hasWhitespace(interpreter.getHome().getRemote()))
+            if (interpreter != null && interpreter.isValid() && !StringUtil.hasWhitespace(interpreter.getHome().getRemote()))
                 // Add the interpreter
                 interpreters.add(interpreter);
         }
