@@ -52,8 +52,9 @@ public class BuilderUtil
      */
     public static long lastConfigure(AbstractBuild<?, ?> build)
     {
-        // Get the last modification date of the build configuration
-        long lastJobConfigure = build.getParent().getConfigFile().getFile().lastModified();
+        // Get the last modification date of the build configuration (call
+        // getRootProject for matrix builds)
+        long lastJobConfigure = build.getProject().getRootProject().getConfigFile().getFile().lastModified();
         // Get the last modification of the global configuration file
         long lastJenkinsConfigure = new File(Jenkins.getInstance().getRootDir(), "config.xml").lastModified();
         // Get the newer of the two

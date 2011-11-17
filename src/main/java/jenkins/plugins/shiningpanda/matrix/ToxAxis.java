@@ -147,7 +147,7 @@ public class ToxAxis extends Axis
         @Override
         public String getHelpFile()
         {
-            return "/plugin/shiningpanda/help/ToxAxis/help.html";
+            return "/plugin/shiningpanda/help/matrix/ToxAxis/help.html";
         }
 
         /*

@@ -4,6 +4,7 @@ import hudson.FilePath;
 import hudson.matrix.AxisList;
 import hudson.matrix.MatrixProject;
 import hudson.model.Item;
+import hudson.model.AbstractProject;
 import hudson.tasks.Builder;
 
 import java.beans.PropertyDescriptor;
@@ -459,6 +460,29 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
 
             assertEquals("Property " + p + " is different", lp, rp);
         }
+    }
+
+    /**
+     * Get the JENKINS configuration file.
+     * 
+     * @return The configuration file.
+     */
+    public File getConfigFile()
+    {
+        return new File(jenkins.getRootDir(), "config.xml");
+    }
+
+    /**
+     * Get the configuration file for this project.
+     * 
+     * @param project
+     *            The project
+     * @return The configuration file
+     */
+    public File getConfigFile(AbstractProject<?, ?> project)
+    {
+        return new File(jenkins.getRootDir(), StringUtils.join(new String[] { "jobs", project.getName(), "config.xml" },
+                File.separator));
     }
 
     /**

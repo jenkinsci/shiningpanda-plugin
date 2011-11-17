@@ -27,4 +27,18 @@ public class ShiningPanda extends Plugin
      */
     public static boolean HOSTED = Boolean.getBoolean(ShiningPanda.class.getName() + ".hosted");
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see hudson.Plugin#start()
+     */
+    @Override
+    public void start() throws Exception
+    {
+        // Enable backward compatibility
+        Compatibility.enable();
+        // Call super
+        super.start();
+    }
+
 }

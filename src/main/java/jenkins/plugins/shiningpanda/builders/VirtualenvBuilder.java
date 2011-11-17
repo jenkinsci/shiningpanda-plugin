@@ -22,10 +22,7 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
-import hudson.init.InitMilestone;
-import hudson.init.Initializer;
 import hudson.model.BuildListener;
-import hudson.model.Items;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.tasks.BuildStepDescriptor;
@@ -281,16 +278,6 @@ public class VirtualenvBuilder extends Builder implements Serializable
         {
             // Delegate
             return PythonInstallation.list();
-        }
-
-        /**
-         * Enable backward compatibility.
-         */
-        @Initializer(before = InitMilestone.PLUGINS_STARTED)
-        public static void compatibility()
-        {
-            // VirtualenvBuilder is now in a builders package
-            Items.XSTREAM2.addCompatibilityAlias("jenkins.plugins.shiningpanda.VirtualenvBuilder", VirtualenvBuilder.class);
         }
     }
 }

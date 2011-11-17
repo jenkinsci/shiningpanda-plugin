@@ -166,7 +166,7 @@ public class Virtualenv extends Python
      */
     public boolean isOutdated(long timestamp) throws IOException, InterruptedException
     {
-        return !isValid() || !getTimestamp().exists() || getTimestamp().lastModified() < timestamp;
+        return !isValid() || !getTimestamp().exists() || getTimestamp().lastModified() <= timestamp;
     }
 
     /**
@@ -215,9 +215,9 @@ public class Virtualenv extends Python
         // If use distribute, add the flag
         if (useDistribute)
             args.add("--distribute");
-        // If no site package required, add the flag except if hosted by
-        // ShiningPanda (nothing in the site package anyway)
-        if (noSitePackages && !ShiningPanda.HOSTED)
+        // If no site package required, add the flag. If hosted by ShiningPanda
+        // always add the flag
+        if (noSitePackages || ShiningPanda.HOSTED)
             args.add("--no-site-packages");
         // Get the folder where packages can be found (PIP, ...)
         FilePath extraSearchDir = workspace.getPackagesDir();

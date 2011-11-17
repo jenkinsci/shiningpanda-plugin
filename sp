@@ -13,7 +13,7 @@ case $1 in
         mvn -Dtest=jenkins.plugins.shiningpanda.$2
         ;;
     run-hosted)
-        mvn clean hpi:run -Djenkins.plugins.shiningpanda.PythonPlugin.hosted=true
+        mvn clean hpi:run -Djenkins.plugins.shiningpanda.ShiningPanda.hosted=true
         ;;
     help)
         echo "usage: sp <subcommand> [args]"

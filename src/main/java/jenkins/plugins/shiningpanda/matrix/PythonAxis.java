@@ -20,12 +20,8 @@ package jenkins.plugins.shiningpanda.matrix;
 import hudson.Extension;
 import hudson.Functions;
 import hudson.Util;
-import hudson.init.InitMilestone;
-import hudson.init.Initializer;
 import hudson.matrix.Axis;
 import hudson.matrix.AxisDescriptor;
-import hudson.model.Items;
-import hudson.model.Run;
 
 import java.util.Arrays;
 
@@ -101,7 +97,7 @@ public class PythonAxis extends Axis
         @Override
         public String getHelpFile()
         {
-            return "/plugin/shiningpanda/help/PythonAxis/help.html";
+            return "/plugin/shiningpanda/help/matrix/PythonAxis/help.html";
         }
 
         /*
@@ -167,19 +163,5 @@ public class PythonAxis extends Axis
                     + String.format("+has(%s)+", jsStringEscape(installation.getName()))
                     + jsStringEscape("/><label class='attach-previous'>%s</label>", TREE.getVersion(installation));
         }
-
-        /**
-         * Enable backward compatibility.
-         */
-        @Initializer(before = InitMilestone.PLUGINS_STARTED)
-        public static void compatibility()
-        {
-            // PythonAxis is now in a matrix package. Compatibility with
-            // configuration...
-            Items.XSTREAM2.addCompatibilityAlias("jenkins.plugins.shiningpanda.PythonAxis", PythonAxis.class);
-            // ... and with builds
-            Run.XSTREAM2.addCompatibilityAlias("jenkins.plugins.shiningpanda.PythonAxis", PythonAxis.class);
-        }
     }
-
 }

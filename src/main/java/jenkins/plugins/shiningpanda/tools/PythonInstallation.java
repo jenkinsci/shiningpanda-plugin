@@ -21,10 +21,7 @@ import hudson.CopyOnWrite;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Util;
-import hudson.init.InitMilestone;
-import hudson.init.Initializer;
 import hudson.model.EnvironmentSpecific;
-import hudson.model.Items;
 import hudson.model.TaskListener;
 import hudson.model.Computer;
 import hudson.model.Node;
@@ -39,6 +36,7 @@ import java.util.List;
 
 import jenkins.model.Jenkins;
 import jenkins.plugins.shiningpanda.Messages;
+import jenkins.plugins.shiningpanda.util.DescriptorUtil;
 import jenkins.plugins.shiningpanda.util.FormValidationUtil;
 import jenkins.plugins.shiningpanda.util.StringUtil;
 
@@ -170,8 +168,8 @@ public class PythonInstallation extends ToolInstallation implements EnvironmentS
          */
         public DescriptorImpl()
         {
-            // Load saved data on disk
-            load();
+            // Load saved data on disk (with backward compatibility)
+            DescriptorUtil.load(this, "jenkins.plugins.shiningpanda.StandardPythonInstallation");
         }
 
         /*
@@ -182,7 +180,7 @@ public class PythonInstallation extends ToolInstallation implements EnvironmentS
         @Override
         public String getHelpFile()
         {
-            return "/plugin/shiningpanda/help/StandardPythonInstallation/help.html";
+            return "/plugin/shiningpanda/help/tools/PythonInstallation/help.html";
         }
 
         /*
@@ -257,17 +255,5 @@ public class PythonInstallation extends ToolInstallation implements EnvironmentS
             // Seems fine
             return FormValidation.ok();
         }
-
-        /**
-         * Enable backward compatibility.
-         */
-        @Initializer(before = InitMilestone.PLUGINS_STARTED)
-        public static void compatibility()
-        {
-            // StandardPythonInstallation becomes PythonInstallation
-            Items.XSTREAM2.addCompatibilityAlias("jenkins.plugins.shiningpanda.StandardPythonInstallation",
-                    PythonInstallation.class);
-        }
     }
-
 }

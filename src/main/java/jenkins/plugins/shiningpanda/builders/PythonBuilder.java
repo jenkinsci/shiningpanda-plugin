@@ -20,10 +20,7 @@ package jenkins.plugins.shiningpanda.builders;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.init.InitMilestone;
-import hudson.init.Initializer;
 import hudson.model.BuildListener;
-import hudson.model.Items;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.tasks.BuildStepDescriptor;
@@ -180,16 +177,6 @@ public class PythonBuilder extends Builder implements Serializable
         {
             // Delegate
             return PythonInstallation.list();
-        }
-
-        /**
-         * Enable backward compatibility.
-         */
-        @Initializer(before = InitMilestone.PLUGINS_STARTED)
-        public static void compatibility()
-        {
-            // StandardPythonBuilder becomes PythonBuilder
-            Items.XSTREAM2.addCompatibilityAlias("jenkins.plugins.shiningpanda.StandardPythonBuilder", PythonBuilder.class);
         }
     }
 }

@@ -179,16 +179,5 @@ public class CustomPythonBuilder extends Builder implements Serializable
             // Validate PYTHON home
             return FormValidationUtil.validatePythonHome(value);
         }
-
-        /**
-         * Enable backward compatibility.
-         */
-        @Initializer(before = InitMilestone.PLUGINS_STARTED)
-        public static void compatibility()
-        {
-            // CustomVirtualenvBuilder becomes CustomPythonBuilder
-            Items.XSTREAM2.addCompatibilityAlias("jenkins.plugins.shiningpanda.CustomVirtualenvBuilder",
-                    CustomPythonBuilder.class);
-        }
     }
 }
