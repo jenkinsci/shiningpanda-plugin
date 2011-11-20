@@ -83,6 +83,10 @@ public class Jython extends Python
         if (includeHomeKey)
             // If required define JYTHON_HOME
             environment.put("JYTHON_HOME", getHome().getRemote());
+        // Else delete it from environment
+        else
+            // Delete
+            environment.put("JYTHON_HOME", null);
         // Add the bin folder in the PATH
         environment.put("PATH+", join("bin").getRemote());
         // Return the environment

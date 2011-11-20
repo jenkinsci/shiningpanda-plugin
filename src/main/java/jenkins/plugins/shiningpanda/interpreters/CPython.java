@@ -84,6 +84,10 @@ public class CPython extends Python
         if (includeHomeKey)
             // If required define PYTHONHOME
             environment.put("PYTHONHOME", getHome().getRemote());
+        // Else delete it from environment
+        else
+            // Delete
+            environment.put("PYTHONHOME", null);
         // Check if on Windows
         if (isWindows())
             // If on Windows add the home folder and the scripts folder in the

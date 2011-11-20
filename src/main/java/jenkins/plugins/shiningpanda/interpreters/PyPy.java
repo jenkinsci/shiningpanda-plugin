@@ -83,6 +83,10 @@ public class PyPy extends Python
         if (includeHomeKey)
             // Define PYTHONHOME
             environment.put("PYTHONHOME", getHome().getRemote());
+        // Else delete it from environment
+        else
+            // Delete
+            environment.put("PYTHONHOME", null);
         // Check if on Windows
         if (isWindows())
             // If on Windows add home folder and bin folder in PATH

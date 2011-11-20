@@ -84,16 +84,18 @@ public class Virtualenv extends Python
     {
         // Store the environment
         Map<String, String> environment = new HashMap<String, String>();
+        // Delete PYTHONHOME variable
+        environment.put("PYTHONHOME", null);
+        // Delete JYTHON_HOME variable
+        environment.put("JYTHON_HOME", null);
         // Check if home variable required
         if (includeHomeKey)
-        {
-            // Delete PYTHONHOME variable
-            environment.put("PYTHONHOME", null);
-            // Delete JYTHON_HOME variable
-            environment.put("JYTHON_HOME", null);
             // Add VIRTUALENV home variable
             environment.put("VIRTUAL_ENV", getHome().getRemote());
-        }
+        // Else delete it from environment
+        else
+            // Delete
+            environment.put("VIRTUAL_ENV", null);
         // Check if on Windows
         if (isWindows())
         {
@@ -226,9 +228,12 @@ public class Virtualenv extends Python
             args.add("--extra-search-dir=" + extraSearchDir.getRemote());
         // Add the place where to create the environment
         args.add(getHome().getRemote());
+        // Do not set JYTHON_HOME in environment if this is JYTHON
+        // See https://github.com/pypa/virtualenv/issues/185
+        boolean includeHomeKey = interpreter.isJython() == null;
         // Start creation
         boolean success = LauncherUtil.launch(launcher, listener, workspace,
-                EnvVarsUtil.override(environment, getEnvironment()), args);
+                EnvVarsUtil.override(environment, interpreter.getEnvironment(includeHomeKey)), args);
         // Check if was successful
         if (success)
             // If successful, set a creation time stamp
