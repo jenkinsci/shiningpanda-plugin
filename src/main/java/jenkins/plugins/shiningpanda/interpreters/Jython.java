@@ -64,8 +64,8 @@ public class Jython extends Python
         if (isWindows())
             // On windows this is jython.bat
             return FilePathUtil.isFileOrNull(join("bin", "jython.bat"));
-        // On UNIX no extension. JYTHON 2.2.1 is directly in the home folder,
-        // later versions are in the bin folder.
+        // On UNIX no extension. For JYTHON 2.2.1, 2.5.0 and 2.5.1 the binary is
+        // directly in the home folder, later versions are in the bin folder.
         return FilePathUtil.isFileOrNull(join("bin", "jython"), join("jython"));
     }
 

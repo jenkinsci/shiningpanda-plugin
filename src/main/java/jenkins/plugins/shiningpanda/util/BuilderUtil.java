@@ -264,6 +264,8 @@ public class BuilderUtil
     {
         // Set the interpreter environment
         environment.overrideAll(interpreter.getEnvironment());
+        // Add PYTHON_EXE environment variable
+        environment.override("PYTHON_EXE", interpreter.getExecutable().getRemote());
         // Launch the script
         return Command.get(workspace.isUnix(), command, ignoreExitCode).launch(launcher, listener, environment,
                 workspace.getHome());
