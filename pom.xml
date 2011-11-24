@@ -58,7 +58,7 @@
 			<id>jenkins</id>
 			<activation>
 				<property>
-					<name>BUILD_NUMBER</name>
+					<name>JENKINS_URL</name>
 				</property>
 			</activation>
 			<build>
