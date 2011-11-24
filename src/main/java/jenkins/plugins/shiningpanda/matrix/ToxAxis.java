@@ -46,7 +46,7 @@ public class ToxAxis extends Axis
      * 
      * @param values
      *            Values for this axis
-     * @param extraValues
+     * @param extraValueString
      *            Extra values for this axis
      */
     @DataBoundConstructor

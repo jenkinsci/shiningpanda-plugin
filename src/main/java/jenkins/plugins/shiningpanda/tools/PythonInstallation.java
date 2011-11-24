@@ -82,7 +82,7 @@ public class PythonInstallation extends ToolInstallation implements EnvironmentS
      * 
      * @param node
      *            The node
-     * @param log
+     * @param listener
      *            The listener
      * @return The new installation
      * @throws IOException
@@ -237,8 +237,8 @@ public class PythonInstallation extends ToolInstallation implements EnvironmentS
         /**
          * Check that the PYTHON name is specified
          * 
-         * @param The
-         *            value to check
+         * @param value
+         *            The value to check
          */
         public FormValidation doCheckName(@QueryParameter String value)
         {

@@ -300,7 +300,7 @@ public class Virtualenv extends Python
      *            The tox.ini file
      * @param recreate
      *            If true recreate the environments
-     * @return
+     * @return true if TOX was successful, else false
      * @throws InterruptedException
      * @throws IOException
      */

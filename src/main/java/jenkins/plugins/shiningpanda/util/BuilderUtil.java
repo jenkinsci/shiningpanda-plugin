@@ -128,7 +128,7 @@ public class BuilderUtil
      *            The environment
      * @param name
      *            The name
-     * @return
+     * @return The PYTHON installation for this build
      * @throws IOException
      * @throws InterruptedException
      */
@@ -255,7 +255,7 @@ public class BuilderUtil
      *            The command to execute
      * @param ignoreExitCode
      *            Is the exit code ignored?
-     * @return
+     * @return true if was successful, else false
      * @throws IOException
      * @throws InterruptedException
      */
