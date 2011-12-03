@@ -197,14 +197,14 @@ public class Virtualenv extends Python
      *            The interpreter
      * @param useDistribute
      *            Use DISTRIBUTE or SETUPTOOLS?
-     * @param noSitePackages
-     *            Do not use original site packages
+     * @param systemSitePackages
+     *            Give access to the global site-packages directory
      * @return true if creation was successful, else false
      * @throws InterruptedException
      * @throws IOException
      */
     public boolean create(Launcher launcher, TaskListener listener, EnvVars environment, Workspace workspace,
-            Python interpreter, boolean useDistribute, boolean noSitePackages) throws InterruptedException, IOException
+            Python interpreter, boolean useDistribute, boolean systemSitePackages) throws InterruptedException, IOException
     {
         // Cleanup
         delete();
@@ -219,8 +219,8 @@ public class Virtualenv extends Python
             args.add("--distribute");
         // If no site package required, add the flag. If hosted by ShiningPanda
         // always add the flag
-        if (noSitePackages || ShiningPanda.HOSTED)
-            args.add("--no-site-packages");
+        if (systemSitePackages && !ShiningPanda.HOSTED)
+            args.add("--system-site-packages");
         // Get the folder where packages can be found (PIP, ...)
         FilePath extraSearchDir = workspace.getPackagesDir();
         // If this folder exists, add as search directory

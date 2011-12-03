@@ -60,19 +60,27 @@ public class VirtualenvBuilder extends Builder implements Serializable
     public final String home;
 
     /**
-     * Must be public else not available in Jelly
+     * Clear out the non-root install and start from scratch
      */
     public boolean clear;
 
     /**
-     * Must be public else not available in Jelly
+     * Use Distribute instead of SETUPTOOLS
      */
     public boolean useDistribute;
 
     /**
-     * Must be public else not available in Jelly
+     * Don't give access to the global site-packages
+     * 
+     * @deprecated since 0.6
      */
-    public boolean noSitePackages;
+    @Deprecated
+    private transient boolean noSitePackages;
+
+    /**
+     * Give access to the global site-packages
+     */
+    public boolean systemSitePackages;
 
     /**
      * The command to execute in the PYTHON environment
@@ -96,8 +104,8 @@ public class VirtualenvBuilder extends Builder implements Serializable
      *            Must the VIRTUALENV be cleared on each build?
      * @param useDistribute
      *            Choose between SETUPTOOLS and DISTRIBUTE
-     * @param noSitePackages
-     *            Do not include the contents of site-packages when creating the
+     * @param systemSitePackages
+     *            Give access to the global site-packages directory to the
      *            virtual environment
      * @param ignoreExitCode
      *            Do not consider the build as a failure if any of the commands
@@ -106,7 +114,7 @@ public class VirtualenvBuilder extends Builder implements Serializable
      *            The command to execute
      */
     @DataBoundConstructor
-    public VirtualenvBuilder(String pythonName, String home, boolean clear, boolean useDistribute, boolean noSitePackages,
+    public VirtualenvBuilder(String pythonName, String home, boolean clear, boolean useDistribute, boolean systemSitePackages,
             String command, boolean ignoreExitCode)
     {
         // Call super
@@ -119,8 +127,8 @@ public class VirtualenvBuilder extends Builder implements Serializable
         this.clear = clear;
         // Use DISTRIBUTE instead of SETUPTOOLS
         this.useDistribute = useDistribute;
-        // Hide the packages installed in the PYTHON creating the VIRTUALENV
-        this.noSitePackages = noSitePackages;
+        // Give access to the global site-packages directory
+        this.systemSitePackages = systemSitePackages;
         // Normalize and store the command
         this.command = command;
         // Store the ignore flag
@@ -178,7 +186,7 @@ public class VirtualenvBuilder extends Builder implements Serializable
         // Check if clean required or if configuration changed
         if (clear || virtualenv.isOutdated(BuilderUtil.lastConfigure(build)))
             // A new environment is required
-            if (!virtualenv.create(launcher, listener, environment, workspace, interpreter, useDistribute, noSitePackages))
+            if (!virtualenv.create(launcher, listener, environment, workspace, interpreter, useDistribute, systemSitePackages))
                 // Failed to create the environment, do not continue
                 return false;
         // Launch script

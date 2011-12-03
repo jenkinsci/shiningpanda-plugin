@@ -35,12 +35,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <j:choose>
     <j:when test="${descriptor.HOSTED}">
       <f:invisibleEntry>
-        <input type="hidden" name="noSitePackages" value="${it.noSitePackages}"/>
+        <input type="hidden" name="systemSitePackages" value="${it.systemSitePackages}"/>
       </f:invisibleEntry>
     </j:when>
     <j:otherwise>
-      <f:entry field="noSitePackages" title="${%No site packages}" help="/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-noSitePackages.html">
-        <f:checkbox checked="${it.noSitePackages}" />
+      <f:entry field="systemSitePackages" title="${%System site packages}" help="/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-systemSitePackages.html">
+        <f:checkbox checked="${it.systemSitePackages}" />
       </f:entry>
     </j:otherwise>
   </j:choose>
