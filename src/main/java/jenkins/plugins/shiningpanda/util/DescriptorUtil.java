@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 
 import jenkins.model.Jenkins;
 
+import com.thoughtworks.xstream.XStream;
+
 public class DescriptorUtil
 {
 
@@ -21,40 +23,46 @@ public class DescriptorUtil
     /**
      * Get the configuration file for the provided ID
      * 
+     * @param xs
+     *            The XML stream
      * @param id
      *            The ID
      * @return The configuration file
      */
-    public static XmlFile getConfigFile(String id)
+    public static XmlFile getConfigFile(XStream xs, String id)
     {
-        return new XmlFile(new File(Jenkins.getInstance().getRootDir(), id + ".xml"));
+        return new XmlFile(xs, new File(Jenkins.getInstance().getRootDir(), id + ".xml"));
     }
 
     /**
      * Get the configuration file for the provided descriptor
      * 
+     * @param xs
+     *            The XML stream
      * @param descriptor
      *            The descriptor
      * @return The configuration file
      */
-    public static XmlFile getConfigFile(Descriptor<?> descriptor)
+    public static XmlFile getConfigFile(XStream xs, Descriptor<?> descriptor)
     {
-        return getConfigFile(descriptor.getId());
+        return getConfigFile(xs, descriptor.getId());
     }
 
     /**
      * Load the configuration by looking first for the nominal file, and then by
      * looking for the provided IDs.
      * 
+     * @param xs
+     *            The XML stream
      * @param descriptor
      *            The descriptor
      * @param ids
      *            The addition IDs
      */
-    public synchronized static void load(Descriptor<?> descriptor, String... ids)
+    public synchronized static void load(XStream xs, Descriptor<?> descriptor, String... ids)
     {
         // Get the nominal configuration file
-        XmlFile file = getConfigFile(descriptor);
+        XmlFile file = getConfigFile(xs, descriptor);
         // CHeck if this file exists
         if (file.exists())
         {
@@ -67,7 +75,7 @@ public class DescriptorUtil
         for (String id : ids)
         {
             // Get the configuration file for the ID
-            XmlFile aliasFile = getConfigFile(id);
+            XmlFile aliasFile = getConfigFile(xs, id);
             // Check if exists
             if (aliasFile.exists())
             {

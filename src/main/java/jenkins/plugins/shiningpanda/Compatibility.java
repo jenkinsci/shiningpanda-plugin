@@ -6,7 +6,6 @@ import jenkins.plugins.shiningpanda.builders.CustomPythonBuilder;
 import jenkins.plugins.shiningpanda.builders.PythonBuilder;
 import jenkins.plugins.shiningpanda.builders.VirtualenvBuilder;
 import jenkins.plugins.shiningpanda.matrix.PythonAxis;
-import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 
 public class Compatibility
 {
@@ -16,9 +15,6 @@ public class Compatibility
      */
     private static void c_0_4__0_5()
     {
-        // StandardPythonInstallation becomes PythonInstallation
-        Items.XSTREAM2.addCompatibilityAlias("jenkins.plugins.shiningpanda.StandardPythonInstallation",
-                PythonInstallation.class);
         // CustomVirtualenvBuilder becomes CustomPythonBuilder
         Items.XSTREAM2.addCompatibilityAlias("jenkins.plugins.shiningpanda.CustomVirtualenvBuilder", CustomPythonBuilder.class);
         // StandardPythonBuilder becomes PythonBuilder

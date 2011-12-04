@@ -30,6 +30,7 @@ import hudson.tools.ToolDescriptor;
 import hudson.tools.ToolProperty;
 import hudson.tools.ToolInstallation;
 import hudson.util.FormValidation;
+import hudson.util.XStream2;
 
 import java.io.IOException;
 import java.util.List;
@@ -169,7 +170,7 @@ public class PythonInstallation extends ToolInstallation implements EnvironmentS
         public DescriptorImpl()
         {
             // Load saved data on disk (with backward compatibility)
-            DescriptorUtil.load(this, "jenkins.plugins.shiningpanda.StandardPythonInstallation");
+            DescriptorUtil.load(XSTREAM, this, "jenkins.plugins.shiningpanda.StandardPythonInstallation");
         }
 
         /*
@@ -254,6 +255,21 @@ public class PythonInstallation extends ToolInstallation implements EnvironmentS
                 return FormValidation.error(Messages.PythonInstallation_Name_WhitespaceNotAllowed());
             // Seems fine
             return FormValidation.ok();
+        }
+
+        /**
+         * Thread safe stream.
+         */
+        private static final XStream2 XSTREAM = new XStream2();
+
+        static
+        {
+            // 0.4 to 0.5: StandardPythonInstallation becomes
+            // PythonInstallation...
+            XSTREAM.addCompatibilityAlias("jenkins.plugins.shiningpanda.StandardPythonInstallation", PythonInstallation.class);
+            // and its descriptor...
+            XSTREAM.addCompatibilityAlias("jenkins.plugins.shiningpanda.StandardPythonInstallation$DescriptorImpl",
+                    PythonInstallation.DescriptorImpl.class);
         }
     }
 }

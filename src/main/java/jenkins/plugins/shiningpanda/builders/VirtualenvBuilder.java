@@ -75,7 +75,7 @@ public class VirtualenvBuilder extends Builder implements Serializable
      * @deprecated since 0.6
      */
     @Deprecated
-    private transient boolean noSitePackages;
+    private transient Boolean noSitePackages;
 
     /**
      * Give access to the global site-packages
@@ -193,6 +193,22 @@ public class VirtualenvBuilder extends Builder implements Serializable
         return BuilderUtil.launch(launcher, listener, environment, workspace, virtualenv, command, ignoreExitCode);
     }
 
+    /**
+     * ShiningPanda 0.5 to 0.6 compatibility: VIRTUALENV option
+     * --no-site-packages replaced by --system-site-packages
+     * 
+     * @return The builder
+     */
+    private Object readResolve()
+    {
+        // Check if old flag defined
+        if (noSitePackages != null)
+            // If defined, set the new one at the opposite value
+            systemSitePackages = !noSitePackages;
+        // Return the builder
+        return this;
+    }
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -287,5 +303,6 @@ public class VirtualenvBuilder extends Builder implements Serializable
             // Delegate
             return PythonInstallation.list();
         }
+
     }
 }
