@@ -8,7 +8,6 @@ import hudson.matrix.TextAxis;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 
-import java.io.File;
 import java.util.List;
 
 import jenkins.plugins.shiningpanda.Messages;
@@ -38,8 +37,7 @@ public class TestPythonBuilder extends ShiningPandaTestCase
 
     public void testHomeWithSpace() throws Exception
     {
-        File virtualenv = createVirtualenv(createTmpDir("bad move"));
-        PythonInstallation installation = configurePython("Python", virtualenv.getAbsolutePath());
+        PythonInstallation installation = configurePython("Python", createFakePythonInstallationWithWhitespaces().getAbsolutePath());
         PythonBuilder builder = new PythonBuilder(installation.getName(), "echo hello", false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);

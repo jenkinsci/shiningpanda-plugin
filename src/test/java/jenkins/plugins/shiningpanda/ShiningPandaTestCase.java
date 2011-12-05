@@ -230,6 +230,30 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
     }
 
     /**
+     * Create a fake PYTHON installation with spaces in its home folder path.
+     * 
+     * @return The home folder
+     * @throws IOException
+     */
+    protected File createFakePythonInstallationWithWhitespaces() throws IOException
+    {
+        // Create a home folder with spaces in its name
+        File home = createTmpDir("bad move");
+        // Cleanup if already exists
+        FileUtils.deleteDirectory(home);
+        // Get the binary folder
+        File bin = new File(home, "bin");
+        // Create it
+        bin.mkdir();
+        // Get the PYTHON binary path
+        File binary = new File(bin, "python");
+        // Create the file
+        FileUtils.writeStringToFile(binary, "fake installation");
+        // Return home folder
+        return home;
+    }
+
+    /**
      * Configure a PYTHON installation.
      * 
      * @param name
