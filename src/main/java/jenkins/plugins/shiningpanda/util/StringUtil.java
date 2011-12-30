@@ -51,4 +51,17 @@ public class StringUtil
         return Pattern.compile("\\s").matcher(value).find();
     }
 
+    /**
+     * Check that the provided array is not null. If null fix it by returning an
+     * empty array.
+     * 
+     * @param values
+     *            The array to fix
+     * @return A fixed array
+     */
+    public static String[] fixNull(String[] values)
+    {
+        return values != null ? values : new String[] {};
+    }
+
 }

@@ -29,6 +29,7 @@ import java.util.List;
 
 import jenkins.plugins.shiningpanda.Messages;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
+import jenkins.plugins.shiningpanda.util.StringUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -53,7 +54,7 @@ public class ToxAxis extends Axis
     public ToxAxis(String[] values, String extraValueString)
     {
         // Call super
-        super(KEY, merge(values, extraValueString));
+        super(KEY, merge(StringUtil.fixNull(values), extraValueString));
     }
 
     /**
