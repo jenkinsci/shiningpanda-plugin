@@ -2,7 +2,7 @@
 
 ShiningPanda Plugin for Jenkins
 ===============================
-Copyright &copy; 2011, ShiningPanda S.A.S. Licensed under [GNU Affero General Public License].
+Copyright &copy; 2011-2012, ShiningPanda S.A.S. Licensed under [GNU Affero General Public License].
 
 About
 -----
