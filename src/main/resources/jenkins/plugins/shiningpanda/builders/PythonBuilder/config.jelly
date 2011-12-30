@@ -18,7 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <j:if test="${!empty(descriptor.installations) &amp;&amp; descriptor.showInstallations}">
-    <f:entry title="${%Python Version}" help="/plugin/shiningpanda/help/builders/help-pythonName.html">
+    <f:entry title="${%Python version}" help="/plugin/shiningpanda/help/builders/help-pythonName.html">
       <select class="setting-input" name="pythonName">
         <j:forEach var="installation" items="${descriptor.installations}">
           <f:option selected="${installation.name==instance.pythonName}" value="${installation.name}">${installation.name}</f:option>
