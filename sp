@@ -43,6 +43,12 @@ case $1 in
     run-hosted)
         mvn $OPTIONS clean hpi:run -Djenkins.plugins.shiningpanda.ShiningPanda.hosted=true
         ;;
+    debug)
+        mvnDebug $OPTIONS clean hpi:run
+        ;;
+    debug-hosted)
+        mvnDebug $OPTIONS clean hpi:run -Djenkins.plugins.shiningpanda.ShiningPanda.hosted=true
+        ;;
     release)
         mvn $OPTIONS clean release:prepare release:perform -Dusername=omansion -Dpassword=$2
         ;;
@@ -55,6 +61,8 @@ case $1 in
         echo "    test-debug <TestCase>: run this test case in debug mode,"
         echo "    run: execute clean hpi:run,"
         echo "    run-hosted: execute clean hpi:run in hosted mode,"
+        echo "    debug: execute clean hpi:run in debug mode,"
+        echo "    debug-hosted: execute clean hpi:run in debug and hosted mode,"
         echo "    release <github password>: release the plugin."
         ;;
     *)
