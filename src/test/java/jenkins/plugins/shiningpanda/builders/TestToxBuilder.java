@@ -37,14 +37,14 @@ public class TestToxBuilder extends ShiningPandaTestCase
 
     public void testRoundTrip() throws Exception
     {
-        ToxBuilder before = new ToxBuilder("toto/tox.ini", true);
+        ToxBuilder before = new ToxBuilder("toto/tox.ini", true, "$TOTO");
         ToxBuilder after = configToxMatrixRoundtrip(before);
-        assertEqualBeans2(before, after, "toxIni,recreate");
+        assertEqualBeans2(before, after, "toxIni,recreate,toxenvPattern");
     }
 
     public void testNoAxis() throws Exception
     {
-        ToxBuilder builder = new ToxBuilder("tox.ini", false);
+        ToxBuilder builder = new ToxBuilder("tox.ini", false, null);
         MatrixProject project = createMatrixProject();
         AxisList axes = new AxisList(new TextAxis("TOTO", "TUTU"));
         project.setAxes(axes);
@@ -59,7 +59,7 @@ public class TestToxBuilder extends ShiningPandaTestCase
 
     public void testNoInterpreter() throws Exception
     {
-        ToxBuilder builder = new ToxBuilder("tox.ini", false);
+        ToxBuilder builder = new ToxBuilder("tox.ini", false, null);
         MatrixProject project = createMatrixProject();
         AxisList axes = new AxisList(new ToxAxis(new String[] { "py27" }));
         project.setAxes(axes);
@@ -72,10 +72,10 @@ public class TestToxBuilder extends ShiningPandaTestCase
         assertTrue("should not have found an interpreter:\n" + log, log.contains(Messages.BuilderUtil_NoInterpreterFound()));
     }
 
-    public void testToxSuccessful() throws Exception
+    public void testToxAxisSuccessful() throws Exception
     {
         configureCPython2();
-        ToxBuilder builder = new ToxBuilder("tox.ini", false);
+        ToxBuilder builder = new ToxBuilder("tox.ini", false, null);
         MatrixProject project = createMatrixProject();
         AxisList axes = new AxisList(new ToxAxis(new String[] { "py27" }));
         project.setScm(new ToxSCM("tox.ini", "[testenv]\ncommand = echo"));
@@ -88,6 +88,64 @@ public class TestToxBuilder extends ShiningPandaTestCase
         String log = FileUtils.readFileToString(run.getLogFile());
         assertTrue("tox should have been successful:\n" + log, log.contains("congratulations :)"));
         assertTrue("build should have been successful:\n" + log, log.contains("SUCCESS"));
+    }
+
+    public void testToxenvPatternSuccessful() throws Exception
+    {
+        configureCPython2();
+        ToxBuilder builder = new ToxBuilder("tox.ini", false, "$INTERPRETER$VERSION");
+        MatrixProject project = createMatrixProject();
+        AxisList axes = new AxisList(new TextAxis("INTERPRETER", "py"), new TextAxis("VERSION", "27"));
+        project.setScm(new ToxSCM("tox.ini", "[testenv]\ncommand = echo"));
+        project.setAxes(axes);
+        project.getBuildersList().add(builder);
+        MatrixBuild build = project.scheduleBuild2(0).get();
+        List<MatrixRun> runs = build.getRuns();
+        assertEquals(1, runs.size());
+        MatrixRun run = runs.get(0);
+        String log = FileUtils.readFileToString(run.getLogFile());
+        System.out.println(log);
+        assertTrue("tox should have been successful:\n" + log, log.contains("congratulations :)"));
+        assertTrue("build should have been successful:\n" + log, log.contains("SUCCESS"));
+    }
+
+    public void testToxAxisAndToxenvPattern() throws Exception
+    {
+        configureCPython2();
+        ToxBuilder builder = new ToxBuilder("tox.ini", false, "$INTERPRETER$VERSION");
+        MatrixProject project = createMatrixProject();
+        AxisList axes = new AxisList(new ToxAxis(new String[] { "py27" }), new TextAxis("INTERPRETER", "py"), new TextAxis(
+                "VERSION", "27"));
+        project.setScm(new ToxSCM("tox.ini", "[testenv]\ncommand = echo"));
+        project.setAxes(axes);
+        project.getBuildersList().add(builder);
+        MatrixBuild build = project.scheduleBuild2(0).get();
+        List<MatrixRun> runs = build.getRuns();
+        assertEquals(1, runs.size());
+        MatrixRun run = runs.get(0);
+        String log = FileUtils.readFileToString(run.getLogFile());
+        System.out.println(log);
+        assertTrue("should not be able to run with both Tox axis and TOXENV pattern:\n" + log,
+                log.contains(Messages.ToxBuilder_ToxAxis_And_ToxenvPattern()));
+    }
+
+    public void testToxenvPatternBlank() throws Exception
+    {
+        configureCPython2();
+        ToxBuilder builder = new ToxBuilder("tox.ini", false, "$FOOBAR");
+        MatrixProject project = createMatrixProject();
+        AxisList axes = new AxisList(new TextAxis("FOOBAR2", "badluck"));
+        project.setScm(new ToxSCM("tox.ini", "[testenv]\ncommand = echo"));
+        project.setAxes(axes);
+        project.getBuildersList().add(builder);
+        MatrixBuild build = project.scheduleBuild2(0).get();
+        List<MatrixRun> runs = build.getRuns();
+        assertEquals(1, runs.size());
+        MatrixRun run = runs.get(0);
+        String log = FileUtils.readFileToString(run.getLogFile());
+        System.out.println(log);
+        assertTrue("should not be able to run with a blank TOXENV pattern:\n" + log,
+                log.contains(Messages.ToxBuilder_ToxenvPattern_Invalid("$FOOBAR")));
     }
 
 }

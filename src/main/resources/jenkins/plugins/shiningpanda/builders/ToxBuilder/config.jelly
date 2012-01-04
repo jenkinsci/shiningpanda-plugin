@@ -21,6 +21,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <f:textbox default="tox.ini"/>
   </f:entry>
   <f:entry field="recreate" title="${%Recreate}" help="/plugin/shiningpanda/help/builders/ToxBuilder/help-recreate.html">
-    <f:checkbox checked="${it.recreate}" />
+    <f:checkbox checked="${it.recreate}"/>
   </f:entry>
+  <f:advanced>
+    <f:entry field="toxenvPattern" title="${%TOXENV pattern}" help="/plugin/shiningpanda/help/builders/ToxBuilder/help-toxenvPattern.html">
+      <f:textbox/>
+    </f:entry>
+  </f:advanced>
 </j:jelly>

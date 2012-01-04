@@ -39,6 +39,7 @@ import jenkins.plugins.shiningpanda.interpreters.Virtualenv;
 import jenkins.plugins.shiningpanda.matrix.ToxAxis;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 import jenkins.plugins.shiningpanda.util.BuilderUtil;
+import jenkins.plugins.shiningpanda.util.UnixVariableResolver;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -57,8 +58,13 @@ public class ToxBuilder extends Builder implements Serializable
      */
     public final boolean recreate;
 
+    /**
+     * If there is no TOX axis, use this field to get the TOX environment.
+     */
+    public final String toxenvPattern;
+
     @DataBoundConstructor
-    public ToxBuilder(String toxIni, boolean recreate)
+    public ToxBuilder(String toxIni, boolean recreate, String toxenvPattern)
     {
         // Call super
         super();
@@ -66,6 +72,8 @@ public class ToxBuilder extends Builder implements Serializable
         this.toxIni = Util.fixEmptyAndTrim(toxIni);
         // Store the recreation flag
         this.recreate = recreate;
+        // Store the TOXENV pattern
+        this.toxenvPattern = Util.fixEmptyAndTrim(toxenvPattern);
     }
 
     /*
@@ -90,8 +98,39 @@ public class ToxBuilder extends Builder implements Serializable
         // Check if environment contains a TOX axis
         if (!environment.containsKey(ToxAxis.KEY))
         {
-            // Log
-            listener.fatalError(Messages.ToxBuilder_ToxAxis_Required());
+            // Check if this builder uses a TOXENV pattern
+            if (toxenvPattern != null)
+            {
+                // Get the TOXENV value
+                String toxenv = Util.fixEmptyAndTrim(Util.replaceMacro(toxenvPattern, new UnixVariableResolver(environment)));
+                // Check if this is a valid TOXENV value
+                if (toxenv != null)
+                    // Set this value
+                    environment.put(ToxAxis.KEY, toxenv);
+                // Invalid TOXENV value
+                else
+                {
+                    // Log
+                    listener.fatalError(Messages.ToxBuilder_ToxenvPattern_Invalid(toxenvPattern));
+                    // No need to go further
+                    return false;
+                }
+            }
+            else
+            {
+                // Log
+                listener.fatalError(Messages.ToxBuilder_ToxAxis_Required());
+                // No need to go further
+                return false;
+            }
+        }
+        // Check that TOX axis is not used with a TOXENV pattern. If TOXENV
+        // pattern equals TOX axis variable, skip this warning as final result
+        // is the same
+        else if (toxenvPattern != null && toxenvPattern != "$" + ToxAxis.KEY)
+        {
+            // Log that a TOXENV pattern should not be used with a TOX axis
+            listener.fatalError(Messages.ToxBuilder_ToxAxis_And_ToxenvPattern());
             // No need to go further
             return false;
         }
