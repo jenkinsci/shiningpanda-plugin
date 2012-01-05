@@ -66,7 +66,7 @@ public class BuilderUtil
      * 
      * @param build
      *            The build
-     * @return true if this is for a matrix project, else false
+     * @return true if this is for a matrix build, else false
      */
     public static boolean isMatrix(AbstractBuild<?, ?> build)
     {
