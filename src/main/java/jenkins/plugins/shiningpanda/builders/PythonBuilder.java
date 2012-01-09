@@ -20,6 +20,7 @@ package jenkins.plugins.shiningpanda.builders;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
+import hudson.matrix.MatrixProject;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
@@ -124,12 +125,6 @@ public class PythonBuilder extends Builder implements Serializable
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder>
     {
 
-        /**
-         * Flag to determine if PYTHON selection is let to user (useful for
-         * build matrix)
-         */
-        public volatile boolean showInstallations;
-
         /*
          * (non-Javadoc)
          * 
@@ -160,12 +155,19 @@ public class PythonBuilder extends Builder implements Serializable
         @Override
         public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> jobType)
         {
-            // Set the flag (dirty to do this here, but do not know where to do
-            // it)
-            showInstallations = !BuilderUtil.isMatrix(jobType);
             // If there's no PYTHON configured, there's no point in PYTHON
             // builders
             return !PythonInstallation.isEmpty();
+        }
+
+        /**
+         * Check if this is a matrix project.
+         * 
+         * @return true if this is a matrix project.
+         */
+        public boolean isMatrix(Object it)
+        {
+            return it instanceof MatrixProject;
         }
 
         /**

@@ -21,6 +21,7 @@ import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.Util;
+import hudson.matrix.MatrixProject;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
@@ -209,7 +210,7 @@ public class ToxBuilder extends Builder implements Serializable
         public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> jobType)
         {
             // Only available in matrix projects if some installations exist
-            return !PythonInstallation.isEmpty() && BuilderUtil.isMatrix(jobType);
+            return !PythonInstallation.isEmpty() && jobType.equals(MatrixProject.class);
         }
 
         /**

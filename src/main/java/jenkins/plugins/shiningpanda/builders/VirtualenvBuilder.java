@@ -22,6 +22,7 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
+import hudson.matrix.MatrixProject;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
@@ -224,12 +225,6 @@ public class VirtualenvBuilder extends Builder implements Serializable
         public static boolean HOSTED = ShiningPanda.HOSTED;
 
         /**
-         * Flag to determine if PYTHON selection is let to user (useful for
-         * build matrix)
-         */
-        public volatile boolean showInstallations;
-
-        /*
          * (non-Javadoc)
          * 
          * @see hudson.model.Descriptor#getDisplayName()
@@ -260,12 +255,19 @@ public class VirtualenvBuilder extends Builder implements Serializable
         @Override
         public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> jobType)
         {
-            // Set the flag (dirty to do this here, but do not know where to do
-            // it)
-            showInstallations = !BuilderUtil.isMatrix(jobType);
             // If there's no PYTHON configured, there's no point in PYTHON
             // builders
             return !PythonInstallation.isEmpty();
+        }
+
+        /**
+         * Check if this is a matrix project.
+         * 
+         * @return true if this is a matrix project.
+         */
+        public boolean isMatrix(Object it)
+        {
+            return it instanceof MatrixProject;
         }
 
         /**

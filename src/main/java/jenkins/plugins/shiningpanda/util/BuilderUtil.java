@@ -21,10 +21,8 @@ import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.matrix.MatrixRun;
-import hudson.matrix.MatrixProject;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,30 +57,6 @@ public class BuilderUtil
         long lastJenkinsConfigure = new File(Jenkins.getInstance().getRootDir(), "config.xml").lastModified();
         // Get the newer of the two
         return Math.max(lastJobConfigure, lastJenkinsConfigure);
-    }
-
-    /**
-     * Check if this build is for a matrix project.
-     * 
-     * @param build
-     *            The build
-     * @return true if this is for a matrix build, else false
-     */
-    public static boolean isMatrix(AbstractBuild<?, ?> build)
-    {
-        return build instanceof MatrixRun;
-    }
-
-    /**
-     * Check if this is a matrix project.
-     * 
-     * @param jobType
-     *            The project
-     * @return true if this is a matrix project, else false
-     */
-    public static boolean isMatrix(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> jobType)
-    {
-        return jobType.equals(MatrixProject.class);
     }
 
     /**
@@ -136,7 +110,7 @@ public class BuilderUtil
             String name) throws IOException, InterruptedException
     {
         // Check if this is a matrix build
-        if (isMatrix(build))
+        if (build instanceof MatrixRun)
         {
             // Check if the environment contains a PYTHON axis key
             if (!environment.containsKey(PythonAxis.KEY))
