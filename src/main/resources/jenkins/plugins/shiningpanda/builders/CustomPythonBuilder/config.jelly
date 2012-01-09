@@ -20,10 +20,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <f:entry title="${%Home}" help="/plugin/shiningpanda/help/builders/CustomPythonBuilder/help-home.html">
     <f:textbox field="home"/>
   </f:entry>
-  <f:entry field="ignoreExitCode" title="${%Ignore exit code}" help="/plugin/shiningpanda/help/builders/help-ignoreExitCode.html">
-    <f:checkbox checked="${it.ignoreExitCode}" />
-  </f:entry>
   <f:entry title="${%Command}" help="/plugin/shiningpanda/help/builders/help-command.html">
     <f:textarea field="command" class="fixed-width" />
   </f:entry>
+  <f:advanced>
+    <f:entry field="ignoreExitCode" title="${%Ignore exit code}" help="/plugin/shiningpanda/help/builders/help-ignoreExitCode.html">
+      <f:checkbox checked="${it.ignoreExitCode}" />
+    </f:entry>
+  </f:advanced>
 </j:jelly>
