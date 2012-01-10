@@ -164,7 +164,7 @@ public class TestPythonBuilder extends ShiningPandaTestCase
     public void testXShellNature() throws Exception
     {
         PythonInstallation installation = configureCPython2();
-        PythonBuilder builder = new PythonBuilder(installation.getName(), CommandNature.SHELL.getKey(), "echo %HOME%", false);
+        PythonBuilder builder = new PythonBuilder(installation.getName(), CommandNature.XSHELL.getKey(), "echo %HOME%", false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
