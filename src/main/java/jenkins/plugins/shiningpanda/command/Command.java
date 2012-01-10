@@ -23,6 +23,7 @@ import hudson.Launcher;
 import hudson.Util;
 import hudson.model.TaskListener;
 import hudson.tasks.Messages;
+import hudson.util.ArgumentListBuilder;
 
 import java.io.IOException;
 
@@ -120,7 +121,21 @@ public abstract class Command
      *            The script to execute
      * @return The arguments
      */
-    protected abstract String[] getCommandLine(FilePath script);
+    protected abstract ArgumentListBuilder getArguments(FilePath script);
+
+    /**
+     * Be able to have a late environment processing.
+     * 
+     * @param pwd
+     *            The working directory
+     * @param environment
+     *            The environment
+     * @return The processed environment
+     */
+    protected EnvVars getEnvironment(FilePath pwd, EnvVars environment)
+    {
+        return environment;
+    }
 
     /**
      * Create content of the script execute.
@@ -155,7 +170,7 @@ public abstract class Command
     {
         // The script file
         FilePath script = null;
-        // Be able to delete the script file
+        // Be able to delete the script file in all cases
         try
         {
             // Try to create the script file
@@ -164,44 +179,53 @@ public abstract class Command
                 // Create the script file
                 script = createScriptFile(pwd);
             }
+            // Failed to create the script file
             catch (IOException e)
             {
-                // Failed to create the script file, log and return an error
+                // Display exception
                 Util.displayIOException(e, listener);
+                // Log the message
                 e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_UnableToProduceScript()));
+                // Do not continue
                 return false;
             }
-            // Store the exit code
-            int r;
-            // Be able to get execution errors
+            // Be able to catch execution errors
             try
             {
                 // Execute the script
-                r = launcher.launch().cmds(getCommandLine(script)).envs(environment).stdout(listener).pwd(pwd).join();
+                int exitCode = launcher.launch().cmds(getArguments(script)).envs(getEnvironment(pwd, environment))
+                        .stdout(listener).pwd(pwd).join();
+                // Check if continue or not depending on the exit code ignore
+                // flag
+                return isExitCodeIgnored() ? true : exitCode == 0;
             }
+            // Failed to execute the script
             catch (IOException e)
             {
-                // Failed to execute the script, log and set the flag to return
-                // an error
+                // Display exception
                 Util.displayIOException(e, listener);
+                // Log the error
                 e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_CommandFailed()));
-                r = -1;
+                // Do not continue
+                return false;
             }
-            // Check if successful
-            return r == 0;
         }
+        // Cleanup in all cases
         finally
         {
+            // Catch cleanup errors
             try
             {
-                // If script file was created, delete it
+                // Check if the script was created
                 if (script != null)
+                    // Delete it
                     script.delete();
             }
             catch (IOException e)
             {
-                // Failed to delete the script, log error only
+                // Failed to delete the script, display exception
                 Util.displayIOException(e, listener);
+                // Log the error
                 e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_UnableToDelete(script)));
             }
         }
@@ -212,14 +236,26 @@ public abstract class Command
      * 
      * @param isUnix
      *            Target execution platform
+     * @param executable
+     *            The PYTHON executable
+     * @param nature
+     *            The nature of the command: PYTHON, shell, X shell
      * @param command
      *            The content of the script to execute
      * @param ignoreExitCode
      *            Is exit code ignored?
      * @return The command object
      */
-    public static Command get(boolean isUnix, String command, boolean ignoreExitCode)
+    public static Command get(boolean isUnix, String executable, CommandNature nature, String command, boolean ignoreExitCode)
     {
-        return (isUnix ? new UnixCommand(command, ignoreExitCode) : new WindowsCommand(command, ignoreExitCode));
+        // Check if this is a PYTHON script
+        if (nature == CommandNature.PYTHON)
+            // Create a new PYTHON command
+            return new PythonCommand(isUnix, executable, command, ignoreExitCode);
+        // Check if a conversion is required
+        boolean convert = nature == CommandNature.XSHELL;
+        // Create the right command depending of the OS and the conversion flag
+        return (isUnix ? new UnixCommand(command, ignoreExitCode, convert) : new WindowsCommand(command, ignoreExitCode,
+                convert));
     }
 }

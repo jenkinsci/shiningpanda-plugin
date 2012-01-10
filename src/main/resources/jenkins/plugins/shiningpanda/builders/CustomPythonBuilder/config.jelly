@@ -20,6 +20,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <f:entry title="${%Home}" help="/plugin/shiningpanda/help/builders/CustomPythonBuilder/help-home.html">
     <f:textbox field="home"/>
   </f:entry>
+  <f:entry title="${%Nature}" help="/plugin/shiningpanda/help/builders/help-nature.html">
+    <select class="setting-input" name="nature">
+      <j:forEach var="nature" items="${descriptor.natures}">
+        <f:option selected="${nature.key==instance.nature}" value="${nature.key}">${nature.name}</f:option>
+      </j:forEach>
+    </select>
+  </f:entry>
   <f:entry title="${%Command}" help="/plugin/shiningpanda/help/builders/help-command.html">
     <f:textarea field="command" class="fixed-width" />
   </f:entry>

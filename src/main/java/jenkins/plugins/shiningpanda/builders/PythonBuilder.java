@@ -29,8 +29,10 @@ import hudson.tasks.Builder;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 
 import jenkins.plugins.shiningpanda.Messages;
+import jenkins.plugins.shiningpanda.command.CommandNature;
 import jenkins.plugins.shiningpanda.interpreters.Python;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 import jenkins.plugins.shiningpanda.util.BuilderUtil;
@@ -47,10 +49,9 @@ public class PythonBuilder extends Builder implements Serializable
     public final String pythonName;
 
     /**
-     * Do not consider the build as a failure if any of the commands exits with
-     * a non-zero exit code.
+     * The nature of the command: PYTHON, shell, X shell
      */
-    public final boolean ignoreExitCode;
+    public final String nature;
 
     /**
      * The command to execute in the PYTHON environment
@@ -58,23 +59,33 @@ public class PythonBuilder extends Builder implements Serializable
     public final String command;
 
     /**
+     * Do not consider the build as a failure if any of the commands exits with
+     * a non-zero exit code.
+     */
+    public final boolean ignoreExitCode;
+
+    /**
      * Constructor using fields
      * 
      * @param pythonName
      *            The name of the PYTHON
+     * @param nature
+     *            The nature of the command: PYTHON, shell, X shell
+     * @param command
+     *            The command to execute in PYTHON environment
      * @param ignoreExitCode
      *            Do not consider the build as a failure if any of the commands
      *            exits with a non-zero exit code
-     * @param command
-     *            The command to execute in PYTHON environment
      */
     @DataBoundConstructor
-    public PythonBuilder(String pythonName, String command, boolean ignoreExitCode)
+    public PythonBuilder(String pythonName, String nature, String command, boolean ignoreExitCode)
     {
         // Call super
         super();
         // Store the name of the PYTHON to invoke
         this.pythonName = pythonName;
+        // Store the nature of the command
+        this.nature = nature;
         // Normalize and store the command
         this.command = command;
         // Store the ignore flag
@@ -113,7 +124,7 @@ public class PythonBuilder extends Builder implements Serializable
             // If no interpreter found, do not continue the build
             return false;
         // Launch the process
-        return BuilderUtil.launch(launcher, listener, environment, workspace, interpreter, command, ignoreExitCode);
+        return BuilderUtil.launch(launcher, listener, environment, workspace, interpreter, nature, command, ignoreExitCode);
     }
 
     private static final long serialVersionUID = 1L;
@@ -179,6 +190,16 @@ public class PythonBuilder extends Builder implements Serializable
         {
             // Delegate
             return PythonInstallation.list();
+        }
+
+        /**
+         * Get the list of the available command natures.
+         * 
+         * @return The list of natures
+         */
+        public List<CommandNature> getNatures()
+        {
+            return CommandNature.ALL;
         }
     }
 }

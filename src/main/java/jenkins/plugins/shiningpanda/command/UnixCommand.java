@@ -21,10 +21,19 @@ import hudson.FilePath;
 import hudson.model.Hudson;
 import hudson.remoting.VirtualChannel;
 import hudson.tasks.Shell;
+import hudson.util.ArgumentListBuilder;
+
+import java.util.regex.Pattern;
+
 import jenkins.plugins.shiningpanda.util.StringUtil;
 
-public class UnixCommand extends Command
+public class UnixCommand extends ShellCommand
 {
+
+    /**
+     * Store the variable pattern.
+     */
+    private final static Pattern VARIABLE = Pattern.compile("%(\\S+?)%");
 
     /**
      * Constructor using fields.
@@ -33,10 +42,12 @@ public class UnixCommand extends Command
      *            The content of the execution script
      * @param ignoreExitCode
      *            Is exit code ignored?
+     * @param convert
+     *            Convert batch to shell
      */
-    protected UnixCommand(String command, boolean ignoreExitCode)
+    protected UnixCommand(String command, boolean ignoreExitCode, boolean convert)
     {
-        super(command, ignoreExitCode);
+        super(command, ignoreExitCode, convert);
     }
 
     /*
@@ -53,41 +64,91 @@ public class UnixCommand extends Command
     /*
      * (non-Javadoc)
      * 
-     * @see jenkins.plugins.shiningpanda.command.Command#getContents()
+     * @see
+     * jenkins.plugins.shiningpanda.command.ShellCommand#getOriginalContent()
      */
     @Override
-    protected String getContents()
+    protected String getSourceContent()
     {
-        return addCrForNonASCII(StringUtil.fixCrLf(getCommand())) + "\n" + "exit 0";
+        return addCrForNonASCII(StringUtil.fixCrLf(getCommand()));
     }
 
     /*
      * (non-Javadoc)
      * 
      * @see
-     * jenkins.plugins.shiningpanda.command.Command#getCommandLine(hudson.FilePath
+     * jenkins.plugins.shiningpanda.command.ShellCommand#getSourceSeparator()
+     */
+    @Override
+    protected String getSourceSeparator()
+    {
+        return "\\";
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * jenkins.plugins.shiningpanda.command.ShellCommand#getTargetSeparator()
+     */
+    @Override
+    protected String getTargetSeparator()
+    {
+        return "/";
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * jenkins.plugins.shiningpanda.command.ShellCommand#getSourceVariable()
+     */
+    @Override
+    protected Pattern getSourceVariable()
+    {
+        return VARIABLE;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * jenkins.plugins.shiningpanda.command.ShellCommand#getTargetVariable()
+     */
+    @Override
+    protected String getTargetVariable()
+    {
+        return "\\$$1";
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * jenkins.plugins.shiningpanda.command.Command#getArguments(hudson.FilePath
      * )
      */
     @Override
-    protected String[] getCommandLine(FilePath script)
+    protected ArgumentListBuilder getArguments(FilePath script)
     {
-        return new String[] { getShell(script.getChannel()), isExitCodeIgnored() ? "-x" : "-xe", script.getRemote() };
+        return new ArgumentListBuilder(getShell(script.getChannel()), isExitCodeIgnored() ? "-x" : "-xe", script.getRemote());
     }
 
     /**
-     * Older versions of bash have a bug where non-ASCII on the first line makes
-     * the shell think the file is a binary file and not a script. Adding a
-     * leading line feed works around this problem.
+     * Add a leading line for old shell compatibility.
      * 
-     * @param s
+     * @param contents
      *            The string to fix
      * @return The fixed string
      */
-    protected static String addCrForNonASCII(String s)
+    protected static String addCrForNonASCII(String contents)
     {
-        if (s.indexOf('\n') != 0)
-            return "\n" + s;
-        return s;
+        // Check if the first char is not already a line return
+        if (contents.indexOf('\n') != 0)
+            // If not add one
+            return "\n" + contents;
+        // Return the content
+        return contents;
     }
 
     /**

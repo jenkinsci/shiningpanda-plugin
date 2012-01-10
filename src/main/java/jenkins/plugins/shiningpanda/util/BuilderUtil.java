@@ -32,6 +32,7 @@ import java.util.List;
 import jenkins.model.Jenkins;
 import jenkins.plugins.shiningpanda.Messages;
 import jenkins.plugins.shiningpanda.command.Command;
+import jenkins.plugins.shiningpanda.command.CommandNature;
 import jenkins.plugins.shiningpanda.interpreters.Python;
 import jenkins.plugins.shiningpanda.interpreters.Virtualenv;
 import jenkins.plugins.shiningpanda.matrix.PythonAxis;
@@ -225,6 +226,8 @@ public class BuilderUtil
      *            The workspace
      * @param interpreter
      *            The interpreter
+     * @param nature
+     *            The nature of the command: PYTHON, shell, X shell
      * @param command
      *            The command to execute
      * @param ignoreExitCode
@@ -234,15 +237,17 @@ public class BuilderUtil
      * @throws InterruptedException
      */
     public static boolean launch(Launcher launcher, BuildListener listener, EnvVars environment, Workspace workspace,
-            Python interpreter, String command, boolean ignoreExitCode) throws IOException, InterruptedException
+            Python interpreter, String nature, String command, boolean ignoreExitCode) throws IOException, InterruptedException
     {
+        // Get PYTHON executable
+        String executable = interpreter.getExecutable().getRemote();
         // Set the interpreter environment
         environment.overrideAll(interpreter.getEnvironment());
         // Add PYTHON_EXE environment variable
-        environment.override("PYTHON_EXE", interpreter.getExecutable().getRemote());
+        environment.override("PYTHON_EXE", executable);
         // Launch the script
-        return Command.get(workspace.isUnix(), command, ignoreExitCode).launch(launcher, listener, environment,
-                workspace.getHome());
+        return Command.get(workspace.isUnix(), executable, CommandNature.get(nature), command, ignoreExitCode).launch(launcher,
+                listener, environment, workspace.getHome());
     }
 
     /**

@@ -33,9 +33,11 @@ import hudson.util.FormValidation;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 
 import jenkins.plugins.shiningpanda.Messages;
 import jenkins.plugins.shiningpanda.ShiningPanda;
+import jenkins.plugins.shiningpanda.command.CommandNature;
 import jenkins.plugins.shiningpanda.interpreters.Python;
 import jenkins.plugins.shiningpanda.interpreters.Virtualenv;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
@@ -84,6 +86,11 @@ public class VirtualenvBuilder extends Builder implements Serializable
     public boolean systemSitePackages;
 
     /**
+     * The nature of the command: PYTHON, shell, X shell
+     */
+    public final String nature;
+
+    /**
      * The command to execute in the PYTHON environment
      */
     public final String command;
@@ -108,15 +115,17 @@ public class VirtualenvBuilder extends Builder implements Serializable
      * @param systemSitePackages
      *            Give access to the global site-packages directory to the
      *            virtual environment
+     * @param nature
+     *            The nature of the command: PYTHON, shell, X shell
+     * @param command
+     *            The command to execute
      * @param ignoreExitCode
      *            Do not consider the build as a failure if any of the commands
      *            exits with a non-zero exit code
-     * @param command
-     *            The command to execute
      */
     @DataBoundConstructor
     public VirtualenvBuilder(String pythonName, String home, boolean clear, boolean useDistribute, boolean systemSitePackages,
-            String command, boolean ignoreExitCode)
+            String nature, String command, boolean ignoreExitCode)
     {
         // Call super
         super();
@@ -130,6 +139,8 @@ public class VirtualenvBuilder extends Builder implements Serializable
         this.useDistribute = useDistribute;
         // Give access to the global site-packages directory
         this.systemSitePackages = systemSitePackages;
+        // Store the nature of the command
+        this.nature = nature;
         // Normalize and store the command
         this.command = command;
         // Store the ignore flag
@@ -191,7 +202,7 @@ public class VirtualenvBuilder extends Builder implements Serializable
                 // Failed to create the environment, do not continue
                 return false;
         // Launch script
-        return BuilderUtil.launch(launcher, listener, environment, workspace, virtualenv, command, ignoreExitCode);
+        return BuilderUtil.launch(launcher, listener, environment, workspace, virtualenv, nature, command, ignoreExitCode);
     }
 
     /**
@@ -306,5 +317,14 @@ public class VirtualenvBuilder extends Builder implements Serializable
             return PythonInstallation.list();
         }
 
+        /**
+         * Get the list of the available command natures.
+         * 
+         * @return The list of natures
+         */
+        public List<CommandNature> getNatures()
+        {
+            return CommandNature.ALL;
+        }
     }
 }

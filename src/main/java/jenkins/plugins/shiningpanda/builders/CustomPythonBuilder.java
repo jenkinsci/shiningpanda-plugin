@@ -30,8 +30,10 @@ import hudson.util.FormValidation;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 
 import jenkins.plugins.shiningpanda.Messages;
+import jenkins.plugins.shiningpanda.command.CommandNature;
 import jenkins.plugins.shiningpanda.interpreters.Python;
 import jenkins.plugins.shiningpanda.util.BuilderUtil;
 import jenkins.plugins.shiningpanda.util.FormValidationUtil;
@@ -50,6 +52,11 @@ public class CustomPythonBuilder extends Builder implements Serializable
     public final String home;
 
     /**
+     * The nature of the command: PYTHON, shell, X shell
+     */
+    public final String nature;
+
+    /**
      * The command to execute in the PYTHON environment
      */
     public final String command;
@@ -65,19 +72,23 @@ public class CustomPythonBuilder extends Builder implements Serializable
      * 
      * @param home
      *            The home directory for VIRTUALENV
+     * @param nature
+     *            The nature of the command: PYTHON, shell, X shell
+     * @param command
+     *            The command to execute
      * @param ignoreExitCode
      *            Do not consider the build as a failure if any of the commands
      *            exits with a non-zero exit code
-     * @param command
-     *            The command to execute
      */
     @DataBoundConstructor
-    public CustomPythonBuilder(String home, String command, boolean ignoreExitCode)
+    public CustomPythonBuilder(String home, String nature, String command, boolean ignoreExitCode)
     {
         // Call super
         super();
         // Store the home directory
         this.home = home;
+        // Store the nature of the command
+        this.nature = nature;
         // Normalize and store the command
         this.command = command;
         // Store the ignore flag
@@ -110,7 +121,7 @@ public class CustomPythonBuilder extends Builder implements Serializable
             // Failed to get the interpreter, no need to go further
             return false;
         // Launch script
-        return BuilderUtil.launch(launcher, listener, environment, workspace, interpreter, command, ignoreExitCode);
+        return BuilderUtil.launch(launcher, listener, environment, workspace, interpreter, nature, command, ignoreExitCode);
     }
 
     private static final long serialVersionUID = 1L;
@@ -175,6 +186,16 @@ public class CustomPythonBuilder extends Builder implements Serializable
                 return FormValidation.ok();
             // Validate PYTHON home
             return FormValidationUtil.validatePythonHome(value);
+        }
+
+        /**
+         * Get the list of the available command natures.
+         * 
+         * @return The list of natures
+         */
+        public List<CommandNature> getNatures()
+        {
+            return CommandNature.ALL;
         }
     }
 }

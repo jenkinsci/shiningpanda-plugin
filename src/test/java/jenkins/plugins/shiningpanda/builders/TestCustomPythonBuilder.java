@@ -29,6 +29,7 @@ import java.util.List;
 
 import jenkins.plugins.shiningpanda.Messages;
 import jenkins.plugins.shiningpanda.ShiningPandaTestCase;
+import jenkins.plugins.shiningpanda.command.CommandNature;
 
 import org.apache.commons.io.FileUtils;
 
@@ -37,22 +38,22 @@ public class TestCustomPythonBuilder extends ShiningPandaTestCase
 
     public void testRoundTripFreeStyle() throws Exception
     {
-        CustomPythonBuilder before = new CustomPythonBuilder("/tmp/custom", "echo hello", true);
+        CustomPythonBuilder before = new CustomPythonBuilder("/tmp/custom", CommandNature.SHELL.getKey(), "echo hello", true);
         CustomPythonBuilder after = configFreeStyleRoundtrip(before);
-        assertEqualBeans2(before, after, "home,command,ignoreExitCode");
+        assertEqualBeans2(before, after, "home,nature,command,ignoreExitCode");
     }
 
     public void testRoundTripMatrix() throws Exception
     {
-        CustomPythonBuilder before = new CustomPythonBuilder("/tmp/custom", "echo hello", false);
+        CustomPythonBuilder before = new CustomPythonBuilder("/tmp/custom", CommandNature.PYTHON.getKey(), "echo hello", false);
         CustomPythonBuilder after = configPythonMatrixRoundtrip(before);
-        assertEqualBeans2(before, after, "home,command,ignoreExitCode");
+        assertEqualBeans2(before, after, "home,nature,command,ignoreExitCode");
     }
 
     public void testHomeWithSpace() throws Exception
     {
         CustomPythonBuilder builder = new CustomPythonBuilder(createFakePythonInstallationWithWhitespaces().getAbsolutePath(),
-                "echo hello", false);
+                CommandNature.SHELL.getKey(), "echo hello", false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -63,7 +64,8 @@ public class TestCustomPythonBuilder extends ShiningPandaTestCase
 
     public void testTextAxisAvailable() throws Exception
     {
-        CustomPythonBuilder builder = new CustomPythonBuilder(getCPython2Home(), "echo \"Welcome $TOTO\"", false);
+        CustomPythonBuilder builder = new CustomPythonBuilder(getCPython2Home(), CommandNature.SHELL.getKey(),
+                "echo \"Welcome $TOTO\"", false);
         MatrixProject project = createMatrixProject();
         AxisList axes = new AxisList(new TextAxis("TOTO", "TUTU"));
         project.setAxes(axes);
@@ -78,7 +80,8 @@ public class TestCustomPythonBuilder extends ShiningPandaTestCase
 
     public void testIgnoreExitCode() throws Exception
     {
-        CustomPythonBuilder builder = new CustomPythonBuilder(getCPython3Home(), "ls foobartrucmuch", true);
+        CustomPythonBuilder builder = new CustomPythonBuilder(getCPython3Home(), CommandNature.SHELL.getKey(),
+                "ls foobartrucmuch", true);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -88,7 +91,8 @@ public class TestCustomPythonBuilder extends ShiningPandaTestCase
 
     public void testConsiderExitCode() throws Exception
     {
-        CustomPythonBuilder builder = new CustomPythonBuilder(getJythonHome(), "ls foobartrucmuch", false);
+        CustomPythonBuilder builder = new CustomPythonBuilder(getJythonHome(), CommandNature.SHELL.getKey(),
+                "ls foobartrucmuch", false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
