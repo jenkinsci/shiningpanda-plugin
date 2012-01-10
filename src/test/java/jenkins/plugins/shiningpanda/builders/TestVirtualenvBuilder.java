@@ -274,4 +274,30 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
         assertTrue("a new virtualenv was expected to be created:\n" + log, log.contains("New python executable in"));
     }
 
+    public void testPythonNature() throws Exception
+    {
+        PythonInstallation installation = configureCPython2();
+        VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", true, true, false,
+                CommandNature.PYTHON.getKey(), "import sys\nsys.stdout.write('hello world!\\n')", true);
+        FreeStyleProject project = createFreeStyleProject();
+        project.getBuildersList().add(builder);
+        FreeStyleBuild build = project.scheduleBuild2(0).get();
+        String log = FileUtils.readFileToString(build.getLogFile());
+        assertTrue("this build should have been successful:\n" + log, log.contains("SUCCESS"));
+        assertTrue("this build should have say hello world:\n" + log, log.contains("hello world!"));
+    }
+
+    public void testXShellNature() throws Exception
+    {
+        PythonInstallation installation = configureCPython2();
+        VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", true, true, false,
+                CommandNature.XSHELL.getKey(), "echo %HOME%", true);
+        FreeStyleProject project = createFreeStyleProject();
+        project.getBuildersList().add(builder);
+        FreeStyleBuild build = project.scheduleBuild2(0).get();
+        String log = FileUtils.readFileToString(build.getLogFile());
+        assertTrue("this build should have been successful:\n" + log, log.contains("SUCCESS"));
+        String home = System.getProperty("user.home");
+        assertTrue("this build should have say " + home + ":\n" + log, log.contains(home));
+    }
 }

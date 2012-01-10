@@ -33,7 +33,7 @@ public class UnixCommand extends ShellCommand
     /**
      * Store the variable pattern.
      */
-    private final static Pattern VARIABLE = Pattern.compile("%(\\S+?)%");
+    private final static Pattern VARIABLE = Pattern.compile("%(\\w+?)%");
 
     /**
      * Constructor using fields.
@@ -118,7 +118,7 @@ public class UnixCommand extends ShellCommand
     @Override
     protected String getTargetVariable()
     {
-        return "\\$$1";
+        return "\\${$1}";
     }
 
     /*

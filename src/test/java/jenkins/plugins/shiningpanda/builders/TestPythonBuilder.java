@@ -147,4 +147,31 @@ public class TestPythonBuilder extends ShiningPandaTestCase
         assertTrue("this build should have failed:\n" + log, log.contains("FAILURE"));
     }
 
+    public void testPythonNature() throws Exception
+    {
+
+        PythonInstallation installation = configureCPython2();
+        PythonBuilder builder = new PythonBuilder(installation.getName(), CommandNature.PYTHON.getKey(),
+                "import sys\nsys.stdout.write('hello world!\\n')", false);
+        FreeStyleProject project = createFreeStyleProject();
+        project.getBuildersList().add(builder);
+        FreeStyleBuild build = project.scheduleBuild2(0).get();
+        String log = FileUtils.readFileToString(build.getLogFile());
+        assertTrue("this build should have been successful:\n" + log, log.contains("SUCCESS"));
+        assertTrue("this build should have say hello world:\n" + log, log.contains("hello world!"));
+    }
+
+    public void testXShellNature() throws Exception
+    {
+        PythonInstallation installation = configureCPython2();
+        PythonBuilder builder = new PythonBuilder(installation.getName(), CommandNature.SHELL.getKey(), "echo %HOME%", false);
+        FreeStyleProject project = createFreeStyleProject();
+        project.getBuildersList().add(builder);
+        FreeStyleBuild build = project.scheduleBuild2(0).get();
+        String log = FileUtils.readFileToString(build.getLogFile());
+        assertTrue("this build should have been successful:\n" + log, log.contains("SUCCESS"));
+        String home = System.getProperty("user.home");
+        assertTrue("this build should have say " + home + ":\n" + log, log.contains(home));
+    }
+
 }

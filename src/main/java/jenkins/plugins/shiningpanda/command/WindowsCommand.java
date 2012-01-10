@@ -28,7 +28,7 @@ public class WindowsCommand extends ShellCommand
     /**
      * Store the variable pattern.
      */
-    private final static Pattern VARIABLE = Pattern.compile("\\$(\\S+)");
+    private final static Pattern VARIABLE = Pattern.compile("\\$\\{?(\\w+)\\}?");
 
     /**
      * Constructor using fields.
