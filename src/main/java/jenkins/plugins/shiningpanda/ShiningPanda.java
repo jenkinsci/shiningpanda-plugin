@@ -17,7 +17,10 @@
  */
 package jenkins.plugins.shiningpanda;
 
+import hudson.Main;
 import hudson.Plugin;
+import jenkins.plugins.shiningpanda.tools.PythonInstallationFinder;
+import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 
 public class ShiningPanda extends Plugin
 {
@@ -37,8 +40,20 @@ public class ShiningPanda extends Plugin
     {
         // Enable backward compatibility
         Compatibility.enable();
-        // Call super
-        super.start();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see hudson.Plugin#postInitialize()
+     */
+    @Override
+    public void postInitialize() throws Exception
+    {
+        // Check if some installations are not already set or if this is not in
+        // test context
+        if (PythonInstallation.isEmpty() && !Main.isUnitTest)
+            // Look for installations and configure them
+            PythonInstallationFinder.configure();
+    }
 }
