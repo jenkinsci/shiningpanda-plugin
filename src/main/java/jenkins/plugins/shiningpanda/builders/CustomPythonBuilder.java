@@ -35,8 +35,8 @@ import java.util.List;
 import jenkins.plugins.shiningpanda.Messages;
 import jenkins.plugins.shiningpanda.command.CommandNature;
 import jenkins.plugins.shiningpanda.interpreters.Python;
-import jenkins.plugins.shiningpanda.util.BuilderUtil;
-import jenkins.plugins.shiningpanda.util.FormValidationUtil;
+import jenkins.plugins.shiningpanda.utils.BuilderUtil;
+import jenkins.plugins.shiningpanda.utils.FormValidationUtil;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 import org.kohsuke.stapler.AncestorInPath;

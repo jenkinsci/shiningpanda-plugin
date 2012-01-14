@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package jenkins.plugins.shiningpanda.util;
+package jenkins.plugins.shiningpanda.utils;
 
 import java.util.regex.Pattern;
 

@@ -28,9 +28,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jenkins.plugins.shiningpanda.ShiningPanda;
-import jenkins.plugins.shiningpanda.util.EnvVarsUtil;
-import jenkins.plugins.shiningpanda.util.FilePathUtil;
-import jenkins.plugins.shiningpanda.util.LauncherUtil;
+import jenkins.plugins.shiningpanda.utils.EnvVarsUtil;
+import jenkins.plugins.shiningpanda.utils.FilePathUtil;
+import jenkins.plugins.shiningpanda.utils.LauncherUtil;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 public class Virtualenv extends Python

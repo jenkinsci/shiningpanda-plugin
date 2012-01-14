@@ -25,7 +25,7 @@ import hudson.util.ArgumentListBuilder;
 
 import java.util.regex.Pattern;
 
-import jenkins.plugins.shiningpanda.util.StringUtil;
+import jenkins.plugins.shiningpanda.utils.StringUtil;
 
 public class UnixCommand extends ShellCommand
 {

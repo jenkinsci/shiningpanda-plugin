@@ -15,37 +15,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package jenkins.plugins.shiningpanda.util;
+package jenkins.plugins.shiningpanda.utils;
 
-import hudson.Util;
-import hudson.util.VariableResolver;
+import junit.framework.TestCase;
 
-import java.util.Map;
-
-public class UnixVariableResolver implements VariableResolver<String>
+public class TestStringUtil extends TestCase
 {
-    /**
-     * The map used to resolve variables.
-     */
-    private final Map<String, String> data;
 
-    /**
-     * Constructor using fields.
-     * 
-     * @param data
-     *            The data.
-     */
-    public UnixVariableResolver(Map<String, String> data)
+    public void testHasWhitespace() throws Exception
     {
-        this.data = data;
+        assertFalse("should not have whitespace", StringUtil.hasWhitespace(null));
+        assertTrue("should have whitespace", StringUtil.hasWhitespace("hello world"));
+        assertTrue("should have whitespace", StringUtil.hasWhitespace("hello\tworld"));
+        assertFalse("should not have whitespace", StringUtil.hasWhitespace("hello_world"));
     }
 
-    /**
-     * Resolve a variable.
-     */
-    public String resolve(String name)
+    public void testFixCrLf() throws Exception
     {
-        // UNIX-like: blank if not found
-        return Util.fixNull(data.get(name));
+        assertEquals("\nabc\ndef\n", StringUtil.fixCrLf("\r\nabc\r\ndef\r\n"));
     }
+
 }

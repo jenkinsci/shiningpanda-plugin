@@ -35,7 +35,7 @@ import jenkins.plugins.shiningpanda.Messages;
 import jenkins.plugins.shiningpanda.command.CommandNature;
 import jenkins.plugins.shiningpanda.interpreters.Python;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
-import jenkins.plugins.shiningpanda.util.BuilderUtil;
+import jenkins.plugins.shiningpanda.utils.BuilderUtil;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 import org.kohsuke.stapler.DataBoundConstructor;

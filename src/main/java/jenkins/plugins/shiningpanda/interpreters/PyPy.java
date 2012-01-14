@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import jenkins.plugins.shiningpanda.util.FilePathUtil;
+import jenkins.plugins.shiningpanda.utils.FilePathUtil;
 
 public class PyPy extends Python
 {

@@ -39,8 +39,8 @@ import jenkins.plugins.shiningpanda.interpreters.Python;
 import jenkins.plugins.shiningpanda.interpreters.Virtualenv;
 import jenkins.plugins.shiningpanda.matrix.ToxAxis;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
-import jenkins.plugins.shiningpanda.util.BuilderUtil;
-import jenkins.plugins.shiningpanda.util.UnixVariableResolver;
+import jenkins.plugins.shiningpanda.utils.BuilderUtil;
+import jenkins.plugins.shiningpanda.utils.UnixVariableResolver;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 import org.kohsuke.stapler.DataBoundConstructor;

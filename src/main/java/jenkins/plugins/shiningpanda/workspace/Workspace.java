@@ -24,7 +24,7 @@ import java.io.File;
 import java.io.IOException;
 
 import jenkins.model.Jenkins;
-import jenkins.plugins.shiningpanda.util.FilePathUtil;
+import jenkins.plugins.shiningpanda.utils.FilePathUtil;
 
 public abstract class Workspace
 {

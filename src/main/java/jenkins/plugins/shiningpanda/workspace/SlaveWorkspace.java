@@ -21,7 +21,7 @@ import hudson.FilePath;
 
 import java.io.IOException;
 
-import jenkins.plugins.shiningpanda.util.FilePathUtil;
+import jenkins.plugins.shiningpanda.utils.FilePathUtil;
 
 public class SlaveWorkspace extends Workspace
 {

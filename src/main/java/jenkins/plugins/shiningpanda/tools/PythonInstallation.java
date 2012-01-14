@@ -37,9 +37,9 @@ import java.util.List;
 
 import jenkins.model.Jenkins;
 import jenkins.plugins.shiningpanda.Messages;
-import jenkins.plugins.shiningpanda.util.DescriptorUtil;
-import jenkins.plugins.shiningpanda.util.FormValidationUtil;
-import jenkins.plugins.shiningpanda.util.StringUtil;
+import jenkins.plugins.shiningpanda.utils.DescriptorUtil;
+import jenkins.plugins.shiningpanda.utils.FormValidationUtil;
+import jenkins.plugins.shiningpanda.utils.StringUtil;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;

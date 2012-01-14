@@ -41,8 +41,8 @@ import jenkins.plugins.shiningpanda.command.CommandNature;
 import jenkins.plugins.shiningpanda.interpreters.Python;
 import jenkins.plugins.shiningpanda.interpreters.Virtualenv;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
-import jenkins.plugins.shiningpanda.util.BuilderUtil;
-import jenkins.plugins.shiningpanda.util.EnvVarsUtil;
+import jenkins.plugins.shiningpanda.utils.BuilderUtil;
+import jenkins.plugins.shiningpanda.utils.EnvVarsUtil;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 import org.apache.commons.io.FilenameUtils;

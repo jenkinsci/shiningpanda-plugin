@@ -29,7 +29,7 @@ import java.util.List;
 
 import jenkins.plugins.shiningpanda.Messages;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
-import jenkins.plugins.shiningpanda.util.StringUtil;
+import jenkins.plugins.shiningpanda.utils.StringUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;

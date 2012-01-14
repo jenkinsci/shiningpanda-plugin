@@ -19,7 +19,7 @@ package jenkins.plugins.shiningpanda.command;
 
 import hudson.FilePath;
 import hudson.util.ArgumentListBuilder;
-import jenkins.plugins.shiningpanda.util.StringUtil;
+import jenkins.plugins.shiningpanda.utils.StringUtil;
 
 public class PythonCommand extends Command
 {
