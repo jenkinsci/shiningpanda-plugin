@@ -22,7 +22,7 @@ import hudson.model.AbstractBuild;
 import java.io.File;
 
 import jenkins.plugins.shiningpanda.Messages;
-import jenkins.plugins.shiningpanda.recorders.CoverageArchiver;
+import jenkins.plugins.shiningpanda.publishers.CoverageArchiver;
 
 public class BuildCoverageAction extends CoverageAction
 {

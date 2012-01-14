@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package jenkins.plugins.shiningpanda.recorders;
+package jenkins.plugins.shiningpanda.publishers;
 
 import hudson.EnvVars;
 import hudson.Extension;
@@ -306,7 +306,7 @@ public class CoverageArchiver extends Recorder
             // Get a workspace
             FilePath workspace = project.getSomeWorkspace();
             // If a workspace is available, check that the value is relative
-            return workspace != null ? workspace.validateRelativeDirectory(value) : FormValidation.ok();
+            return workspace != null ? workspace.validateFileMask(value) : FormValidation.ok();
         }
     }
 }

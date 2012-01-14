@@ -27,7 +27,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 
 import jenkins.plugins.shiningpanda.Messages;
-import jenkins.plugins.shiningpanda.recorders.CoverageArchiver;
+import jenkins.plugins.shiningpanda.publishers.CoverageArchiver;
 
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
