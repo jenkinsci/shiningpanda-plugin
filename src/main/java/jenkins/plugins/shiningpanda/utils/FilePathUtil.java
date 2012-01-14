@@ -24,6 +24,8 @@ import hudson.remoting.Callable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.filefilter.FileFileFilter;
@@ -259,6 +261,21 @@ public class FilePathUtil
         }
         // Return the destination file of directory
         return dest;
+    }
+
+    /**
+     * List shared libraries contained in this folder.
+     * 
+     * @param filePath
+     *            The folder
+     * @return The list of libraries
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static List<FilePath> listSharedLibraries(FilePath filePath) throws IOException, InterruptedException
+    {
+        return !filePath.isDirectory() ? Collections.<FilePath> emptyList() : Arrays.asList(filePath
+                .list("*.so,*.so.*,*.dylib,*.dylib.*"));
     }
 
 }

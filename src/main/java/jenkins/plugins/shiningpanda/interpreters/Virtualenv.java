@@ -25,6 +25,7 @@ import hudson.util.ArgumentListBuilder;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import jenkins.plugins.shiningpanda.ShiningPanda;
@@ -109,6 +110,17 @@ public class Virtualenv extends Python
                 environment.put("PATH+", join("Scripts").getRemote());
             // Return the environment
             return environment;
+        }
+        // Handle UNIX case
+        else
+        {
+            // Get a potential library folder
+            FilePath lib = join("lib");
+            // Check if there is a library folder containing some shared
+            // libraries
+            if (!FilePathUtil.listSharedLibraries(lib).isEmpty())
+                // Export in environment
+                environment.putAll(EnvVarsUtil.getLibs(lib));
         }
         // For UNIX add the bin folder in the PATH
         environment.put("PATH+", join("bin").getRemote());
@@ -234,6 +246,27 @@ public class Virtualenv extends Python
         // Start creation
         boolean success = LauncherUtil.launch(launcher, listener, workspace,
                 EnvVarsUtil.override(environment, interpreter.getEnvironment(includeHomeKey)), args);
+        // Add links to libraries
+        // See https://github.com/pypa/virtualenv/issues/216
+        if (isUnix())
+        {
+            // Get the list of libraries
+            List<FilePath> libs = FilePathUtil.listSharedLibraries(interpreter.getHome().child("lib"));
+            // Check if got at least one
+            if (!libs.isEmpty())
+            {
+                // Get the VIRTUALENV library folder
+                FilePath libDir = join("lib");
+                // Create it if required
+                libDir.mkdirs();
+                // Go threw the libraries and create links
+                for (FilePath lib : libs)
+                    // Create the link
+                    if (!LauncherUtil.createSymlink(launcher, listener, lib, libDir.child(lib.getName())))
+                        // Failed to create link
+                        return false;
+            }
+        }
         // Check if was successful
         if (success)
             // If successful, set a creation time stamp

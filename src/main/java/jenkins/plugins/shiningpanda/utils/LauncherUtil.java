@@ -18,6 +18,7 @@
 package jenkins.plugins.shiningpanda.utils;
 
 import hudson.EnvVars;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
 import hudson.model.TaskListener;
@@ -50,14 +51,12 @@ public class LauncherUtil
     public static boolean launch(Launcher launcher, TaskListener listener, Workspace workspace, EnvVars environment,
             ArgumentListBuilder args) throws InterruptedException
     {
-        // Store the return code
-        int r;
         // Be able to display error
         try
         {
             // Launch the process
-            r = launcher.launch().cmds(workspace.isUnix() ? args : args.toWindowsCommand()).envs(environment).stdout(listener)
-                    .pwd(workspace.getHome()).join();
+            return 0 == launcher.launch().cmds(workspace.isUnix() ? args : args.toWindowsCommand()).envs(environment)
+                    .stdout(listener).pwd(workspace.getHome()).join();
         }
         catch (IOException e)
         {
@@ -65,11 +64,45 @@ public class LauncherUtil
             Util.displayIOException(e, listener);
             // Log error message
             e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_CommandFailed()));
-            // Set exit code to notify an error
-            r = -1;
+            // Return an error
+            return false;
         }
-        // This is a success only if exit code is zero
-        return r == 0;
     }
 
+    /**
+     * Create a symbolic link.
+     * 
+     * @param launcher
+     *            The launcher
+     * @param listener
+     *            The listener
+     * @param target
+     *            The target file
+     * @param link
+     *            The link file
+     * @return true if successful, else false
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public static boolean createSymlink(Launcher launcher, TaskListener listener, FilePath target, FilePath link)
+            throws InterruptedException, IOException
+    {
+        // Get the arguments
+        ArgumentListBuilder args = new ArgumentListBuilder("ln", "-s", target.getRemote(), link.getRemote());
+        // Be able to display error
+        try
+        {
+            // Launch the process
+            return 0 == launcher.launch().cmds(args).stdout(listener).join();
+        }
+        catch (IOException e)
+        {
+            // Something went wrong, display error
+            Util.displayIOException(e, listener);
+            // Log error message
+            e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_CommandFailed()));
+            // Return an error
+            return false;
+        }
+    }
 }
