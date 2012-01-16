@@ -52,7 +52,7 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
-public class CoverageArchiver extends Recorder
+public class CoveragePublisher extends Recorder
 {
 
     /**
@@ -79,7 +79,7 @@ public class CoverageArchiver extends Recorder
      *            If true keep for each successful build
      */
     @DataBoundConstructor
-    public CoverageArchiver(String htmlDir, boolean keepAll)
+    public CoveragePublisher(String htmlDir, boolean keepAll)
     {
         // Call super
         super();
@@ -274,7 +274,7 @@ public class CoverageArchiver extends Recorder
         @Override
         public String getHelpFile()
         {
-            return "/plugin/shiningpanda/help/recorders/CoverageArchiver/help.html";
+            return "/plugin/shiningpanda/help/publishers/CoveragePublisher/help.html";
         }
 
         /*

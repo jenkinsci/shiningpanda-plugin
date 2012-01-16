@@ -27,7 +27,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 
 import jenkins.plugins.shiningpanda.Messages;
-import jenkins.plugins.shiningpanda.publishers.CoverageArchiver;
+import jenkins.plugins.shiningpanda.publishers.CoveragePublisher;
 
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -57,7 +57,7 @@ public abstract class CoverageAction implements Action
      */
     public String getUrlName()
     {
-        return CoverageArchiver.BASENAME;
+        return CoveragePublisher.BASENAME;
     }
 
     /*

@@ -24,7 +24,7 @@ import hudson.model.Run;
 import java.io.File;
 
 import jenkins.plugins.shiningpanda.Messages;
-import jenkins.plugins.shiningpanda.publishers.CoverageArchiver;
+import jenkins.plugins.shiningpanda.publishers.CoveragePublisher;
 
 public class ProjectCoverageAction extends CoverageAction implements ProminentProjectAction
 {
@@ -73,13 +73,13 @@ public class ProjectCoverageAction extends CoverageAction implements ProminentPr
         if (run != null)
         {
             // Get the coverage folder for the last successful
-            File dir = CoverageArchiver.getHtmlDir(run);
+            File dir = CoveragePublisher.getHtmlDir(run);
             // Check if this folder exists
             if (dir.exists())
                 // If exists return it
                 return dir;
         }
         // Else get it for the project
-        return CoverageArchiver.getHtmlDir(project);
+        return CoveragePublisher.getHtmlDir(project);
     }
 }

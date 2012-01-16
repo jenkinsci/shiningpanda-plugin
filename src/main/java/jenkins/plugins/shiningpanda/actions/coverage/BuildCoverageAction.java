@@ -22,7 +22,7 @@ import hudson.model.AbstractBuild;
 import java.io.File;
 
 import jenkins.plugins.shiningpanda.Messages;
-import jenkins.plugins.shiningpanda.publishers.CoverageArchiver;
+import jenkins.plugins.shiningpanda.publishers.CoveragePublisher;
 
 public class BuildCoverageAction extends CoverageAction
 {
@@ -65,6 +65,6 @@ public class BuildCoverageAction extends CoverageAction
      */
     protected File getDir()
     {
-        return CoverageArchiver.getHtmlDir(build);
+        return CoveragePublisher.getHtmlDir(build);
     }
 }
