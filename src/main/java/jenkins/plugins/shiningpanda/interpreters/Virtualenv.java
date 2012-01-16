@@ -261,10 +261,16 @@ public class Virtualenv extends Python
                 libDir.mkdirs();
                 // Go threw the libraries and create links
                 for (FilePath lib : libs)
-                    // Create the link
-                    if (!LauncherUtil.createSymlink(launcher, listener, lib, libDir.child(lib.getName())))
-                        // Failed to create link
-                        return false;
+                {
+                    // Get the link path
+                    FilePath link = libDir.child(lib.getName());
+                    // Check that not already exists
+                    if (!link.exists())
+                        // Create the link
+                        if (!LauncherUtil.createSymlink(launcher, listener, lib, link))
+                            // Failed to create link
+                            return false;
+                }
             }
         }
         // Check if was successful
