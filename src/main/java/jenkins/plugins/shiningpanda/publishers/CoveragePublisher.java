@@ -44,8 +44,8 @@ import java.util.List;
 import javax.servlet.ServletException;
 
 import jenkins.plugins.shiningpanda.Messages;
-import jenkins.plugins.shiningpanda.actions.coverage.BuildCoverageAction;
-import jenkins.plugins.shiningpanda.actions.coverage.ProjectCoverageAction;
+import jenkins.plugins.shiningpanda.actions.coverage.CoverageBuildAction;
+import jenkins.plugins.shiningpanda.actions.coverage.CoverageProjectAction;
 
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -195,7 +195,7 @@ public class CoveragePublisher extends Recorder
                 dir.copyRecursiveTo("**/*", targetDir);
         }
         // Add the build action
-        build.addAction(new BuildCoverageAction(build));
+        build.addAction(new CoverageBuildAction(build));
         // Go on
         return true;
     }
@@ -211,7 +211,7 @@ public class CoveragePublisher extends Recorder
     public Collection<Action> getProjectActions(AbstractProject<?, ?> project)
     {
         // Return the project action
-        return Collections.<Action> singleton(new ProjectCoverageAction(project));
+        return Collections.<Action> singleton(new CoverageProjectAction(project));
     }
 
     /*

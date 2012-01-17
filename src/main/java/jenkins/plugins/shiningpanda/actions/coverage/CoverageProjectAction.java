@@ -37,7 +37,7 @@ import jenkins.plugins.shiningpanda.publishers.CoveragePublisher;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-public class ProjectCoverageAction extends CoverageAction implements ProminentProjectAction
+public class CoverageProjectAction extends CoverageAction implements ProminentProjectAction
 {
 
     /**
@@ -51,7 +51,7 @@ public class ProjectCoverageAction extends CoverageAction implements ProminentPr
      * @param project
      *            The project
      */
-    public ProjectCoverageAction(AbstractProject<?, ?> project)
+    public CoverageProjectAction(AbstractProject<?, ?> project)
     {
         // Call super
         super();
@@ -178,7 +178,7 @@ public class ProjectCoverageAction extends CoverageAction implements ProminentPr
             // Set entries in context
             req.setAttribute("entries", entries);
             // Render the view
-            req.getView(ProjectCoverageAction.class, "entries.jelly").forward(req, rsp);
+            req.getView(CoverageProjectAction.class, "entries.jelly").forward(req, rsp);
             // No need to go further
             return;
         }

@@ -28,7 +28,7 @@ import jenkins.plugins.shiningpanda.publishers.CoveragePublisher;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-public class BuildCoverageAction extends CoverageAction
+public class CoverageBuildAction extends CoverageAction
 {
 
     /**
@@ -42,7 +42,7 @@ public class BuildCoverageAction extends CoverageAction
      * @param build
      *            The build
      */
-    public BuildCoverageAction(AbstractBuild<?, ?> build)
+    public CoverageBuildAction(AbstractBuild<?, ?> build)
     {
         // Call super
         super();
