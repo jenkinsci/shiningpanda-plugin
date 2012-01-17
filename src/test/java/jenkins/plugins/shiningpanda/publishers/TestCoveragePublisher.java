@@ -57,7 +57,7 @@ public class TestCoveragePublisher extends ShiningPandaTestCase
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
         assertTrue("this build should have been successful:\n" + log, log.contains("SUCCESS"));
-        File coveragepy = new File(project.getRootDir(), CoveragePublisher.BASENAME);
+        File coveragepy = new File(project.getLastSuccessfulBuild().getRootDir(), CoveragePublisher.BASENAME);
         assertTrue("htmlcov folder should have been created: " + coveragepy.getAbsolutePath(), coveragepy.exists());
     }
 
@@ -69,7 +69,7 @@ public class TestCoveragePublisher extends ShiningPandaTestCase
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
         assertTrue("this build should have been successful:\n" + log, log.contains("SUCCESS"));
-        File coveragepy = new File(project.getRootDir(), CoveragePublisher.BASENAME);
+        File coveragepy = new File(project.getLastSuccessfulBuild().getRootDir(), CoveragePublisher.BASENAME);
         assertTrue("htmlcov folder should have been created: " + coveragepy.getAbsolutePath(), coveragepy.exists());
         assertTrue("missing report under htmlcov folder", new File(coveragepy, "htmlcov").exists());
         assertTrue("missing report under htmlcov folder", new File(coveragepy, "toto/htmlcov").exists());
