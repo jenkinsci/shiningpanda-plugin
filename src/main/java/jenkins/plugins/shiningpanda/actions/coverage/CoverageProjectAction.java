@@ -109,6 +109,9 @@ public class CoverageProjectAction extends CoverageAction implements ProminentPr
      */
     public void doDynamic(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException
     {
+        // First of all set this flag to avoid cache as this report may change
+        // quickly
+        rsp.addHeader("Cache-Control", "no-cache");
         // Get the path
         String path = getPath(req);
         // Check if this is a matrix project
