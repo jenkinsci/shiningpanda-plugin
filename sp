@@ -31,6 +31,9 @@ case $1 in
     eclipse)
         mvn $OPTIONS -DdownloadSources=true -DdownloadJavadocs=true -DoutputDirectory=target/eclipse-classes eclipse:eclipse
         ;;
+    install)
+        mvn $OPTIONS clean install
+        ;;
     test)
         mvn $OPTIONS -Dtest=jenkins.plugins.shiningpanda.$2
         ;;
@@ -57,6 +60,7 @@ case $1 in
         echo
         echo "Available subcommands:"
         echo "    eclipse: configure project for Eclipse,"
+        echo "    install: execute clean and install goals,"
         echo "    test <TestCase>: run this test case,"
         echo "    test-debug <TestCase>: run this test case in debug mode,"
         echo "    run: execute clean hpi:run,"

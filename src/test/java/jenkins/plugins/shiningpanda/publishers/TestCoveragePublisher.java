@@ -45,8 +45,8 @@ public class TestCoveragePublisher extends ShiningPandaTestCase
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
         assertTrue("this build should have been successful:\n" + log, log.contains("SUCCESS"));
-        File htmlcov = new File(project.getLastSuccessfulBuild().getRootDir(), "htmlcov");
-        assertTrue("htmlcov folder should have been created: " + htmlcov.getAbsolutePath(), htmlcov.exists());
+        File coveragepy = new File(project.getLastSuccessfulBuild().getRootDir(), CoveragePublisher.BASENAME);
+        assertTrue("htmlcov folder should have been created: " + coveragepy.getAbsolutePath(), coveragepy.exists());
     }
 
     public void testHtmlDir() throws Exception
@@ -57,8 +57,8 @@ public class TestCoveragePublisher extends ShiningPandaTestCase
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
         assertTrue("this build should have been successful:\n" + log, log.contains("SUCCESS"));
-        File htmlcov = new File(project.getRootDir(), "htmlcov");
-        assertTrue("htmlcov folder should have been created: " + htmlcov.getAbsolutePath(), htmlcov.exists());
+        File coveragepy = new File(project.getRootDir(), CoveragePublisher.BASENAME);
+        assertTrue("htmlcov folder should have been created: " + coveragepy.getAbsolutePath(), coveragepy.exists());
     }
 
     public void testMultipleHtmlDir() throws Exception
@@ -69,10 +69,10 @@ public class TestCoveragePublisher extends ShiningPandaTestCase
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
         assertTrue("this build should have been successful:\n" + log, log.contains("SUCCESS"));
-        File htmlcov = new File(project.getRootDir(), "htmlcov");
-        assertTrue("htmlcov folder should have been created: " + htmlcov.getAbsolutePath(), htmlcov.exists());
-        assertTrue("missing report under htmlcov folder", new File(htmlcov, "htmlcov").exists());
-        assertTrue("missing report under htmlcov folder", new File(htmlcov, "toto/htmlcov").exists());
+        File coveragepy = new File(project.getRootDir(), CoveragePublisher.BASENAME);
+        assertTrue("htmlcov folder should have been created: " + coveragepy.getAbsolutePath(), coveragepy.exists());
+        assertTrue("missing report under htmlcov folder", new File(coveragepy, "htmlcov").exists());
+        assertTrue("missing report under htmlcov folder", new File(coveragepy, "toto/htmlcov").exists());
     }
 
     public void testHtmlDirNotExists() throws Exception
