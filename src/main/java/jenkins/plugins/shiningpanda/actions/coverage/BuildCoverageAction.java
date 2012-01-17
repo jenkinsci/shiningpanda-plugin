@@ -19,10 +19,14 @@ package jenkins.plugins.shiningpanda.actions.coverage;
 
 import hudson.model.AbstractBuild;
 
-import java.io.File;
+import java.io.IOException;
 
-import jenkins.plugins.shiningpanda.Messages;
+import javax.servlet.ServletException;
+
 import jenkins.plugins.shiningpanda.publishers.CoveragePublisher;
+
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
 public class BuildCoverageAction extends CoverageAction
 {
@@ -49,22 +53,27 @@ public class BuildCoverageAction extends CoverageAction
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * jenkins.plugins.shiningpanda.actions.coverage.CoverageAction#getTitle()
+     * @see jenkins.plugins.shiningpanda.actions.coverage.CoverageAction#show()
      */
-    protected String getTitle()
+    protected boolean show()
     {
-        return Messages.CoverageAction_Title() + " - " + build.getDisplayName();
+        // Delegate
+        return hasReports(CoveragePublisher.getHtmlDir(build));
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Serve report files.
      * 
-     * @see
-     * jenkins.plugins.shiningpanda.actions.coverage.CoverageAction#getDir()
+     * @param req
+     *            The request
+     * @param rsp
+     *            The response
+     * @throws IOException
+     * @throws ServletException
      */
-    protected File getDir()
+    public void doDynamic(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException
     {
-        return CoveragePublisher.getHtmlDir(build);
+        // Delegate
+        serve(req, rsp, build.getFullDisplayName(), CoveragePublisher.getHtmlDir(build), getPath(req));
     }
 }

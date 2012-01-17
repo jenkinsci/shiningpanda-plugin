@@ -26,7 +26,6 @@ import hudson.model.Action;
 import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.model.AbstractBuild;
-import hudson.model.AbstractItem;
 import hudson.model.AbstractProject;
 import hudson.model.Run;
 import hudson.tasks.BuildStepDescriptor;
@@ -58,7 +57,22 @@ public class CoveragePublisher extends Recorder
     /**
      * Base name for the HTML report folder on master.
      */
-    public final static String BASENAME = "htmlcov";
+    public final static String BASENAME = "coveragepy";
+
+    /**
+     * Script file contained in report folders.
+     */
+    public final static String JS = "coverage_html.js";
+
+    /**
+     * Index file in report folders.
+     */
+    public final static String INDEX = "index.html";
+
+    /**
+     * Status file in report folders.
+     */
+    public final static String STATUS = "status.dat";
 
     /**
      * Path to the HTML folder in the workspace.
@@ -66,27 +80,18 @@ public class CoveragePublisher extends Recorder
     public final String htmlDir;
 
     /**
-     * If true, keep reports for all the successful builds.
-     */
-    public final boolean keepAll;
-
-    /**
      * Constructor using fields.
      * 
      * @param htmlDir
      *            The HTML directory
-     * @param keepAll
-     *            If true keep for each successful build
      */
     @DataBoundConstructor
-    public CoveragePublisher(String htmlDir, boolean keepAll)
+    public CoveragePublisher(String htmlDir)
     {
         // Call super
         super();
         // Store the HTML directory
         this.htmlDir = Util.fixEmptyAndTrim(htmlDir);
-        // Store if keep all reports
-        this.keepAll = keepAll;
     }
 
     /**
@@ -104,33 +109,21 @@ public class CoveragePublisher extends Recorder
         // If an HTML folder is not specified look for it in all workspace
         if (htmlDir == null)
             // List all folders containing a coverage_html.js file
-            candidates = workspace.list("**/coverage_html.js");
+            candidates = workspace.list("**/" + JS);
         // Else use the provided value
         else
             // List all folders containing a coverage_html.js file
-            candidates = workspace.list(environment.expand(htmlDir) + "/coverage_html.js");
+            candidates = workspace.list(environment.expand(htmlDir) + "/" + JS);
         // Store the list of matching folders
         List<FilePath> dirs = new ArrayList<FilePath>();
         // Go threw the candidates
         for (FilePath js : candidates)
             // Check that following files also exists
-            if (js.sibling("index.html").exists() && js.sibling("status.dat").exists())
+            if (js.sibling(INDEX).exists() && js.sibling(STATUS).exists())
                 // Add the parent folder
                 dirs.add(js.getParent());
         // Return the found directories
         return dirs;
-    }
-
-    /**
-     * Get the base HTML target folder.
-     * 
-     * @param build
-     *            The build
-     */
-    private FilePath getBaseHtmlTargetDir(AbstractBuild<?, ?> build)
-    {
-        // Depends if keep all or not
-        return new FilePath(keepAll ? getHtmlDir(build) : getHtmlDir(build.getProject()));
     }
 
     /**
@@ -187,17 +180,22 @@ public class CoveragePublisher extends Recorder
             return true;
         }
         // Get the base target folder
-        FilePath base = getBaseHtmlTargetDir(build);
+        FilePath base = new FilePath(getHtmlDir(build));
         // Cleanup
         base.deleteRecursive();
         // Go threw the report folders
         for (FilePath dir : dirs)
-            // Copy their contents
-            dir.copyRecursiveTo("**/*", getHtmlTargetDir(base, workspace, dir, dirs.size() == 1));
-        // If keep for all successful builds, add the build action
-        if (keepAll)
-            // Actually add the action
-            build.addAction(new BuildCoverageAction(build));
+        {
+            // Get the target folder
+            FilePath targetDir = getHtmlTargetDir(base, workspace, dir, dirs.size() == 1);
+            // Only copy files if not already exists, we do not handle included
+            // reports
+            if (!targetDir.exists())
+                // Copy their contents
+                dir.copyRecursiveTo("**/*", targetDir);
+        }
+        // Add the build action
+        build.addAction(new BuildCoverageAction(build));
         // Go on
         return true;
     }
@@ -227,18 +225,6 @@ public class CoveragePublisher extends Recorder
     }
 
     /**
-     * Get the folder containing the HTML on the master for a project.
-     * 
-     * @param project
-     *            The project
-     * @return The path to the HTML folder
-     */
-    public static File getHtmlDir(AbstractItem project)
-    {
-        return new File(project.getRootDir(), BASENAME);
-    }
-
-    /**
      * Get the folder containing the HTML on the master for a build.
      * 
      * @param project
@@ -247,7 +233,8 @@ public class CoveragePublisher extends Recorder
      */
     public static File getHtmlDir(Run<?, ?> run)
     {
-        return new File(run.getRootDir(), BASENAME);
+        // Check if the provided run exists
+        return run == null ? null : new File(run.getRootDir(), BASENAME);
     }
 
     /**

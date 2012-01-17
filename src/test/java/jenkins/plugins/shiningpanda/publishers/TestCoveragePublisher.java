@@ -32,16 +32,16 @@ public class TestCoveragePublisher extends ShiningPandaTestCase
 
     public void testRoundTrip() throws Exception
     {
-        CoveragePublisher before = new CoveragePublisher("**/htmlcov", true);
+        CoveragePublisher before = new CoveragePublisher("**/htmlcov");
         CoveragePublisher after = configRoundtrip(before);
-        assertEqualBeans2(before, after, "htmlDir,keepAll");
+        assertEqualBeans2(before, after, "htmlDir");
     }
 
-    public void testNoHtmlDirKeepAll() throws Exception
+    public void testNoHtmlDir() throws Exception
     {
         FreeStyleProject project = createFreeStyleProject();
         project.setScm(new CoverageSCM("htmlcov"));
-        project.getPublishersList().add(new CoveragePublisher(null, true));
+        project.getPublishersList().add(new CoveragePublisher(null));
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
         assertTrue("this build should have been successful:\n" + log, log.contains("SUCCESS"));
@@ -49,11 +49,11 @@ public class TestCoveragePublisher extends ShiningPandaTestCase
         assertTrue("htmlcov folder should have been created: " + htmlcov.getAbsolutePath(), htmlcov.exists());
     }
 
-    public void testHtmlDirNotKeepAll() throws Exception
+    public void testHtmlDir() throws Exception
     {
         FreeStyleProject project = createFreeStyleProject();
         project.setScm(new CoverageSCM("htmlcov"));
-        project.getPublishersList().add(new CoveragePublisher("htmlcov", false));
+        project.getPublishersList().add(new CoveragePublisher("htmlcov"));
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
         assertTrue("this build should have been successful:\n" + log, log.contains("SUCCESS"));
@@ -65,7 +65,7 @@ public class TestCoveragePublisher extends ShiningPandaTestCase
     {
         FreeStyleProject project = createFreeStyleProject();
         project.setScm(new CoverageSCM("htmlcov", "toto/htmlcov"));
-        project.getPublishersList().add(new CoveragePublisher(null, false));
+        project.getPublishersList().add(new CoveragePublisher(null));
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
         assertTrue("this build should have been successful:\n" + log, log.contains("SUCCESS"));
@@ -78,7 +78,7 @@ public class TestCoveragePublisher extends ShiningPandaTestCase
     public void testHtmlDirNotExists() throws Exception
     {
         FreeStyleProject project = createFreeStyleProject();
-        project.getPublishersList().add(new CoveragePublisher(null, true));
+        project.getPublishersList().add(new CoveragePublisher(null));
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
         assertTrue("this build should have failed:\n" + log, log.contains("FAILURE"));

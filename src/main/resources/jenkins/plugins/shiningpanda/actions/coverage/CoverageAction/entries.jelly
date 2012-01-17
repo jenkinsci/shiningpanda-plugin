@@ -1,0 +1,20 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+  <l:layout title="Coverage report » ${title}">
+    <l:main-panel>
+      <h1><img src="${imagesURL}/48x48/graph.png" alt="" height="48" width="48"/> ${title}</h1>
+      <j:choose>
+        <j:when test="${empty(entries)}">
+          ${%No HTML reports.}
+        </j:when>
+        <j:otherwise>
+          <ul>
+            <j:forEach var="entry" items="${entries}">
+              <li><a href="${entry.target}">${entry.title}</a></li>
+            </j:forEach>
+          </ul>
+        </j:otherwise>
+      </j:choose>
+    </l:main-panel>
+  </l:layout>
+</j:jelly>
