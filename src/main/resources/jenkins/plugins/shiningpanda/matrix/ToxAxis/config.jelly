@@ -22,7 +22,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
       <st:nbsp/>
     </j:forEach>
   </f:entry>
-  <f:entry field="extraValueString" title="${%Custom environments}" help="/plugin/shiningpanda/help/matrix/ToxAxis/help-customToxenv.html">
-    <f:expandableTextbox/>
-  </f:entry>
+  <f:advanced>
+    <f:entry field="extraValueString" title="${%Custom environments}" help="/plugin/shiningpanda/help/matrix/ToxAxis/help-customToxenv.html">
+      <f:expandableTextbox/>
+    </f:entry>
+  </f:advanced>
 </j:jelly>  
