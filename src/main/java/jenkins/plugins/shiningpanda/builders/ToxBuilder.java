@@ -141,32 +141,34 @@ public class ToxBuilder extends Builder implements Serializable
         if (virtualenv == null)
             // Invalid, no need to go further
             return false;
+        // Get an interpreter to potentially be able to create the VIRTUALENV
+        Python interpreter = BuilderUtil.getInterpreter(launcher, listener, environment);
+        // Check if found one
+        if (interpreter == null)
+            // No interpreter found, no need to continue
+            return false;
+        // Creation flag for distribute
+        boolean useDistribute = true;
+        // Creation flag for system packages
+        boolean systemSitePackages = false;
         // Check if out of date to be able to create a new one
-        if (virtualenv.isOutdated(BuilderUtil.lastConfigure(build)))
-        {
-            // Get an interpreter to be able to create the VIRTUALENV
-            Python interpreter = BuilderUtil.getInterpreter(launcher, listener, environment);
-            // Check if found one
-            if (interpreter == null)
-                // No interpreter found, no need to continue
-                return false;
+        if (virtualenv.isOutdated(workspace, interpreter, useDistribute, systemSitePackages))
             // Create the VIRTUALENV
-            if (!virtualenv.create(launcher, listener, environment, workspace, interpreter, true, true))
+            if (!virtualenv.create(launcher, listener, environment, workspace, interpreter, useDistribute, systemSitePackages))
                 // Failed to create the VIRTUALENV, do not continue
                 return false;
-        }
         // Install or upgrade TOX
         if (!virtualenv.pipInstall(launcher, listener, environment, workspace, "tox"))
             // Failed to install TOX, do not continue
             return false;
         // Get all the available interpreters on the executor
-        List<Python> interpreters = BuilderUtil.getInterpreters(launcher, listener, environment);
+        List<Python> contributors = BuilderUtil.getInterpreters(launcher, listener, environment);
         // Reverse the order to be able to sort the environment variables
-        Collections.reverse(interpreters);
+        Collections.reverse(contributors);
         // Go threw the interpreters to add them in the path
-        for (Python interpreter : interpreters)
+        for (Python contributor : contributors)
             // Add the environment without the home variables
-            environment.overrideAll(interpreter.getEnvironment(false));
+            environment.overrideAll(contributor.getEnvironment(false));
         // Launch TOX
         return virtualenv.tox(launcher, listener, environment, workspace, toxIni, recreate);
     }

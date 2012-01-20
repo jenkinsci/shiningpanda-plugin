@@ -28,6 +28,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import jenkins.plugins.shiningpanda.interpreters.Python;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.lang.StringUtils;
 
@@ -134,6 +137,70 @@ public class FilePathUtil
     public static String getPathSeparator(FilePath filePath) throws IOException, InterruptedException
     {
         return filePath.act(new PathSeparator());
+    }
+
+    /**
+     * Get a file contents.
+     */
+    public static final class Read implements Callable<String, IOException>
+    {
+        /**
+         * Store the path.
+         */
+        private String file;
+
+        /**
+         * Store the encoding.
+         */
+        private String encoding;
+
+        /**
+         * Constructor using fields.
+         * 
+         * @param filePath
+         *            The file path
+         * @param encoding
+         *            The encoding
+         */
+        public Read(FilePath filePath, String encoding)
+        {
+            // Call super
+            super();
+            // Store the file path
+            this.file = filePath.getRemote();
+            // Store encoding
+            this.encoding = encoding;
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see hudson.remoting.Callable#call()
+         */
+        public String call() throws IOException
+        {
+            // Read content
+            return FileUtils.readFileToString(new File(file), encoding);
+        }
+
+        private static final long serialVersionUID = 1L;
+    }
+
+    /**
+     * Get the content of the provided file path.
+     * 
+     * @param filePath
+     *            The file path
+     * @param encoding
+     *            The encoding
+     * @return The content of the file
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static String read(FilePath filePath, String encoding) throws IOException, InterruptedException
+    {
+        // Sometimes FilePath.readToString doesn't work, don't ask me why...
+        return filePath.act(new Read(filePath, encoding));
     }
 
     /**
@@ -261,6 +328,20 @@ public class FilePathUtil
         }
         // Return the destination file of directory
         return dest;
+    }
+
+    /**
+     * List the shared libraries of the provided interpreter.
+     * 
+     * @param interpreter
+     *            The interpreter
+     * @return The list of shared libraries
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public static List<FilePath> listSharedLibraries(Python interpreter) throws IOException, InterruptedException
+    {
+        return listSharedLibraries(interpreter.getHome().child("lib"));
     }
 
     /**

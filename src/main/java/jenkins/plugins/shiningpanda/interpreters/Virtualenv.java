@@ -157,30 +157,41 @@ public class Virtualenv extends Python
     }
 
     /**
-     * Get the file whose last modification date is the creation date of this
-     * VIRTUALENV.
-     * 
-     * @return The time stamp file
-     */
-    public FilePath getTimestamp()
-    {
-        return new FilePath(getHome(), ".timestamp");
-    }
-
-    /**
      * Check if this VIRTUALENV is out dated. It can be out dated if it does not
-     * exist, if it is not valid, or if it was created before the provided time
-     * stamp.
+     * exist, if it is not valid, or if the signature doesn't match the desired
+     * one.
      * 
-     * @param timestamp
-     *            The time stamp
+     * @param workspace
+     *            The workspace
+     * @param interpreter
+     *            The interpreter
+     * @param useDistribute
+     *            True id use distribute, else false
+     * @param systemSitePackages
+     *            True if include system packages, else false
      * @return true if this VIRTUALENV is out dated, else false
      * @throws IOException
      * @throws InterruptedException
      */
-    public boolean isOutdated(long timestamp) throws IOException, InterruptedException
+    public boolean isOutdated(Workspace workspace, Python interpreter, boolean useDistribute, boolean systemSitePackages)
+            throws IOException, InterruptedException
     {
-        return !isValid() || !getTimestamp().exists() || getTimestamp().lastModified() <= timestamp;
+        // Out dated if invalid, or if no signature file, or if signatures
+        // differ
+        return !isValid()
+                || !getSignatureFile().exists()
+                || !FilePathUtil.read(getSignatureFile(), "UTF-8").equals(
+                        getSignature(workspace, interpreter, useDistribute, systemSitePackages));
+    }
+
+    /**
+     * Get the signature file path.
+     * 
+     * @return The signature file path
+     */
+    public FilePath getSignatureFile()
+    {
+        return getHome().child(".signature");
     }
 
     /**
@@ -228,15 +239,18 @@ public class Virtualenv extends Python
         args.add(workspace.getVirtualenvPy().getRemote());
         // If use distribute, add the flag
         if (useDistribute)
+            // Add the flag
             args.add("--distribute");
         // If no site package required, add the flag. If hosted by ShiningPanda
         // always add the flag
         if (systemSitePackages && !ShiningPanda.HOSTED)
+            // Add the flag
             args.add("--system-site-packages");
         // Get the folder where packages can be found (PIP, ...)
         FilePath extraSearchDir = workspace.getPackagesDir();
         // If this folder exists, add as search directory
         if (extraSearchDir != null)
+            // Add search folders
             args.add("--extra-search-dir=" + extraSearchDir.getRemote());
         // Add the place where to create the environment
         args.add(getHome().getRemote());
@@ -251,7 +265,7 @@ public class Virtualenv extends Python
         if (isUnix())
         {
             // Get the list of libraries
-            List<FilePath> libs = FilePathUtil.listSharedLibraries(interpreter.getHome().child("lib"));
+            List<FilePath> libs = FilePathUtil.listSharedLibraries(interpreter);
             // Check if got at least one
             if (!libs.isEmpty())
             {
@@ -275,8 +289,8 @@ public class Virtualenv extends Python
         }
         // Check if was successful
         if (success)
-            // If successful, set a creation time stamp
-            getTimestamp().touch(System.currentTimeMillis());
+            // Write down the virtual environment signature
+            getSignatureFile().write(getSignature(workspace, interpreter, useDistribute, systemSitePackages), "UTF-8");
         // Return success flag
         return success;
     }
@@ -361,5 +375,52 @@ public class Virtualenv extends Python
             args.add("--recreate");
         // Start the process and return status
         return LauncherUtil.launch(launcher, listener, workspace, EnvVarsUtil.override(environment, getEnvironment()), args);
+    }
+
+    /**
+     * Get a virtual environment signature.
+     * 
+     * @param workspace
+     *            The workspace
+     * @param interpreter
+     *            The interpreter
+     * @param useDistribute
+     *            Use distribute package
+     * @param systemSitePackages
+     *            Use system packages
+     * @return The signature
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static String getSignature(Workspace workspace, Python interpreter, boolean useDistribute, boolean systemSitePackages)
+            throws IOException, InterruptedException
+    {
+        StringBuilder sb = new StringBuilder();
+        // Get the executable
+        FilePath executable = interpreter.getExecutable();
+        // Add the path to executable
+        sb.append(executable.getRemote()).append("\n");
+        // Add the executable MD5
+        sb.append(executable.digest()).append("\n");
+        // Get the VIRTUALENV script digest
+        sb.append(workspace.getMasterVirtualenvPy().digest()).append("\n");
+        // Add the distribute flag
+        sb.append(useDistribute).append("\n");
+        // Add the systemSitePackages flag
+        sb.append(systemSitePackages).append("\n");
+        // Get the folder containing packages on the master
+        FilePath packageDir = workspace.getMasterPackagesDir();
+        // Check if this folder exists
+        if (packageDir != null)
+            // If exists, list the packages
+            for (FilePath bn : packageDir.list())
+                // Add their names
+                sb.append(bn.getName()).append("\n");
+        // Go threw the shared libraries
+        for (FilePath lib : FilePathUtil.listSharedLibraries(interpreter))
+            // Add their names
+            sb.append(lib.getName()).append("\n");
+        // Return the signature
+        return sb.toString();
     }
 }

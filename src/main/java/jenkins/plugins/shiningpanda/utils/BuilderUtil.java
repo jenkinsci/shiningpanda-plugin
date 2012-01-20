@@ -24,12 +24,10 @@ import hudson.matrix.MatrixRun;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jenkins.model.Jenkins;
 import jenkins.plugins.shiningpanda.Messages;
 import jenkins.plugins.shiningpanda.command.Command;
 import jenkins.plugins.shiningpanda.command.CommandNature;
@@ -41,24 +39,6 @@ import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 public class BuilderUtil
 {
-
-    /**
-     * Get the last configuration date of this build.
-     * 
-     * @param build
-     *            The build
-     * @return The last configuration date
-     */
-    public static long lastConfigure(AbstractBuild<?, ?> build)
-    {
-        // Get the last modification date of the build configuration (call
-        // getRootProject for matrix builds)
-        long lastJobConfigure = build.getProject().getRootProject().getConfigFile().getFile().lastModified();
-        // Get the last modification of the global configuration file
-        long lastJenkinsConfigure = new File(Jenkins.getInstance().getRootDir(), "config.xml").lastModified();
-        // Get the newer of the two
-        return Math.max(lastJobConfigure, lastJenkinsConfigure);
-    }
 
     /**
      * Get the consolidated environment for the provided build.

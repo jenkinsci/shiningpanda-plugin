@@ -131,7 +131,7 @@ public abstract class Workspace
      * 
      * @return The VIRTUALENV module file
      */
-    protected FilePath getMasterVirtualenvPy()
+    public FilePath getMasterVirtualenvPy()
     {
         return new FilePath(new File(getClass().getResource(VIRTUALENV).getFile()));
     }
@@ -153,7 +153,7 @@ public abstract class Workspace
      * @throws IOException
      * @throws InterruptedException
      */
-    protected FilePath getMasterPackagesDir() throws IOException, InterruptedException
+    public FilePath getMasterPackagesDir() throws IOException, InterruptedException
     {
         return FilePathUtil.isDirectoryOrNull(Jenkins.getInstance().getRootPath().child("shiningpanda").child("packages"));
     }

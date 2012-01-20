@@ -196,7 +196,7 @@ public class VirtualenvBuilder extends Builder implements Serializable
             // Invalid VIRTUALENV, do not continue
             return false;
         // Check if clean required or if configuration changed
-        if (clear || virtualenv.isOutdated(BuilderUtil.lastConfigure(build)))
+        if (clear || virtualenv.isOutdated(workspace, interpreter, useDistribute, systemSitePackages))
             // A new environment is required
             if (!virtualenv.create(launcher, listener, environment, workspace, interpreter, useDistribute, systemSitePackages))
                 // Failed to create the environment, do not continue

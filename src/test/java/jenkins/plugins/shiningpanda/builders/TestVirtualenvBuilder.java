@@ -196,7 +196,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
         assertTrue("a new virtualenv was expected to be created:\n" + log, log.contains("New python executable in"));
     }
 
-    public void testVirtualenvClearOnJenkinsConfigureForFreeStyle() throws Exception
+    public void testVirtualenvClearOnChange() throws Exception
     {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", false, true, false,
@@ -206,71 +206,9 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
         FreeStyleBuild build = project.scheduleBuild2(0).get();
         String log = FileUtils.readFileToString(build.getLogFile());
         assertTrue("a new virtualenv was expected to be created:\n" + log, log.contains("New python executable in"));
-        getConfigFile().setLastModified(System.currentTimeMillis());
+        builder.systemSitePackages = true;
         build = project.scheduleBuild2(0).get();
         log = FileUtils.readFileToString(build.getLogFile());
-        assertTrue("a new virtualenv was expected to be created:\n" + log, log.contains("New python executable in"));
-    }
-
-    public void testVirtualenvClearOnJobConfigureForFreeStyle() throws Exception
-    {
-        PythonInstallation installation = configureCPython2();
-        VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", false, true, false,
-                CommandNature.SHELL.getKey(), "echo", false);
-        FreeStyleProject project = createFreeStyleProject();
-        project.getBuildersList().add(builder);
-        FreeStyleBuild build = project.scheduleBuild2(0).get();
-        String log = FileUtils.readFileToString(build.getLogFile());
-        assertTrue("a new virtualenv was expected to be created:\n" + log, log.contains("New python executable in"));
-        getConfigFile(project).setLastModified(System.currentTimeMillis());
-        build = project.scheduleBuild2(0).get();
-        log = FileUtils.readFileToString(build.getLogFile());
-        assertTrue("a new virtualenv was expected to be created:\n" + log, log.contains("New python executable in"));
-    }
-
-    public void testVirtualenvClearOnJenkinsConfigureForMatrix() throws Exception
-    {
-        PythonInstallation installation = configureCPython2();
-        VirtualenvBuilder builder = new VirtualenvBuilder(null, "env", false, true, false, CommandNature.SHELL.getKey(),
-                "echo", false);
-        MatrixProject project = createMatrixProject();
-        AxisList axes = new AxisList(new PythonAxis(new String[] { installation.getName(), }));
-        project.setAxes(axes);
-        project.getBuildersList().add(builder);
-        MatrixBuild build = project.scheduleBuild2(0).get();
-        List<MatrixRun> runs = build.getRuns();
-        assertEquals(1, runs.size());
-        MatrixRun run = runs.get(0);
-        String log = FileUtils.readFileToString(run.getLogFile());
-        assertTrue("a new virtualenv was expected to be created:\n" + log, log.contains("New python executable in"));
-        getConfigFile().setLastModified(System.currentTimeMillis());
-        build = project.scheduleBuild2(0).get();
-        runs = build.getRuns();
-        assertEquals(1, runs.size());
-        run = runs.get(0);
-        assertTrue("a new virtualenv was expected to be created:\n" + log, log.contains("New python executable in"));
-    }
-
-    public void testVirtualenvClearOnJobConfigureForMatrix() throws Exception
-    {
-        PythonInstallation installation = configureCPython2();
-        VirtualenvBuilder builder = new VirtualenvBuilder(null, "env", false, true, false, CommandNature.SHELL.getKey(),
-                "echo", false);
-        MatrixProject project = createMatrixProject();
-        AxisList axes = new AxisList(new PythonAxis(new String[] { installation.getName(), }));
-        project.setAxes(axes);
-        project.getBuildersList().add(builder);
-        MatrixBuild build = project.scheduleBuild2(0).get();
-        List<MatrixRun> runs = build.getRuns();
-        assertEquals(1, runs.size());
-        MatrixRun run = runs.get(0);
-        String log = FileUtils.readFileToString(run.getLogFile());
-        assertTrue("a new virtualenv was expected to be created:\n" + log, log.contains("New python executable in"));
-        getConfigFile(project).setLastModified(System.currentTimeMillis());
-        build = project.scheduleBuild2(0).get();
-        runs = build.getRuns();
-        assertEquals(1, runs.size());
-        run = runs.get(0);
         assertTrue("a new virtualenv was expected to be created:\n" + log, log.contains("New python executable in"));
     }
 
