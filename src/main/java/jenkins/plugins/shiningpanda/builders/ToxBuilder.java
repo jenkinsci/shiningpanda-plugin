@@ -136,7 +136,7 @@ public class ToxBuilder extends Builder implements Serializable
             return false;
         }
         // Get a VIRTUALENV to install TOX
-        Virtualenv virtualenv = BuilderUtil.getVirtualenv(listener, workspace.getVirtualenvHome());
+        Virtualenv virtualenv = BuilderUtil.getVirtualenv(listener, workspace.getToolsHome());
         // Check if is a valid one
         if (virtualenv == null)
             // Invalid, no need to go further

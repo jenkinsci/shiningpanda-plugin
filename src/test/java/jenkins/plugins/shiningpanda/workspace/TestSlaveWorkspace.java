@@ -40,7 +40,7 @@ public class TestSlaveWorkspace extends ShiningPandaTestCase
 
     public void testGetPackageDirNotExists() throws Exception
     {
-        assertNull("slave workspace should not have a package directory", getMasterWorkspace().getPackagesDir());
+        assertNull("slave workspace should not have a package directory", getSlaveWorkspace().getPackagesDir());
     }
 
     public void testGetPackageDirExists() throws Exception

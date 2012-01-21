@@ -18,7 +18,11 @@
 package jenkins.plugins.shiningpanda.workspace;
 
 import hudson.FilePath;
+import hudson.Util;
+import hudson.matrix.MatrixConfiguration;
 import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.Node;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +34,16 @@ public abstract class Workspace
 {
 
     /**
+     * Base name of the workspace under the node.
+     */
+    public static String BASENAME = "shiningpanda";
+
+    /**
+     * Base name of the folder containing the packages.
+     */
+    public static String PACKAGES = "packages";
+
+    /**
      * Name of the VIRTUALENV module.
      */
     protected static String VIRTUALENV = "virtualenv.py";
@@ -38,11 +52,6 @@ public abstract class Workspace
      * Home folder for the workspace.
      */
     private FilePath home;
-
-    /**
-     * ShiningPanda cache folder in the workspace.
-     */
-    private FilePath cache;
 
     /**
      * Constructor using fields.
@@ -56,12 +65,10 @@ public abstract class Workspace
         super();
         // Store home folder
         setHome(home);
-        // Store ShiningPanda cache folder
-        setCache(new FilePath(home, ".shiningpanda"));
     }
 
     /**
-     * Get workspace's home folder
+     * Get the home folder of this workspace.
      * 
      * @return The home folder
      */
@@ -71,7 +78,7 @@ public abstract class Workspace
     }
 
     /**
-     * Set workspace's home folder.
+     * Set the home folder for this workspace.
      * 
      * @param home
      *            The home folder
@@ -79,27 +86,6 @@ public abstract class Workspace
     private void setHome(FilePath home)
     {
         this.home = home;
-    }
-
-    /**
-     * Get workspace's cache folder.
-     * 
-     * @return The cache folder
-     */
-    public FilePath getCache()
-    {
-        return cache;
-    }
-
-    /**
-     * Set workspace's cache folder.
-     * 
-     * @param cache
-     *            The cache folder
-     */
-    private void setCache(FilePath cache)
-    {
-        this.cache = cache;
     }
 
     /**
@@ -155,7 +141,7 @@ public abstract class Workspace
      */
     public FilePath getMasterPackagesDir() throws IOException, InterruptedException
     {
-        return FilePathUtil.isDirectoryOrNull(Jenkins.getInstance().getRootPath().child("shiningpanda").child("packages"));
+        return FilePathUtil.isDirectoryOrNull(Jenkins.getInstance().getRootPath().child(BASENAME).child(PACKAGES));
     }
 
     /**
@@ -172,11 +158,22 @@ public abstract class Workspace
      * Get the VIRTUALENV home for this workspace, where TOX (or other tools)
      * can be installed for instance.
      * 
-     * @return The VIRTUALENV
+     * @return The VIRTUALENV home
      */
-    public FilePath getVirtualenvHome()
+    public FilePath getToolsHome()
     {
-        return new FilePath(getCache(), "env");
+        return getHome().child("tools");
+    }
+
+    /**
+     * Get the VIRTUALENV home for this workspace, where TOX (or other tools)
+     * can be installed for instance.
+     * 
+     * @return The VIRTUALENV home
+     */
+    public FilePath getVirtualenvHome(String name)
+    {
+        return getHome().child("virtualenvs").child(Util.getDigestOf(Util.fixNull(name)).substring(0, 8));
     }
 
     /**
@@ -200,6 +197,29 @@ public abstract class Workspace
      */
     public static Workspace fromBuild(AbstractBuild<?, ?> build)
     {
-        return fromHome(build.getWorkspace());
+        return fromNode(build.getBuiltOn(), build.getProject());
+    }
+
+    /**
+     * Create a workspace from the node and the project.
+     * 
+     * @param node
+     *            The node
+     * @param project
+     *            The project
+     * @return The workspace
+     */
+    public static Workspace fromNode(Node node, AbstractProject<?, ?> project)
+    {
+        // Get the name of the project as identifier
+        String id = project.getName();
+        // Check if this is the child of a matrix project
+        if (project instanceof MatrixConfiguration)
+            // If it is, also add the name of the parent project
+            id += ((MatrixConfiguration) project).getParent().getName();
+        // Get the home folder of this workspace
+        FilePath work = node.getRootPath().child(BASENAME).child("jobs").child(Util.getDigestOf(id).substring(0, 8));
+        // Build the workspace from home
+        return fromHome(work);
     }
 }

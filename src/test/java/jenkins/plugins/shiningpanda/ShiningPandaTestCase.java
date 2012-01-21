@@ -566,7 +566,7 @@ public abstract class ShiningPandaTestCase extends HudsonTestCase
      */
     public File getPackagesDir()
     {
-        return new File(jenkins.getRootDir(), "shiningpanda" + File.separator + "packages");
+        return new File(jenkins.getRootDir(), Workspace.BASENAME + File.separator + Workspace.PACKAGES);
     }
 
     /**

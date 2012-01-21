@@ -19,18 +19,14 @@ package jenkins.plugins.shiningpanda.builders;
 
 import hudson.EnvVars;
 import hudson.Extension;
-import hudson.FilePath;
 import hudson.Launcher;
-import hudson.Util;
 import hudson.matrix.MatrixProject;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
-import hudson.util.FormValidation;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
@@ -42,12 +38,9 @@ import jenkins.plugins.shiningpanda.interpreters.Python;
 import jenkins.plugins.shiningpanda.interpreters.Virtualenv;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 import jenkins.plugins.shiningpanda.utils.BuilderUtil;
-import jenkins.plugins.shiningpanda.utils.EnvVarsUtil;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
 
-import org.apache.commons.io.FilenameUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
 
 public class VirtualenvBuilder extends Builder implements Serializable
 {
@@ -147,16 +140,6 @@ public class VirtualenvBuilder extends Builder implements Serializable
         this.ignoreExitCode = ignoreExitCode;
     }
 
-    /**
-     * Get the home folder of the VIRTUALENV
-     * 
-     * @return The home folder
-     */
-    public String getHome()
-    {
-        return home;
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -189,8 +172,7 @@ public class VirtualenvBuilder extends Builder implements Serializable
             // If no interpreter found, no need to continue
             return false;
         // Create a VIRTUALENV
-        Virtualenv virtualenv = BuilderUtil.getVirtualenv(listener,
-                new FilePath(workspace.getHome(), environment.expand(getHome())));
+        Virtualenv virtualenv = BuilderUtil.getVirtualenv(listener, workspace.getVirtualenvHome(home));
         // Check if this is a valid VIRTUALENV
         if (virtualenv == null)
             // Invalid VIRTUALENV, do not continue
@@ -279,31 +261,6 @@ public class VirtualenvBuilder extends Builder implements Serializable
         public boolean isMatrix(Object it)
         {
             return it instanceof MatrixProject;
-        }
-
-        /**
-         * Checks if the VIRTUALENV home is valid.
-         * 
-         * @param value
-         *            The value to check
-         * @return The validation result
-         */
-        public FormValidation doCheckHome(@QueryParameter String value)
-        {
-            // Get the file value as a string
-            String home = Util.fixEmptyAndTrim(value);
-            // Check is a value was provided
-            if (home == null)
-                // Value is required
-                return FormValidation.error(Messages.VirtualenvBuilder_Home_Required());
-            // Try to expand the variables
-            home = EnvVarsUtil.expand(home);
-            // Check that path is relative in workspace
-            if (new File(home).isAbsolute() || FilenameUtils.normalize(home) == null)
-                // Not relative, this is an error
-                return FormValidation.error(Messages.VirtualenvBuilder_Home_RelativePathRequired());
-            // Do not need to check more as files are located on slaves
-            return FormValidation.ok();
         }
 
         /**

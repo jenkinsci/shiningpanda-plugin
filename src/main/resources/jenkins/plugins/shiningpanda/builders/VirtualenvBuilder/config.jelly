@@ -43,8 +43,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <f:entry field="ignoreExitCode" title="${%Ignore exit code}" help="/plugin/shiningpanda/help/builders/help-ignoreExitCode.html">
       <f:checkbox checked="${it.ignoreExitCode}" />
     </f:entry>
-    <f:entry title="${%Virtualenv home}" help="/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-home.html">
-      <f:textbox field="home" default="env"/>
+    <f:entry title="${%Name}" help="/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-home.html">
+      <f:textbox field="home"/>
     </f:entry>
     <j:choose>
       <j:when test="${descriptor.HOSTED}">

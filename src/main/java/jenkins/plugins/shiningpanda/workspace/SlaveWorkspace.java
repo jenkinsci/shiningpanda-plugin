@@ -27,12 +27,6 @@ public class SlaveWorkspace extends Workspace
 {
 
     /**
-     * Folder on executor containing packages provided by user to avoid
-     * downloads when creating a VIRTUALENV.
-     */
-    private FilePath packages;
-
-    /**
      * Constructor using fields.
      * 
      * @param home
@@ -42,8 +36,6 @@ public class SlaveWorkspace extends Workspace
     {
         // Call super
         super(home);
-        // Compute and store the packages folder
-        packages = new FilePath(getCache(), "packages");
     }
 
     /*
@@ -54,7 +46,7 @@ public class SlaveWorkspace extends Workspace
     @Override
     public FilePath getVirtualenvPy() throws IOException, InterruptedException
     {
-        return FilePathUtil.synchronize(getMasterVirtualenvPy(), new FilePath(getCache(), VIRTUALENV));
+        return FilePathUtil.synchronize(getMasterVirtualenvPy(), getHome().child(VIRTUALENV));
     }
 
     /*
@@ -65,6 +57,6 @@ public class SlaveWorkspace extends Workspace
     @Override
     public FilePath getPackagesDir() throws IOException, InterruptedException
     {
-        return FilePathUtil.isDirectoryOrNull(FilePathUtil.synchronize(getMasterPackagesDir(), packages));
+        return FilePathUtil.isDirectoryOrNull(FilePathUtil.synchronize(getMasterPackagesDir(), getHome().child(PACKAGES)));
     }
 }

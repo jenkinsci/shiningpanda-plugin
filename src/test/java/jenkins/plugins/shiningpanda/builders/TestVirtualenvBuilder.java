@@ -69,19 +69,6 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
                 log.contains(Messages.BuilderUtil_Interpreter_WhitespaceNotAllowed("")));
     }
 
-    public void testVirtualenvHomeWithSpace() throws Exception
-    {
-        PythonInstallation installation = configureCPython2();
-        VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "bad move", false, true, false,
-                CommandNature.SHELL.getKey(), "echo hello", false);
-        FreeStyleProject project = createFreeStyleProject();
-        project.getBuildersList().add(builder);
-        FreeStyleBuild build = project.scheduleBuild2(0).get();
-        String log = FileUtils.readFileToString(build.getLogFile());
-        assertTrue("whitespace should not have been allowed:\n" + log,
-                log.contains(Messages.BuilderUtil_Interpreter_WhitespaceNotAllowed("")));
-    }
-
     public void testTextAxisAvailable() throws Exception
     {
         PythonInstallation installation = configureCPython2();
