@@ -215,7 +215,7 @@ public class FilePathUtil
     public static FilePath existsOrNull(FilePath... filePaths) throws IOException, InterruptedException
     {
         for (FilePath filePath : filePaths)
-            if (filePath.exists())
+            if (filePath != null && filePath.exists())
                 return filePath;
         return null;
     }
@@ -232,7 +232,7 @@ public class FilePathUtil
     public static FilePath isDirectoryOrNull(FilePath... filePaths) throws IOException, InterruptedException
     {
         for (FilePath filePath : filePaths)
-            if (filePath.isDirectory())
+            if (filePath != null && filePath.isDirectory())
                 return filePath;
         return null;
     }
@@ -249,7 +249,7 @@ public class FilePathUtil
     public static FilePath isFileOrNull(FilePath... filePaths) throws IOException, InterruptedException
     {
         for (FilePath filePath : filePaths)
-            if (isFile(filePath))
+            if (filePath != null && isFile(filePath))
                 return filePath;
         return null;
     }
@@ -283,7 +283,21 @@ public class FilePathUtil
      */
     public static boolean isFile(FilePath filePath) throws IOException, InterruptedException
     {
-        return filePath.exists() && !filePath.isDirectory();
+        return filePath != null && filePath.exists() && !filePath.isDirectory();
+    }
+
+    /**
+     * Check if the provided path is a directory
+     * 
+     * @param filePath
+     *            The path to check
+     * @return true if this is a directory, else false
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static boolean isDirectory(FilePath filePath) throws IOException, InterruptedException
+    {
+        return filePath != null && filePath.isDirectory();
     }
 
     /**
@@ -308,22 +322,28 @@ public class FilePathUtil
                 src.copyTo(dest);
         }
         // Handle directory
-        else if (src.isDirectory())
+        else if (isDirectory(src))
         {
             // Get the list of the files to synchronize
             List<FilePath> srcFiles = src.list(FileFileFilter.FILE);
             // Get the list of the related file names
             List<String> srcNames = new ArrayList<String>();
+            // Go threw the files
             for (FilePath srcFile : srcFiles)
+                // Add to the source list
                 srcNames.add(srcFile.getName());
             // Delete files in destination folder that don't exist anymore in
             // source folder
             if (dest.exists())
+                // List the files
                 for (FilePath destFile : dest.list(FileFileFilter.FILE))
+                    // Check if contained in the source files
                     if (!srcNames.contains(destFile.getName()))
+                        // If not delete it
                         destFile.delete();
             // Synchronize all files
             for (FilePath srcFile : srcFiles)
+                // Synchronize folders
                 synchronize(srcFile, new FilePath(dest, srcFile.getName()));
         }
         // Return the destination file of directory
@@ -355,7 +375,7 @@ public class FilePathUtil
      */
     public static List<FilePath> listSharedLibraries(FilePath filePath) throws IOException, InterruptedException
     {
-        return !filePath.isDirectory() ? Collections.<FilePath> emptyList() : Arrays.asList(filePath
+        return !isDirectory(filePath) ? Collections.<FilePath> emptyList() : Arrays.asList(filePath
                 .list("*.so,*.so.*,*.dylib,*.dylib.*"));
     }
 
