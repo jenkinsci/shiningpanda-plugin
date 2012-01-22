@@ -63,9 +63,9 @@ public class PyPy extends Python
         // Check if on Windows
         if (isWindows())
             // If on windows look for executables in home folder
-            return FilePathUtil.isFileOrNull(join("pypy-c.exe"), join("pypy.exe"));
+            return FilePathUtil.isFileOrNull(getHome().child("pypy-c.exe"), getHome().child("pypy.exe"));
         // Else look in bin folder
-        return FilePathUtil.isFileOrNull(join("bin", "pypy-c"), join("bin", "pypy"));
+        return FilePathUtil.isFileOrNull(getHome().child("bin").child("pypy-c"), getHome().child("bin").child("pypy"));
     }
 
     /*
@@ -90,11 +90,11 @@ public class PyPy extends Python
         // Check if on Windows
         if (isWindows())
             // If on Windows add home folder and bin folder in PATH
-            environment.put("PATH+", getHome().getRemote() + ";" + join("bin").getRemote());
+            environment.put("PATH+", getHome().getRemote() + ";" + getHome().child("bin").getRemote());
         // Handle UNIX
         else
             // Add bin folder in PATH
-            environment.put("PATH+", join("bin").getRemote());
+            environment.put("PATH+", getHome().child("bin").getRemote());
         // Return environment
         return environment;
     }

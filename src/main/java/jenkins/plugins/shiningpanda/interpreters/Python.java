@@ -147,20 +147,6 @@ public abstract class Python
     }
 
     /**
-     * Join path parts to home folder.
-     * 
-     * @param parts
-     *            The path parts
-     * @return The resulting file
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    protected FilePath join(String... parts) throws IOException, InterruptedException
-    {
-        return FilePathUtil.join(getHome(), parts);
-    }
-
-    /**
      * Get the PYTHON executable.
      * 
      * @return The executable file if exists, else null

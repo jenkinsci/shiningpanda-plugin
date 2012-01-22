@@ -62,12 +62,13 @@ public class Virtualenv extends Python
         if (isWindows())
         {
             // Look for activate.bat script
-            if (FilePathUtil.existsOrNull(join("bin", "activate.bat"), join("Scripts", "activate.bat")) == null)
+            if (FilePathUtil.existsOrNull(getHome().child("bin").child("activate.bat"),
+                    getHome().child("Scripts").child("activate.bat")) == null)
                 // Not found, this VIRTUALENV is not valid
                 return false;
         }
         // If on UNIX, look for activate script
-        else if (FilePathUtil.existsOrNull(join("bin", "activate")) == null)
+        else if (FilePathUtil.existsOrNull(getHome().child("bin").child("activate")) == null)
             // Not found, this VIRTUALENV is not valid
             return false;
         // Activation script found, look for executable
@@ -101,13 +102,13 @@ public class Virtualenv extends Python
         if (isWindows())
         {
             // Check if activation script is in a bin folder or in a scripts one
-            if (join("bin", "activate.bat").exists())
+            if (getHome().child("bin").child("activate.bat").exists())
                 // In bin folder, add this folder to the PATH
-                environment.put("PATH+", join("bin").getRemote());
+                environment.put("PATH+", getHome().child("bin").getRemote());
             // In a scripts one
             else
                 // Add the scripts folder to the PATH
-                environment.put("PATH+", join("Scripts").getRemote());
+                environment.put("PATH+", getHome().child("Scripts").getRemote());
             // Return the environment
             return environment;
         }
@@ -115,7 +116,7 @@ public class Virtualenv extends Python
         else
         {
             // Get a potential library folder
-            FilePath lib = join("lib");
+            FilePath lib = getHome().child("lib");
             // Check if there is a library folder containing some shared
             // libraries
             if (!FilePathUtil.listSharedLibraries(lib).isEmpty())
@@ -123,7 +124,7 @@ public class Virtualenv extends Python
                 environment.putAll(EnvVarsUtil.getLibs(lib));
         }
         // For UNIX add the bin folder in the PATH
-        environment.put("PATH+", join("bin").getRemote());
+        environment.put("PATH+", getHome().child("bin").getRemote());
         // Return the environment
         return environment;
     }
@@ -140,9 +141,10 @@ public class Virtualenv extends Python
         if (isWindows())
             // Look for executables in bin folder if JYTHON, in scripts if
             // standard interpreter
-            return FilePathUtil.existsOrNull(join("bin", "jython.bat"), join("Scripts", "python.exe"));
+            return FilePathUtil.existsOrNull(getHome().child("bin").child("jython.bat"),
+                    getHome().child("Scripts").child("python.exe"));
         // On UNIX look for executable in bin folder
-        return FilePathUtil.existsOrNull(join("bin", "jython"), join("bin", "python"));
+        return FilePathUtil.existsOrNull(getHome().child("bin").child("jython"), getHome().child("bin").child("python"));
     }
 
     /*
@@ -272,7 +274,7 @@ public class Virtualenv extends Python
             if (!libs.isEmpty())
             {
                 // Get the VIRTUALENV library folder
-                FilePath libDir = join("lib");
+                FilePath libDir = getHome().child("lib");
                 // Create it if required
                 libDir.mkdirs();
                 // Go threw the libraries and create links

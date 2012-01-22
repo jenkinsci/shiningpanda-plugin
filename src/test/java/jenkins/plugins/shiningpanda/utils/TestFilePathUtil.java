@@ -28,12 +28,6 @@ import org.apache.commons.io.FileUtils;
 public class TestFilePathUtil extends ShiningPandaTestCase
 {
 
-    public void testJoin() throws Exception
-    {
-        assertEquals("toto" + File.separator + "tata" + File.separator + "tutu",
-                FilePathUtil.join(getFilePath("toto"), "tata", "tutu").getRemote());
-    }
-
     public void testIsWindows() throws Exception
     {
         assertFalse("this is not a Windows", FilePathUtil.isWindows(getFilePath("toto")));
@@ -42,16 +36,6 @@ public class TestFilePathUtil extends ShiningPandaTestCase
     public void testIsUnix() throws Exception
     {
         assertTrue("this should be an UNIX", FilePathUtil.isUnix(getFilePath("toto")));
-    }
-
-    public void testGetSeparator() throws Exception
-    {
-        assertEquals("invalid separator", File.separator, FilePathUtil.getSeparator(getFilePath("toto")));
-    }
-
-    public void testGetPathSeparator() throws Exception
-    {
-        assertEquals("invalid path separator", File.pathSeparator, FilePathUtil.getPathSeparator(getFilePath("toto")));
     }
 
     public void testExistsOrNullNotExists() throws Exception

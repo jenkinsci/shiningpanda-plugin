@@ -63,10 +63,10 @@ public class Jython extends Python
         // Check if on Windows
         if (isWindows())
             // On windows this is jython.bat
-            return FilePathUtil.isFileOrNull(join("bin", "jython.bat"));
+            return FilePathUtil.isFileOrNull(getHome().child("bin").child("jython.bat"));
         // On UNIX no extension. For JYTHON 2.2.1, 2.5.0 and 2.5.1 the binary is
         // directly in the home folder, later versions are in the bin folder.
-        return FilePathUtil.isFileOrNull(join("bin", "jython"), join("jython"));
+        return FilePathUtil.isFileOrNull(getHome().child("bin").child("jython"), getHome().child("jython"));
     }
 
     /*
@@ -89,7 +89,7 @@ public class Jython extends Python
             // Delete
             environment.put("JYTHON_HOME", null);
         // Add the bin folder in the PATH
-        environment.put("PATH+", join("bin").getRemote());
+        environment.put("PATH+", getHome().child("bin").getRemote());
         // Return the environment
         return environment;
     }

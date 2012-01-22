@@ -32,26 +32,9 @@ import jenkins.plugins.shiningpanda.interpreters.Python;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFileFilter;
-import org.apache.commons.lang.StringUtils;
 
 public class FilePathUtil
 {
-
-    /**
-     * Join path
-     * 
-     * @param base
-     *            The base path
-     * @param parts
-     *            The extra path parts
-     * @return The joined path
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    public static FilePath join(FilePath base, String... parts) throws IOException, InterruptedException
-    {
-        return new FilePath(base, StringUtils.join(parts, getSeparator(base)));
-    }
 
     private static final class IsWindows implements Callable<Boolean, IOException>
     {
@@ -89,54 +72,6 @@ public class FilePathUtil
     public static boolean isUnix(FilePath filePath) throws IOException, InterruptedException
     {
         return !isWindows(filePath);
-    }
-
-    private static final class Separator implements Callable<String, IOException>
-    {
-        public String call() throws IOException
-        {
-            return File.separator;
-        }
-
-        private static final long serialVersionUID = 1L;
-    }
-
-    /**
-     * Get the separator on the OS hosting this file.
-     * 
-     * @param filePath
-     *            The file
-     * @return The separator
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    public static String getSeparator(FilePath filePath) throws IOException, InterruptedException
-    {
-        return filePath.act(new Separator());
-    }
-
-    private static final class PathSeparator implements Callable<String, IOException>
-    {
-        public String call() throws IOException
-        {
-            return File.pathSeparator;
-        }
-
-        private static final long serialVersionUID = 1L;
-    }
-
-    /**
-     * Get the path separator on the OS hosting this file.
-     * 
-     * @param filePath
-     *            The file
-     * @return The path separator
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    public static String getPathSeparator(FilePath filePath) throws IOException, InterruptedException
-    {
-        return filePath.act(new PathSeparator());
     }
 
     /**

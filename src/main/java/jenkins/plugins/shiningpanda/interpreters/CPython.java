@@ -64,9 +64,9 @@ public class CPython extends Python
         // Check if on Windows
         if (isWindows())
             // If on Windows, look for python.exe
-            return FilePathUtil.isFileOrNull(join("python.exe"));
+            return FilePathUtil.isFileOrNull(getHome().child("python.exe"));
         // If on UNIX, this can be PYTHON 3 or PYTHON 2
-        return FilePathUtil.isFileOrNull(join("bin", "python3"), join("bin", "python"));
+        return FilePathUtil.isFileOrNull(getHome().child("bin").child("python3"), getHome().child("bin").child("python"));
     }
 
     /*
@@ -92,14 +92,14 @@ public class CPython extends Python
         if (isWindows())
             // If on Windows add the home folder and the scripts folder in the
             // PATH
-            environment.put("PATH+", getHome().getRemote() + ";" + join("Scripts").getRemote());
+            environment.put("PATH+", getHome().getRemote() + ";" + getHome().child("Scripts").getRemote());
         // Handle UNIX case
         else
         {
             // Add the bin folder in the PATH
-            environment.put("PATH+", join("bin").getRemote());
+            environment.put("PATH+", getHome().child("bin").getRemote());
             // Add the library folder in the path to look for libraries
-            environment.putAll(EnvVarsUtil.getLibs(join("lib")));
+            environment.putAll(EnvVarsUtil.getLibs(getHome().child("lib")));
         }
         // Return the environment
         return environment;
