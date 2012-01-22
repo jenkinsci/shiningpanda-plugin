@@ -19,6 +19,7 @@ package jenkins.plugins.shiningpanda.builders;
 
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.matrix.MatrixProject;
 import hudson.model.BuildListener;
@@ -177,14 +178,17 @@ public class VirtualenvBuilder extends Builder implements Serializable
         if (virtualenv == null)
             // Invalid VIRTUALENV, do not continue
             return false;
+        // Get the working directory
+        FilePath pwd = build.getWorkspace();
         // Check if clean required or if configuration changed
         if (clear || virtualenv.isOutdated(workspace, interpreter, useDistribute, systemSitePackages))
             // A new environment is required
-            if (!virtualenv.create(launcher, listener, environment, workspace, interpreter, useDistribute, systemSitePackages))
+            if (!virtualenv.create(launcher, listener, workspace, pwd, environment, interpreter, useDistribute,
+                    systemSitePackages))
                 // Failed to create the environment, do not continue
                 return false;
         // Launch script
-        return BuilderUtil.launch(launcher, listener, environment, workspace, virtualenv, nature, command, ignoreExitCode);
+        return BuilderUtil.launch(launcher, listener, pwd, environment, virtualenv, nature, command, ignoreExitCode);
     }
 
     /**

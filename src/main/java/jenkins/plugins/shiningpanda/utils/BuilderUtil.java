@@ -35,7 +35,6 @@ import jenkins.plugins.shiningpanda.interpreters.Python;
 import jenkins.plugins.shiningpanda.interpreters.Virtualenv;
 import jenkins.plugins.shiningpanda.matrix.PythonAxis;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
-import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 public class BuilderUtil
 {
@@ -200,10 +199,10 @@ public class BuilderUtil
      *            The launcher
      * @param listener
      *            The build listener
+     * @param pwd
+     *            The working directory
      * @param environment
      *            The environment
-     * @param workspace
-     *            The workspace
      * @param interpreter
      *            The interpreter
      * @param nature
@@ -216,7 +215,7 @@ public class BuilderUtil
      * @throws IOException
      * @throws InterruptedException
      */
-    public static boolean launch(Launcher launcher, BuildListener listener, EnvVars environment, Workspace workspace,
+    public static boolean launch(Launcher launcher, BuildListener listener, FilePath pwd, EnvVars environment,
             Python interpreter, String nature, String command, boolean ignoreExitCode) throws IOException, InterruptedException
     {
         // Get PYTHON executable
@@ -226,8 +225,8 @@ public class BuilderUtil
         // Add PYTHON_EXE environment variable
         environment.override("PYTHON_EXE", executable);
         // Launch the script
-        return Command.get(workspace.isUnix(), executable, CommandNature.get(nature), command, ignoreExitCode).launch(launcher,
-                listener, environment, workspace.getHome());
+        return Command.get(FilePathUtil.isUnix(pwd), executable, CommandNature.get(nature), command, ignoreExitCode).launch(
+                launcher, listener, environment, pwd);
     }
 
     /**

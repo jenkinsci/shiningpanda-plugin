@@ -37,7 +37,6 @@ import jenkins.plugins.shiningpanda.command.CommandNature;
 import jenkins.plugins.shiningpanda.interpreters.Python;
 import jenkins.plugins.shiningpanda.utils.BuilderUtil;
 import jenkins.plugins.shiningpanda.utils.FormValidationUtil;
-import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -106,8 +105,6 @@ public class CustomPythonBuilder extends Builder implements Serializable
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException,
             IOException
     {
-        // Get the workspace
-        Workspace workspace = Workspace.fromBuild(build);
         // Get the environment variables for this build
         EnvVars environment = BuilderUtil.getEnvironment(build, listener);
         // Check if this is a valid environment
@@ -121,7 +118,8 @@ public class CustomPythonBuilder extends Builder implements Serializable
             // Failed to get the interpreter, no need to go further
             return false;
         // Launch script
-        return BuilderUtil.launch(launcher, listener, environment, workspace, interpreter, nature, command, ignoreExitCode);
+        return BuilderUtil.launch(launcher, listener, build.getWorkspace(), environment, interpreter, nature, command,
+                ignoreExitCode);
     }
 
     private static final long serialVersionUID = 1L;

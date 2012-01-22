@@ -19,6 +19,7 @@ package jenkins.plugins.shiningpanda.builders;
 
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
 import hudson.matrix.MatrixProject;
@@ -147,6 +148,8 @@ public class ToxBuilder extends Builder implements Serializable
         if (interpreter == null)
             // No interpreter found, no need to continue
             return false;
+        // Get the working directory
+        FilePath pwd = build.getWorkspace();
         // Creation flag for distribute
         boolean useDistribute = true;
         // Creation flag for system packages
@@ -154,11 +157,12 @@ public class ToxBuilder extends Builder implements Serializable
         // Check if out of date to be able to create a new one
         if (virtualenv.isOutdated(workspace, interpreter, useDistribute, systemSitePackages))
             // Create the VIRTUALENV
-            if (!virtualenv.create(launcher, listener, environment, workspace, interpreter, useDistribute, systemSitePackages))
+            if (!virtualenv.create(launcher, listener, workspace, pwd, environment, interpreter, useDistribute,
+                    systemSitePackages))
                 // Failed to create the VIRTUALENV, do not continue
                 return false;
         // Install or upgrade TOX
-        if (!virtualenv.pipInstall(launcher, listener, environment, workspace, "tox"))
+        if (!virtualenv.pipInstall(launcher, listener, workspace, pwd, environment, "tox"))
             // Failed to install TOX, do not continue
             return false;
         // Get all the available interpreters on the executor
@@ -170,7 +174,7 @@ public class ToxBuilder extends Builder implements Serializable
             // Add the environment without the home variables
             environment.overrideAll(contributor.getEnvironment(false));
         // Launch TOX
-        return virtualenv.tox(launcher, listener, environment, workspace, toxIni, recreate);
+        return virtualenv.tox(launcher, listener, pwd, environment, toxIni, recreate);
     }
 
     private static final long serialVersionUID = 1L;

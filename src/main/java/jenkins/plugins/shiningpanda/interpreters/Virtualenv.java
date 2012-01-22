@@ -212,10 +212,12 @@ public class Virtualenv extends Python
      *            The launcher
      * @param listener
      *            The listener
-     * @param environment
-     *            The environment
      * @param workspace
      *            The workspace
+     * @param pwd
+     *            The working directory
+     * @param environment
+     *            The environment
      * @param interpreter
      *            The interpreter
      * @param useDistribute
@@ -226,7 +228,7 @@ public class Virtualenv extends Python
      * @throws InterruptedException
      * @throws IOException
      */
-    public boolean create(Launcher launcher, TaskListener listener, EnvVars environment, Workspace workspace,
+    public boolean create(Launcher launcher, TaskListener listener, Workspace workspace, FilePath pwd, EnvVars environment,
             Python interpreter, boolean useDistribute, boolean systemSitePackages) throws InterruptedException, IOException
     {
         // Cleanup
@@ -258,7 +260,7 @@ public class Virtualenv extends Python
         // See https://github.com/pypa/virtualenv/issues/185
         boolean includeHomeKey = interpreter.isJython() == null;
         // Start creation
-        boolean success = LauncherUtil.launch(launcher, listener, workspace,
+        boolean success = LauncherUtil.launch(launcher, listener, pwd,
                 EnvVarsUtil.override(environment, interpreter.getEnvironment(includeHomeKey)), args);
         // Add links to libraries
         // See https://github.com/pypa/virtualenv/issues/216
@@ -302,17 +304,19 @@ public class Virtualenv extends Python
      *            The launcher
      * @param listener
      *            The listener
-     * @param environment
-     *            The environment
      * @param workspace
      *            The workspace
+     * @param pwd
+     *            The working directory
+     * @param environment
+     *            The environment
      * @param packageName
      *            The package to install
      * @return true if installation was successful, else false
      * @throws InterruptedException
      * @throws IOException
      */
-    public boolean pipInstall(Launcher launcher, TaskListener listener, EnvVars environment, Workspace workspace,
+    public boolean pipInstall(Launcher launcher, TaskListener listener, Workspace workspace, FilePath pwd, EnvVars environment,
             String packageName) throws InterruptedException, IOException
     {
         // Create the arguments for the command line
@@ -329,13 +333,14 @@ public class Virtualenv extends Python
         FilePath extraSearchDir = workspace.getPackagesDir();
         // If this folder exists, add as find link
         if (extraSearchDir != null)
+            // Add flag
             args.add("-f").add(workspace.getPackagesDir().toURI().toURL().toExternalForm());
         // Ask for upgrade
         args.add("--upgrade");
         // The package to install
         args.add(packageName);
         // Start the process and return status
-        return LauncherUtil.launch(launcher, listener, workspace, EnvVarsUtil.override(environment, getEnvironment()), args);
+        return LauncherUtil.launch(launcher, listener, pwd, EnvVarsUtil.override(environment, getEnvironment()), args);
     }
 
     /**
@@ -345,10 +350,10 @@ public class Virtualenv extends Python
      *            The launcher
      * @param listener
      *            The listener
+     * @param pwd
+     *            The working directory
      * @param environment
      *            The environment
-     * @param workspace
-     *            The workspace
      * @param toxIni
      *            The tox.ini file
      * @param recreate
@@ -357,7 +362,7 @@ public class Virtualenv extends Python
      * @throws InterruptedException
      * @throws IOException
      */
-    public boolean tox(Launcher launcher, TaskListener listener, EnvVars environment, Workspace workspace, String toxIni,
+    public boolean tox(Launcher launcher, TaskListener listener, FilePath pwd, EnvVars environment, String toxIni,
             boolean recreate) throws InterruptedException, IOException
     {
         // Create the arguments for the command line
@@ -372,9 +377,10 @@ public class Virtualenv extends Python
         args.add("-c").add(toxIni);
         // Check if recreation asked
         if (recreate)
+            // Add the flag
             args.add("--recreate");
         // Start the process and return status
-        return LauncherUtil.launch(launcher, listener, workspace, EnvVarsUtil.override(environment, getEnvironment()), args);
+        return LauncherUtil.launch(launcher, listener, pwd, EnvVarsUtil.override(environment, getEnvironment()), args);
     }
 
     /**

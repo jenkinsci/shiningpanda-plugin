@@ -27,8 +27,6 @@ import hudson.util.ArgumentListBuilder;
 
 import java.io.IOException;
 
-import jenkins.plugins.shiningpanda.workspace.Workspace;
-
 public class LauncherUtil
 {
 
@@ -39,8 +37,8 @@ public class LauncherUtil
      *            The launcher
      * @param listener
      *            The build listener
-     * @param workspace
-     *            The workspace
+     * @param pwd
+     *            The working directory
      * @param environment
      *            The environment
      * @param args
@@ -48,15 +46,15 @@ public class LauncherUtil
      * @return true if was successful, else false
      * @throws InterruptedException
      */
-    public static boolean launch(Launcher launcher, TaskListener listener, Workspace workspace, EnvVars environment,
+    public static boolean launch(Launcher launcher, TaskListener listener, FilePath pwd, EnvVars environment,
             ArgumentListBuilder args) throws InterruptedException
     {
         // Be able to display error
         try
         {
             // Launch the process
-            return 0 == launcher.launch().cmds(workspace.isUnix() ? args : args.toWindowsCommand()).envs(environment)
-                    .stdout(listener).pwd(workspace.getHome()).join();
+            return 0 == launcher.launch().cmds(FilePathUtil.isUnix(pwd) ? args : args.toWindowsCommand()).envs(environment)
+                    .stdout(listener).pwd(pwd).join();
         }
         catch (IOException e)
         {

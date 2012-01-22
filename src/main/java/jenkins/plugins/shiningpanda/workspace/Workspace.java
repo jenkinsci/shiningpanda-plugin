@@ -89,30 +89,6 @@ public abstract class Workspace
     }
 
     /**
-     * Is this an UNIX workspace?
-     * 
-     * @return true if an UNIX workspace, else false
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    public boolean isUnix() throws IOException, InterruptedException
-    {
-        return FilePathUtil.isUnix(getHome());
-    }
-
-    /**
-     * Is this a Windows workspace?
-     * 
-     * @return true if a Windows workspace, else false
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    public boolean isWindows() throws IOException, InterruptedException
-    {
-        return FilePathUtil.isWindows(getHome());
-    }
-
-    /**
      * Get the VIRTUALENV module file on master.
      * 
      * @return The VIRTUALENV module file
