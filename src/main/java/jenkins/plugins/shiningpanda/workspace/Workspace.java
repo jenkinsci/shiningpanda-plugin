@@ -20,18 +20,28 @@ package jenkins.plugins.shiningpanda.workspace;
 import hudson.FilePath;
 import hudson.Util;
 import hudson.matrix.MatrixConfiguration;
+import hudson.matrix.MatrixProject;
+import hudson.model.Item;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Node;
+import hudson.model.Project;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import jenkins.model.Jenkins;
 import jenkins.plugins.shiningpanda.utils.FilePathUtil;
 
 public abstract class Workspace
 {
+
+    /**
+     * Get a logger.
+     */
+    private static final Logger LOGGER = Logger.getLogger(Workspace.class.getName());
 
     /**
      * Base name of the workspace under the node.
@@ -153,6 +163,36 @@ public abstract class Workspace
     }
 
     /**
+     * Delete this workspace.
+     * 
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    protected void delete() throws IOException, InterruptedException
+    {
+        // Delete recursively
+        getHome().deleteRecursive();
+    }
+
+    /**
+     * Delete this workspace without throwing exceptions on error.
+     */
+    protected void safeDelete()
+    {
+        // Get errors
+        try
+        {
+            // Delegate
+            delete();
+        }
+        catch (Exception e)
+        {
+            // Log
+            LOGGER.log(Level.SEVERE, "Failed to delete workspace: " + getHome().getRemote(), e);
+        }
+    }
+
+    /**
      * Create the workspace from its home folder.
      * 
      * @param home
@@ -173,7 +213,22 @@ public abstract class Workspace
      */
     public static Workspace fromBuild(AbstractBuild<?, ?> build)
     {
-        return fromNode(build.getBuiltOn(), build.getProject());
+        return fromNode(build.getBuiltOn(), build.getProject(), null);
+    }
+
+    /**
+     * Get a workspace from a project.
+     * 
+     * @param project
+     *            The project
+     * @param name
+     *            Base name used to compute the workspace location. If null then
+     *            use the name of the project
+     * @return The workspace if exists, else null
+     */
+    public static Workspace fromProject(Project<?, ?> project, String name)
+    {
+        return fromNode(project.getLastBuiltOn(), project, name);
     }
 
     /**
@@ -183,19 +238,73 @@ public abstract class Workspace
      *            The node
      * @param project
      *            The project
+     * @param name
+     *            Base name used to compute the workspace location. If null then
+     *            use the name of the project
      * @return The workspace
      */
-    public static Workspace fromNode(Node node, AbstractProject<?, ?> project)
+    public static Workspace fromNode(Node node, AbstractProject<?, ?> project, String name)
     {
+        // Check if node exists
+        if (node == null)
+            // Unable to get the workspace
+            return null;
         // Get the name of the project as identifier
-        String id = project.getName();
+        String id = name != null ? name : project.getName();
         // Check if this is the child of a matrix project
-        if (project instanceof MatrixConfiguration)
+        if (project.getParent() instanceof AbstractProject)
             // If it is, also add the name of the parent project
-            id += ((MatrixConfiguration) project).getParent().getName();
+            id += ((AbstractProject<?, ?>) project.getParent()).getName();
         // Get the home folder of this workspace
         FilePath work = node.getRootPath().child(BASENAME).child("jobs").child(Util.getDigestOf(id).substring(0, 8));
         // Build the workspace from home
         return fromHome(work);
     }
+
+    /**
+     * Clean item related workspaces.
+     * 
+     * @param item
+     *            The item
+     */
+    public static void delete(Item item)
+    {
+        // Delegate
+        delete(item, null);
+    }
+
+    /**
+     * Clean item related workspaces.
+     * 
+     * @param item
+     *            The item
+     * @param name
+     *            The name to use to compute the workspace location
+     */
+    public static void delete(Item item, String name)
+    {
+        // Check if this is a matrix project
+        if (item instanceof MatrixProject)
+            // Go threw the configurations
+            for (MatrixConfiguration configuration : ((MatrixProject) item).getItems())
+            {
+                // Get workspace
+                Workspace workspace = fromProject(configuration, name);
+                // Check if exists
+                if (workspace != null)
+                    // Delete it
+                    workspace.safeDelete();
+            }
+        // Check if this is a real project
+        else if (item instanceof Project)
+        {
+            // Get workspace
+            Workspace workspace = fromProject((Project<?, ?>) item, name);
+            // Check if exists
+            if (workspace != null)
+                // Delete it
+                workspace.safeDelete();
+        }
+    }
+
 }
