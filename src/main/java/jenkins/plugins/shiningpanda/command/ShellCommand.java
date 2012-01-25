@@ -101,7 +101,7 @@ public abstract class ShellCommand extends Command
         // Get a new one
         environment = new EnvVars(environment);
         // Add the working directory in the path so `./` are useless on UNIX
-        environment.override("+PATH", pwd.getRemote());
+        environment.override("PATH+", pwd.getRemote());
         // Return the environment
         return environment;
     }
