@@ -163,27 +163,15 @@ public abstract class Workspace
     }
 
     /**
-     * Delete this workspace.
-     * 
-     * @throws InterruptedException
-     * @throws IOException
-     */
-    protected void delete() throws IOException, InterruptedException
-    {
-        // Delete recursively
-        getHome().deleteRecursive();
-    }
-
-    /**
      * Delete this workspace without throwing exceptions on error.
      */
-    protected void safeDelete()
+    protected void delete()
     {
         // Get errors
         try
         {
-            // Delegate
-            delete();
+            // Delete recursively
+            getHome().deleteRecursive();
         }
         catch (Exception e)
         {
@@ -250,11 +238,16 @@ public abstract class Workspace
             // Unable to get the workspace
             return null;
         // Get the name of the project as identifier
-        String id = name != null ? name : project.getName();
+        String id;
         // Check if this is the child of a matrix project
-        if (project.getParent() instanceof AbstractProject)
-            // If it is, also add the name of the parent project
-            id += ((AbstractProject<?, ?>) project.getParent()).getName();
+        if (project instanceof MatrixConfiguration)
+            // Append the name of the parent project or the provided name if
+            // exists with the project name
+            id = (name != null ? name : ((MatrixConfiguration) project).getParent().getName()) + project.getName();
+        // This is a standard project
+        else
+            // Use the name of the project or the provided name if exists
+            id = name != null ? name : project.getName();
         // Get the home folder of this workspace
         FilePath work = node.getRootPath().child(BASENAME).child("jobs").child(Util.getDigestOf(id).substring(0, 8));
         // Build the workspace from home
@@ -293,7 +286,7 @@ public abstract class Workspace
                 // Check if exists
                 if (workspace != null)
                     // Delete it
-                    workspace.safeDelete();
+                    workspace.delete();
             }
         // Check if this is a real project
         else if (item instanceof Project)
@@ -303,7 +296,7 @@ public abstract class Workspace
             // Check if exists
             if (workspace != null)
                 // Delete it
-                workspace.safeDelete();
+                workspace.delete();
         }
     }
 
