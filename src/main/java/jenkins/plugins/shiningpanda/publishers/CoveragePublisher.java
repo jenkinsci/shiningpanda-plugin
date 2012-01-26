@@ -227,8 +227,8 @@ public class CoveragePublisher extends Recorder
     /**
      * Get the folder containing the HTML on the master for a build.
      * 
-     * @param project
-     *            The project
+     * @param run
+     *            The build
      * @return The path to the HTML folder
      */
     public static File getHtmlDir(Run<?, ?> run)
