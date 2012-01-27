@@ -57,4 +57,15 @@ public class MasterWorkspace extends Workspace
         return getMasterPackagesDir();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see jenkins.plugins.shiningpanda.workspace.Workspace#getBootstrapPy()
+     */
+    @Override
+    public FilePath getBootstrapPy() throws IOException, InterruptedException
+    {
+        return getMasterBootstrapPy();
+    }
+
 }

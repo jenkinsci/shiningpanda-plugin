@@ -59,6 +59,11 @@ public abstract class Workspace
     protected static String VIRTUALENV = "virtualenv.py";
 
     /**
+     * Name of the BUILDOUT bootstrap module.
+     */
+    protected static String BOOTSTRAP = "bootstrap.py";
+
+    /**
      * Home folder for the workspace.
      */
     private FilePath home;
@@ -118,6 +123,25 @@ public abstract class Workspace
     public abstract FilePath getVirtualenvPy() throws IOException, InterruptedException;
 
     /**
+     * Get the BUILDOUT bootstrap file on master.
+     * 
+     * @return The BUILDOUT bootstrap module file
+     */
+    public FilePath getMasterBootstrapPy()
+    {
+        return new FilePath(new File(getClass().getResource(BOOTSTRAP).getFile()));
+    }
+
+    /**
+     * Get the BUILDOUT bootstrap module file on executor.
+     * 
+     * @return The BUILDOUT bootstrap module file
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public abstract FilePath getBootstrapPy() throws IOException, InterruptedException;
+
+    /**
      * Get the folder on master where user can put some packages to avoid
      * downloads when creating a VIRTUALENV.
      * 
@@ -152,14 +176,28 @@ public abstract class Workspace
     }
 
     /**
-     * Get the VIRTUALENV home for this workspace, where TOX (or other tools)
-     * can be installed for instance.
+     * Get the VIRTUALENV home for the provided VIRTUALENV name.
      * 
+     * @param name
+     *            The name of the VIRTUALENV
      * @return The VIRTUALENV home
      */
     public FilePath getVirtualenvHome(String name)
     {
         return getHome().child("virtualenvs").child(Util.getDigestOf(Util.fixNull(name)).substring(0, 8));
+    }
+
+    /**
+     * Get the VIRTUALENV home dedicated to BUILDOUT for the provided PYTHON
+     * installation name.
+     * 
+     * @param name
+     *            The name of the PYTHON installation
+     * @return The VIRTUALENV home
+     */
+    public FilePath getBuildoutHome(String name)
+    {
+        return getHome().child("buildouts").child(Util.getDigestOf(Util.fixNull(name)).substring(0, 8));
     }
 
     /**

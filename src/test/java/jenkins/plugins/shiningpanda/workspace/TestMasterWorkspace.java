@@ -29,6 +29,11 @@ public class TestMasterWorkspace extends ShiningPandaTestCase
         assertEquals(getMasterWorkspace().getMasterVirtualenvPy(), getMasterWorkspace().getVirtualenvPy());
     }
 
+    public void testGetBootstrapPy() throws Exception
+    {
+        assertEquals(getMasterWorkspace().getMasterBootstrapPy(), getMasterWorkspace().getBootstrapPy());
+    }
+
     public void testGetPackageDirNotExists() throws Exception
     {
         assertNull("master workspace should not have a package directory", getMasterWorkspace().getPackagesDir());

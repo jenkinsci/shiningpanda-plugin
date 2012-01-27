@@ -386,6 +386,53 @@ public class Virtualenv extends Python
     }
 
     /**
+     * Bootstrap BUILDOUT and start its binary.
+     * 
+     * @param launcher
+     *            The launcher
+     * @param listener
+     *            The listener
+     * @param workspace
+     *            The workspace
+     * @param pwd
+     *            The working folder
+     * @param environment
+     *            The environment
+     * @param buildoutCfg
+     *            The BUILDOUT configuration file
+     * @param useDistribute
+     *            Use DISTRIBUTE instead of SETUPTOOLS
+     * @return true if setup was successful, else false
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public boolean buildout(Launcher launcher, TaskListener listener, Workspace workspace, FilePath pwd, EnvVars environment,
+            String buildoutCfg, boolean useDistribute) throws InterruptedException, IOException
+    {
+        // Get the environment
+        EnvVars finalEnvironment = EnvVarsUtil.override(environment, getEnvironment());
+        // Create the arguments for the command line
+        ArgumentListBuilder args = new ArgumentListBuilder();
+        // Add the path to PYTHON executable
+        args.add(getExecutable().getRemote());
+        // Path to the script on local computer
+        args.add(workspace.getBootstrapPy().getRemote());
+        // Add the configuration
+        args.add("-c").add(buildoutCfg);
+        // If use distribute, add the flag
+        if (useDistribute)
+            // Add the flag
+            args.add("--distribute");
+        // Start bootstrap
+        if (!LauncherUtil.launch(launcher, listener, pwd, finalEnvironment, args))
+            // Failed to bootstrap, no need to go further
+            return false;
+        // Call BUILDOUT and return status
+        return LauncherUtil.launch(launcher, listener, pwd, finalEnvironment, new ArgumentListBuilder(pwd.child(buildoutCfg)
+                .getParent().child("bin").child("buildout").getRemote()));
+    }
+
+    /**
      * Get a virtual environment signature.
      * 
      * @param workspace

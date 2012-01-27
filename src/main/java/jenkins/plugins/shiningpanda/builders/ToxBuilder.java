@@ -65,6 +65,16 @@ public class ToxBuilder extends Builder implements Serializable
      */
     public final String toxenvPattern;
 
+    /**
+     * Constructor using fields.
+     * 
+     * @param toxIni
+     *            The TOX configuration file
+     * @param recreate
+     *            Create a new environment each time
+     * @param toxenvPattern
+     *            The pattern used to build the TOXENV environment variable
+     */
     @DataBoundConstructor
     public ToxBuilder(String toxIni, boolean recreate, String toxenvPattern)
     {

@@ -38,6 +38,16 @@ public class TestSlaveWorkspace extends ShiningPandaTestCase
         assertContentEquals(masterPy, slavePy);
     }
 
+    public void testGetBootstrapPy() throws Exception
+    {
+        Workspace workspace = getSlaveWorkspace();
+        FilePath slavePy = workspace.getBootstrapPy();
+        FilePath masterPy = workspace.getMasterBootstrapPy();
+        assertFile(slavePy);
+        assertNotSame("path of virtualenv.py on slave should differ from master one", masterPy.getRemote(), slavePy.getRemote());
+        assertContentEquals(masterPy, slavePy);
+    }
+
     public void testGetPackageDirNotExists() throws Exception
     {
         assertNull("slave workspace should not have a package directory", getSlaveWorkspace().getPackagesDir());
