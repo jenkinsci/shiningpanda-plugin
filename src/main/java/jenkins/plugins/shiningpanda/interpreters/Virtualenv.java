@@ -139,12 +139,13 @@ public class Virtualenv extends Python
     {
         // Check if on Windows
         if (isWindows())
-            // Look for executables in bin folder if JYTHON, in scripts if
-            // standard interpreter
+            // Look for executables in bin folder if JYTHON or PYPY, in scripts
+            // if standard interpreter
             return FilePathUtil.existsOrNull(getHome().child("bin").child("jython.bat"),
-                    getHome().child("Scripts").child("python.exe"));
+                    getHome().child("bin").child("pypy.exe"), getHome().child("Scripts").child("python.exe"));
         // On UNIX look for executable in bin folder
-        return FilePathUtil.existsOrNull(getHome().child("bin").child("jython"), getHome().child("bin").child("python"));
+        return FilePathUtil.existsOrNull(getHome().child("bin").child("jython"), getHome().child("bin").child("pypy"),
+                getHome().child("bin").child("python"));
     }
 
     /*
