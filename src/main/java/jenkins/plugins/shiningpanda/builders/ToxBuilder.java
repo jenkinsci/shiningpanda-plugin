@@ -41,6 +41,7 @@ import jenkins.plugins.shiningpanda.interpreters.Virtualenv;
 import jenkins.plugins.shiningpanda.matrix.ToxAxis;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 import jenkins.plugins.shiningpanda.utils.BuilderUtil;
+import jenkins.plugins.shiningpanda.utils.FilePathUtil;
 import jenkins.plugins.shiningpanda.utils.UnixVariableResolver;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
 
@@ -175,14 +176,20 @@ public class ToxBuilder extends Builder implements Serializable
         if (!virtualenv.pipInstall(launcher, listener, workspace, pwd, environment, "tox"))
             // Failed to install TOX, do not continue
             return false;
-        // Get all the available interpreters on the executor
-        List<Python> contributors = BuilderUtil.getInterpreters(launcher, listener, environment);
-        // Reverse the order to be able to sort the environment variables
-        Collections.reverse(contributors);
-        // Go threw the interpreters to add them in the path
-        for (Python contributor : contributors)
-            // Add the environment without the home variables
-            environment.overrideAll(contributor.getEnvironment(false));
+        // If on UNIX add all PYTHONS in the path so TOX is able to find the
+        // right one. Useless on Windows as TOX only looks in standard
+        // locations.
+        if (FilePathUtil.isUnix(pwd))
+        {
+            // Get all the available interpreters on the executor
+            List<Python> contributors = BuilderUtil.getInterpreters(launcher, listener, environment);
+            // Reverse the order to be able to sort the environment variables
+            Collections.reverse(contributors);
+            // Go threw the interpreters to add them in the path
+            for (Python contributor : contributors)
+                // Add the environment without the home variables
+                environment.overrideAll(contributor.getEnvironment(false));
+        }
         // Launch TOX
         return virtualenv.tox(launcher, listener, pwd, environment, toxIni, recreate);
     }
