@@ -430,7 +430,7 @@ public class Virtualenv extends Python
             return false;
         // Call BUILDOUT and return status
         return LauncherUtil.launch(launcher, listener, pwd, finalEnvironment, new ArgumentListBuilder(pwd.child(buildoutCfg)
-                .getParent().child("bin").child("buildout").getRemote()));
+                .getParent().child("bin").child("buildout").getRemote(), "-c", buildoutCfg));
     }
 
     /**
