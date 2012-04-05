@@ -429,8 +429,11 @@ public class Virtualenv extends Python
             // Failed to bootstrap, no need to go further
             return false;
         // Call BUILDOUT and return status
-        return LauncherUtil.launch(launcher, listener, pwd, finalEnvironment, new ArgumentListBuilder(pwd.child(buildoutCfg)
-                .getParent().child("bin").child("buildout").getRemote()));
+        args = new ArgumentListBuilder();
+        args.add(pwd.child(buildoutCfg)
+                .getParent().child("bin").child("buildout").getRemote());
+        args.add("-c").add(buildoutCfg);
+        return LauncherUtil.launch(launcher, listener, pwd, finalEnvironment, args);
     }
 
     /**
