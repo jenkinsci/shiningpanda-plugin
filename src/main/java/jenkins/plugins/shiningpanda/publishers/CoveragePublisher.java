@@ -20,6 +20,7 @@ package jenkins.plugins.shiningpanda.publishers;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
+import hudson.Functions;
 import hudson.Launcher;
 import hudson.Util;
 import hudson.model.Action;
@@ -261,7 +262,7 @@ public class CoveragePublisher extends Recorder
         @Override
         public String getHelpFile()
         {
-            return "/plugin/shiningpanda/help/publishers/CoveragePublisher/help.html";
+            return Functions.getResourcePath() + "/plugin/shiningpanda/help/publishers/CoveragePublisher/help.html";
         }
 
         /*

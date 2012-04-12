@@ -20,6 +20,7 @@ package jenkins.plugins.shiningpanda.tools;
 import hudson.CopyOnWrite;
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.Functions;
 import hudson.Util;
 import hudson.model.EnvironmentSpecific;
 import hudson.model.TaskListener;
@@ -181,7 +182,7 @@ public class PythonInstallation extends ToolInstallation implements EnvironmentS
         @Override
         public String getHelpFile()
         {
-            return "/plugin/shiningpanda/help/tools/PythonInstallation/help.html";
+            return Functions.getResourcePath() + "/plugin/shiningpanda/help/tools/PythonInstallation/help.html";
         }
 
         /*

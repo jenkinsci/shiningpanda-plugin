@@ -19,6 +19,7 @@ package jenkins.plugins.shiningpanda.builders;
 
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.Functions;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.Item;
@@ -150,7 +151,7 @@ public class CustomPythonBuilder extends Builder implements Serializable
         @Override
         public String getHelpFile()
         {
-            return "/plugin/shiningpanda/help/builders/CustomPythonBuilder/help.html";
+            return Functions.getResourcePath() + "/plugin/shiningpanda/help/builders/CustomPythonBuilder/help.html";
         }
 
         /*

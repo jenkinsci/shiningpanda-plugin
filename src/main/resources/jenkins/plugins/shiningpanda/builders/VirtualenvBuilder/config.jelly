@@ -18,7 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <j:if test="${!empty(descriptor.installations) &amp;&amp; !descriptor.isMatrix(it)}">
-    <f:entry title="${%Python version}" help="/plugin/shiningpanda/help/builders/help-pythonName.html">
+    <f:entry title="${%Python version}" help="${resURL}/plugin/shiningpanda/help/builders/help-pythonName.html">
       <select class="setting-input" name="pythonName">
         <j:forEach var="installation" items="${descriptor.installations}">
           <f:option selected="${installation.name==instance.pythonName}" value="${installation.name}">${installation.name}</f:option>
@@ -26,24 +26,24 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
       </select>
     </f:entry>
   </j:if>
-  <f:entry field="clear" title="${%Clear}" help="/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-clear.html">
+  <f:entry field="clear" title="${%Clear}" help="${resURL}/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-clear.html">
     <f:checkbox checked="${it.clear}" />
   </f:entry>
-  <f:entry title="${%Nature}" help="/plugin/shiningpanda/help/builders/help-nature.html">
+  <f:entry title="${%Nature}" help="${resURL}/plugin/shiningpanda/help/builders/help-nature.html">
     <select class="setting-input" name="nature">
       <j:forEach var="nature" items="${descriptor.natures}">
         <f:option selected="${nature.key==instance.nature}" value="${nature.key}">${nature.name}</f:option>
       </j:forEach>
     </select>
   </f:entry>
-  <f:entry title="${%Command}" help="/plugin/shiningpanda/help/builders/help-command.html">
+  <f:entry title="${%Command}" help="${resURL}/plugin/shiningpanda/help/builders/help-command.html">
     <f:textarea field="command" class="fixed-width" />
   </f:entry>
   <f:advanced>
-    <f:entry field="ignoreExitCode" title="${%Ignore exit code}" help="/plugin/shiningpanda/help/builders/help-ignoreExitCode.html">
+    <f:entry field="ignoreExitCode" title="${%Ignore exit code}" help="${resURL}/plugin/shiningpanda/help/builders/help-ignoreExitCode.html">
       <f:checkbox checked="${it.ignoreExitCode}" />
     </f:entry>
-    <f:entry title="${%Name}" help="/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-home.html">
+    <f:entry title="${%Name}" help="${resURL}/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-home.html">
       <f:textbox field="home"/>
     </f:entry>
     <j:choose>
@@ -53,12 +53,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         </f:invisibleEntry>
       </j:when>
       <j:otherwise>
-        <f:entry field="systemSitePackages" title="${%System site packages}" help="/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-systemSitePackages.html">
+        <f:entry field="systemSitePackages" title="${%System site packages}" help="${resURL}/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-systemSitePackages.html">
           <f:checkbox checked="${it.systemSitePackages}" />
         </f:entry>
       </j:otherwise>
     </j:choose>
-    <f:entry title="${%Package manager}" help="/plugin/shiningpanda/help/builders/help-useDistribute.html">
+    <f:entry title="${%Package manager}" help="${resURL}/plugin/shiningpanda/help/builders/help-useDistribute.html">
       <f:radio name="useDistribute" value="true" checked="${ instance==null || instance.useDistribute==true }" />
       <label class="attach-previous">${%Distribute}</label>
       <st:nbsp />

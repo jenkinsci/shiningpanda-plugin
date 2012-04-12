@@ -18,6 +18,7 @@
 package jenkins.plugins.shiningpanda.matrix;
 
 import hudson.Extension;
+import hudson.Functions;
 import hudson.Util;
 import hudson.matrix.Axis;
 import hudson.matrix.AxisDescriptor;
@@ -148,7 +149,7 @@ public class ToxAxis extends Axis
         @Override
         public String getHelpFile()
         {
-            return "/plugin/shiningpanda/help/matrix/ToxAxis/help.html";
+            return Functions.getResourcePath() + "/plugin/shiningpanda/help/matrix/ToxAxis/help.html";
         }
 
         /*

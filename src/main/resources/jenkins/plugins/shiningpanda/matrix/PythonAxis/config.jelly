@@ -17,7 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
-  <f:entry help="/plugin/shiningpanda/help/matrix/PythonAxis/help-python.html">
+  <f:entry help="${resURL}/plugin/shiningpanda/help/matrix/PythonAxis/help-python.html">
     <j:choose>
       <j:when test="${descriptor.HOSTED}">
         <div class="yahooTree pythonAxis-tree" style="border: 1px solid gray; height: 10em; overflow:auto;" values="${instance.treeValueString}" />

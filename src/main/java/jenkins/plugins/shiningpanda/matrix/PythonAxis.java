@@ -97,7 +97,7 @@ public class PythonAxis extends Axis
         @Override
         public String getHelpFile()
         {
-            return "/plugin/shiningpanda/help/matrix/PythonAxis/help.html";
+            return Functions.getResourcePath() + "/plugin/shiningpanda/help/matrix/PythonAxis/help.html";
         }
 
         /*

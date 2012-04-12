@@ -17,10 +17,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-  <f:entry title="${%Name}" field="name" help="/plugin/shiningpanda/help/tools/PythonInstallation/help-name.html">
+  <f:entry title="${%Name}" field="name" help="${resURL}/plugin/shiningpanda/help/tools/PythonInstallation/help-name.html">
     <f:textbox />
   </f:entry>
-  <f:entry title="${%Home}" field="home" help="/plugin/shiningpanda/help/tools/PythonInstallation/help-home.html">
+  <f:entry title="${%Home}" field="home" help="${resURL}/plugin/shiningpanda/help/tools/PythonInstallation/help-home.html">
     <f:textbox />
   </f:entry>
 </j:jelly>

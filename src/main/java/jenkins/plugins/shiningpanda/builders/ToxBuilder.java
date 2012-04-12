@@ -20,6 +20,7 @@ package jenkins.plugins.shiningpanda.builders;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
+import hudson.Functions;
 import hudson.Launcher;
 import hudson.Util;
 import hudson.matrix.MatrixProject;
@@ -221,7 +222,7 @@ public class ToxBuilder extends Builder implements Serializable
         @Override
         public String getHelpFile()
         {
-            return "/plugin/shiningpanda/help/builders/ToxBuilder/help.html";
+            return Functions.getResourcePath() + "/plugin/shiningpanda/help/builders/ToxBuilder/help.html";
         }
 
         /*

@@ -17,21 +17,21 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-  <f:entry title="${%Home}" help="/plugin/shiningpanda/help/builders/CustomPythonBuilder/help-home.html">
+  <f:entry title="${%Home}" help="${resURL}/plugin/shiningpanda/help/builders/CustomPythonBuilder/help-home.html">
     <f:textbox field="home"/>
   </f:entry>
-  <f:entry title="${%Nature}" help="/plugin/shiningpanda/help/builders/help-nature.html">
+  <f:entry title="${%Nature}" help="${resURL}/plugin/shiningpanda/help/builders/help-nature.html">
     <select class="setting-input" name="nature">
       <j:forEach var="nature" items="${descriptor.natures}">
         <f:option selected="${nature.key==instance.nature}" value="${nature.key}">${nature.name}</f:option>
       </j:forEach>
     </select>
   </f:entry>
-  <f:entry title="${%Command}" help="/plugin/shiningpanda/help/builders/help-command.html">
+  <f:entry title="${%Command}" help="${resURL}/plugin/shiningpanda/help/builders/help-command.html">
     <f:textarea field="command" class="fixed-width" />
   </f:entry>
   <f:advanced>
-    <f:entry field="ignoreExitCode" title="${%Ignore exit code}" help="/plugin/shiningpanda/help/builders/help-ignoreExitCode.html">
+    <f:entry field="ignoreExitCode" title="${%Ignore exit code}" help="${resURL}/plugin/shiningpanda/help/builders/help-ignoreExitCode.html">
       <f:checkbox checked="${it.ignoreExitCode}" />
     </f:entry>
   </f:advanced>
