@@ -60,12 +60,15 @@ public class Jython extends Python
     @Override
     public FilePath getExecutable() throws IOException, InterruptedException
     {
+        // For JYTHON 2.2.1, binary is only in the home folder, for later
+        // versions use the one in the bin folder (for those versions, do not
+        // use the binary available in the home to avoid $JAVA_HOME and
+        // $JYTHON_HOME_FALLBACK exports in script header)
         // Check if on Windows
         if (isWindows())
-            // On windows this is jython.bat
-            return FilePathUtil.isFileOrNull(getHome().child("bin").child("jython.bat"));
-        // On UNIX no extension. For JYTHON 2.2.1, 2.5.0 and 2.5.1 the binary is
-        // directly in the home folder, later versions are in the bin folder.
+            // If on Windows, look for .bat
+            return FilePathUtil.isFileOrNull(getHome().child("bin").child("jython.bat"), getHome().child("jython.bat"));
+        // On UNIX no extension
         return FilePathUtil.isFileOrNull(getHome().child("bin").child("jython"), getHome().child("jython"));
     }
 
