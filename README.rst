@@ -12,6 +12,7 @@ About
 
 This plugin is developed by ShiningPanda S.A.S., a `Hosted Continuous Integration Service <https://www.shiningpanda.com/>`_ provider
 and an expert in `Build and Release Management <https://www.shiningpanda.com/services/>`_ services.
+`Contact us <https://www.shiningpanda.com/about/>`_ for more informations!
 
 Features
 --------
