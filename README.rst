@@ -11,7 +11,7 @@ Copyright © 2011-2012, ShiningPanda S.A.S.
 About
 -----
 
-This plugin is developed by ShiningPanda S.A.S., an `Hosted Continuous Integration Service provider <https://www.shiningpanda.com/>`_
+This plugin is developed by ShiningPanda S.A.S., an `Hosted Continuous Integration Service <https://www.shiningpanda.com/>`_ provider
 and an expert in `Build and Release Management services <https://www.shiningpanda.com/services/>`_.
 
 Features
