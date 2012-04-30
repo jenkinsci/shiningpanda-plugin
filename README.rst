@@ -6,7 +6,7 @@
 ShiningPanda Plugin for Jenkins
 ===============================
 
-Copyright &copy; 2011-2012, ShiningPanda S.A.S.
+Copyright © 2011-2012, ShiningPanda S.A.S.
 
 About
 -----
@@ -14,14 +14,14 @@ About
 This plugin is developed by ShiningPanda S.A.S., an `Hosted Continuous Integration Service provider <https://www.shiningpanda.com/>`_
 and an expert in `Build and Release Management services <https://www.shiningpanda.com/services/>`_.
 
-It adds Python support to Jenkins with some useful builders
-(standard Python builder, `virtualenv <http://pypi.python.org/pypi/virtualenv>`_ builder, ...)
-and the ability to use a Python axis in multi-configuration projects (for testing on multiple versions of Python).
+Features
+--------
 
-News and Website
+This plugin adds Python support to Jenkins with some useful builders and tools. For more details see `Jenkins' wiki <https://wiki.jenkins-ci.org/display/JENKINS/ShiningPanda+Plugin>`_.
+
+News
 ----------------
 
-All about ShiningPanda can be found on our `website <https://www.shiningpanda.com/>`_.
 Follow us on Twitter `@shiningpandaci <http://twitter.com/shiningpandaci>`_ and on `Blogger <http://blog.shiningpanda.com/>`_.
 
 License
