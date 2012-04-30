@@ -21,7 +21,7 @@ This plugin adds Python support to Jenkins with some useful builders and tools. 
 News
 ----------------
 
-Follow us on Twitter `@shiningpandaci <http://twitter.com/shiningpandaci>`_ and on `Blogger <http://blog.shiningpanda.com/>`_.
+Follow us on `Twitter <http://twitter.com/shiningpandaci>`_ and on `Blogger <http://blog.shiningpanda.com/>`_.
 
 License
 -------
