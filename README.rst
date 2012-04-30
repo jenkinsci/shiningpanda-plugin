@@ -1,6 +1,5 @@
 .. image:: https://www.shiningpanda.com/static/latest/images/shiningpanda_github_readme.png
    :alt: ShiningPanda Logo
-   :align: left
    :target: https://www.shiningpanda.com/
 
 ShiningPanda Plugin for Jenkins
@@ -11,8 +10,8 @@ Copyright © 2011-2012, ShiningPanda S.A.S.
 About
 -----
 
-This plugin is developed by ShiningPanda S.A.S., an `Hosted Continuous Integration Service <https://www.shiningpanda.com/>`_ provider
-and an expert in `Build and Release Management services <https://www.shiningpanda.com/services/>`_.
+This plugin is developed by ShiningPanda S.A.S., a `Hosted Continuous Integration Service <https://www.shiningpanda.com/>`_ provider
+and an expert in `Build and Release Management <https://www.shiningpanda.com/services/>`_ services.
 
 Features
 --------
