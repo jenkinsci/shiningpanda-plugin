@@ -94,7 +94,7 @@ public class BuilderUtil
             String name) throws IOException, InterruptedException
     {
         // Check if this is a matrix build
-        if (build instanceof MatrixRun)
+        if ((Object) build instanceof MatrixRun)
         {
             // Check if the environment contains a PYTHON axis key
             if (!environment.containsKey(PythonAxis.KEY))
