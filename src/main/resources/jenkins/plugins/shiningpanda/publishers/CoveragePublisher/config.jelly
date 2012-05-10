@@ -22,7 +22,7 @@ If not, see <https://raw.github.com/jenkinsci/shiningpanda-plugin/master/LICENSE
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <f:advanced>
-    <f:entry field="htmlDir" title="${%Report directory}" help="${resURL}/plugin/shiningpanda/help/publishers/CoveragePublisher/help-htmlDir.html">
+    <f:entry field="htmlDir" title="${%Report directory}" help="${h.resourcePath}/plugin/shiningpanda/help/publishers/CoveragePublisher/help-htmlDir.html">
       <f:textbox/>
     </f:entry>
   </f:advanced>
