@@ -65,8 +65,11 @@ public class BuildoutBuilder extends Builder implements Serializable
 
     /**
      * Use Distribute instead of SETUPTOOLS
+     * 
+     * @deprecated since 0.14
      */
-    public boolean useDistribute;
+    @Deprecated
+    public transient boolean useDistribute;
 
     /**
      * The nature of the command: PYTHON, shell, X shell
@@ -92,8 +95,6 @@ public class BuildoutBuilder extends Builder implements Serializable
      *            starts BUILDOUT
      * @param buildoutCfg
      *            The BUILDOUT configuration file
-     * @param useDistribute
-     *            Choose between SETUPTOOLS and DISTRIBUTE
      * @param nature
      *            The nature of the command: PYTHON, shell, X shell
      * @param command
@@ -103,8 +104,7 @@ public class BuildoutBuilder extends Builder implements Serializable
      *            exits with a non-zero exit code
      */
     @DataBoundConstructor
-    public BuildoutBuilder(String pythonName, String buildoutCfg, boolean useDistribute, String nature, String command,
-            boolean ignoreExitCode)
+    public BuildoutBuilder(String pythonName, String buildoutCfg, String nature, String command, boolean ignoreExitCode)
     {
         // Call super
         super();
@@ -112,8 +112,6 @@ public class BuildoutBuilder extends Builder implements Serializable
         this.pythonName = pythonName;
         // Store the path to the tox.ini file
         this.buildoutCfg = Util.fixEmptyAndTrim(buildoutCfg);
-        // Use DISTRIBUTE instead of SETUPTOOLS
-        this.useDistribute = useDistribute;
         // Store the nature of the command
         this.nature = nature;
         // Normalize and store the command
@@ -173,7 +171,7 @@ public class BuildoutBuilder extends Builder implements Serializable
                 // Failed to create the environment, do not continue
                 return false;
         // Bootstrap
-        if (!virtualenv.buildout(launcher, listener, workspace, pwd, environment, buildoutCfg, vUseDistribute))
+        if (!virtualenv.buildout(launcher, listener, workspace, pwd, environment, buildoutCfg))
             // Failed to bootstrap, no need to continue
             return false;
         // Get the final environment by adding the binary folder in the path

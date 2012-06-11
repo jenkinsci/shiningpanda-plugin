@@ -47,12 +47,5 @@ If not, see <https://raw.github.com/jenkinsci/shiningpanda-plugin/master/LICENSE
     <f:entry field="ignoreExitCode" title="${%Ignore exit code}" help="${h.resourcePath}/plugin/shiningpanda/help/builders/help-ignoreExitCode.html">
       <f:checkbox checked="${it.ignoreExitCode}" />
     </f:entry>
-    <f:entry title="${%Package manager}" help="${h.resourcePath}/plugin/shiningpanda/help/builders/help-useDistribute.html">
-      <f:radio name="useDistribute" value="true" checked="${ instance==null || instance.useDistribute==true }" />
-      <label class="attach-previous">${%Distribute}</label>
-      <st:nbsp />
-      <f:radio name="useDistribute" value="false" checked="${ instance!=null and instance.useDistribute==false }"/>
-      <label class="attach-previous">${%Setuptools}</label>
-    </f:entry>
   </f:advanced>
 </j:jelly>

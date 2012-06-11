@@ -62,7 +62,7 @@ If not, see <https://raw.github.com/jenkinsci/shiningpanda-plugin/master/LICENSE
         </f:entry>
       </j:otherwise>
     </j:choose>
-    <f:entry title="${%Package manager}" help="${h.resourcePath}/plugin/shiningpanda/help/builders/help-useDistribute.html">
+    <f:entry title="${%Package manager}" help="${h.resourcePath}/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-useDistribute.html">
       <f:radio name="useDistribute" value="true" checked="${ instance==null || instance.useDistribute==true }" />
       <label class="attach-previous">${%Distribute}</label>
       <st:nbsp />

@@ -405,14 +405,12 @@ public class Virtualenv extends Python
      *            The environment
      * @param buildoutCfg
      *            The BUILDOUT configuration file
-     * @param useDistribute
-     *            Use DISTRIBUTE instead of SETUPTOOLS
      * @return true if setup was successful, else false
      * @throws InterruptedException
      * @throws IOException
      */
     public boolean buildout(Launcher launcher, TaskListener listener, Workspace workspace, FilePath pwd, EnvVars environment,
-            String buildoutCfg, boolean useDistribute) throws InterruptedException, IOException
+            String buildoutCfg) throws InterruptedException, IOException
     {
         // Get the environment
         EnvVars finalEnvironment = EnvVarsUtil.override(environment, getEnvironment());
@@ -424,10 +422,6 @@ public class Virtualenv extends Python
         args.add(workspace.getBootstrapPy().getRemote());
         // Add the configuration
         args.add("-c").add(buildoutCfg);
-        // If use distribute, add the flag
-        if (useDistribute)
-            // Add the flag
-            args.add("--distribute");
         // Start bootstrap
         if (!LauncherUtil.launch(launcher, listener, pwd, finalEnvironment, args))
             // Failed to bootstrap, no need to go further

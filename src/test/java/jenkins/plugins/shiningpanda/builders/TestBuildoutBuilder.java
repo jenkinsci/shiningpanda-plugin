@@ -36,25 +36,25 @@ public class TestBuildoutBuilder extends ShiningPandaTestCase
     public void testRoundTripFreeStyle() throws Exception
     {
         PythonInstallation installation = configureCPython2();
-        BuildoutBuilder before = new BuildoutBuilder(installation.getName(), "foo/buildout.cfg", true,
-                CommandNature.SHELL.getKey(), "echo hello", true);
+        BuildoutBuilder before = new BuildoutBuilder(installation.getName(), "foo/buildout.cfg", CommandNature.SHELL.getKey(),
+                "echo hello", true);
         BuildoutBuilder after = configFreeStyleRoundtrip(before);
-        assertEqualBeans2(before, after, "pythonName,buildoutCfg,useDistribute,nature,command,ignoreExitCode");
+        assertEqualBeans2(before, after, "pythonName,buildoutCfg,nature,command,ignoreExitCode");
     }
 
     public void testRoundTripMatrix() throws Exception
     {
-        BuildoutBuilder before = new BuildoutBuilder("foobar", "bar/dev.cfg", false, CommandNature.PYTHON.getKey(),
-                "echo hello", false);
+        BuildoutBuilder before = new BuildoutBuilder("foobar", "bar/dev.cfg", CommandNature.PYTHON.getKey(), "echo hello",
+                false);
         BuildoutBuilder after = configPythonMatrixRoundtrip(before);
-        assertEqualBeans2(before, after, "buildoutCfg,useDistribute,nature,command,ignoreExitCode");
+        assertEqualBeans2(before, after, "buildoutCfg,nature,command,ignoreExitCode");
     }
 
     public void test() throws Exception
     {
         PythonInstallation installation = configureCPython2();
         String buildoutCfg = "buildout.cfg";
-        BuildoutBuilder builder = new BuildoutBuilder(installation.getName(), buildoutCfg, true, CommandNature.SHELL.getKey(),
+        BuildoutBuilder builder = new BuildoutBuilder(installation.getName(), buildoutCfg, CommandNature.SHELL.getKey(),
                 "django --help", true);
         FreeStyleProject project = createFreeStyleProject();
         StringBuffer sb = new StringBuffer();
