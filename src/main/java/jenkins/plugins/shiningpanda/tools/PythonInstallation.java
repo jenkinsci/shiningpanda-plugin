@@ -237,7 +237,7 @@ public class PythonInstallation extends ToolInstallation implements EnvironmentS
                 // Do not perform the validation
                 return FormValidation.ok();
             // Validate PYTHON home
-            return FormValidationUtil.validatePythonHome(value);
+            return FormValidationUtil.validatePython(value);
         }
 
         /**

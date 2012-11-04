@@ -32,37 +32,41 @@ public class FormValidationUtil
 {
 
     /**
-     * Validate PYTHON home: verify that specified, exists and has no whitespace
-     * in it.
+     * Validate PYTHON: verify that specified, exists and has no whitespace in
+     * it.
      * 
      * @param home
-     *            The PYTHON home to validate.
+     *            The PYTHON home or executable to validate.
      * @return The validation result.
      */
-    public static FormValidation validatePythonHome(String home)
+    public static FormValidation validatePython(String home)
     {
         // Get the file value as a string
         home = Util.fixEmptyAndTrim(home);
         // Check is a value was provided
         if (home == null)
             // Value is required
-            return FormValidation.error(Messages.FormValidationUtil_PythonHome_Required());
+            return FormValidation.error(Messages.FormValidationUtil_Python_Required());
         // Expand the home
         home = EnvVarsUtil.expand(home);
         // Check that path does not contains some whitespace chars
         if (StringUtil.hasWhitespace(home))
             // No whitespace allowed
-            return FormValidation.error(Messages.FormValidationUtil_PythonHome_WhitespaceNotAllowed());
+            return FormValidation.error(Messages.FormValidationUtil_Python_WhitespaceNotAllowed());
         // Get a file
         File file = new File(home);
         // Check if absolute
         if (!file.isAbsolute())
             // Absolute path required
-            return FormValidation.error(Messages.FormValidationUtil_PythonHome_AbsolutePathRequired());
-        // Check that folder exists
-        if (!file.isDirectory())
-            // Display a warning
-            return FormValidation.error(Messages.FormValidationUtil_PythonHome_NotADirectory());
+            return FormValidation.error(Messages.FormValidationUtil_Python_AbsolutePathRequired());
+        // Check that exists
+        if (!file.exists())
+            // Display an error
+            return FormValidation.error(Messages.FormValidationUtil_Python_NotExists());
+        // Check that file is executable
+        else if (file.isFile() && !file.canExecute())
+            // Display an error
+            return FormValidation.error(Messages.FormValidationUtil_Python_NotExecutable());
         // Seems fine
         return FormValidation.ok();
     }

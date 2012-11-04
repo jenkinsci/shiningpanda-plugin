@@ -188,7 +188,7 @@ public class CustomPythonBuilder extends Builder implements Serializable
                 // Do not validate
                 return FormValidation.ok();
             // Validate PYTHON home
-            return FormValidationUtil.validatePythonHome(value);
+            return FormValidationUtil.validatePython(value);
         }
 
         /**
