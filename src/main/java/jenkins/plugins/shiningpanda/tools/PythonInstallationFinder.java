@@ -141,8 +141,16 @@ public class PythonInstallationFinder
     {
         // Store candidates
         LinkedHashMap<String, String> candidates = new LinkedHashMap<String, String>();
-        // MacPort
-        candidates.put("System", "/usr");
+        // CPython
+        candidates.put("System-CPython-2.4", "/usr/bin/python2.4");
+        candidates.put("System-CPython-2.5", "/usr/bin/python2.5");
+        candidates.put("System-CPython-2.6", "/usr/bin/python2.6");
+        candidates.put("System-CPython-2.7", "/usr/bin/python2.7");
+        candidates.put("System-CPython-3.0", "/usr/bin/python3.0");
+        candidates.put("System-CPython-3.1", "/usr/bin/python3.1");
+        candidates.put("System-CPython-3.2", "/usr/bin/python3.2");
+        // JYTHON
+        candidates.put("System-Jython", "/usr/bin/jython");
         // Return candidates
         return candidates;
     }

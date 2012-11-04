@@ -49,17 +49,6 @@ public class CPython extends Python
     /*
      * (non-Javadoc)
      * 
-     * @see jenkins.plugins.shiningpanda.interpreters.Python#isCPython()
-     */
-    @Override
-    public CPython isCPython()
-    {
-        return this;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see jenkins.plugins.shiningpanda.interpreters.Python#getExecutable()
      */
     @Override

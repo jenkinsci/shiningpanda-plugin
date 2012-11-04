@@ -48,17 +48,6 @@ public class IronPython extends Python
     /*
      * (non-Javadoc)
      * 
-     * @see jenkins.plugins.shiningpanda.interpreters.Python#isIronPython()
-     */
-    @Override
-    public IronPython isIronPython()
-    {
-        return this;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see jenkins.plugins.shiningpanda.interpreters.Python#getExecutable()
      */
     @Override

@@ -29,18 +29,18 @@ import java.util.Map;
 
 import jenkins.plugins.shiningpanda.utils.FilePathUtil;
 
-public class PyPy extends Python
+public class Executable extends Python
 {
 
     /**
-     * Constructor using fields
+     * Constructor using fields.
      * 
      * @param home
-     *            The home folder
+     *            The executable
      * @throws InterruptedException
      * @throws IOException
      */
-    protected PyPy(FilePath home) throws IOException, InterruptedException
+    protected Executable(FilePath home) throws IOException, InterruptedException
     {
         super(home);
     }
@@ -53,12 +53,8 @@ public class PyPy extends Python
     @Override
     public FilePath getExecutable() throws IOException, InterruptedException
     {
-        // Check if on Windows
-        if (isWindows())
-            // If on windows look for executables in home folder
-            return FilePathUtil.isFileOrNull(getHome().child("pypy-c.exe"), getHome().child("pypy.exe"));
-        // Else look in bin folder
-        return FilePathUtil.isFileOrNull(getHome().child("bin").child("pypy-c"), getHome().child("bin").child("pypy"));
+        // Check if the executable path exists
+        return FilePathUtil.isFileOrNull(getHome());
     }
 
     /*
@@ -72,23 +68,13 @@ public class PyPy extends Python
     {
         // Store the environment
         Map<String, String> environment = new HashMap<String, String>();
-        // Check if home variable required
-        if (includeHomeKey)
-            // Define PYTHONHOME
-            environment.put("PYTHONHOME", getHome().getRemote());
-        // Else delete it from environment
-        else
-            // Delete
-            environment.put("PYTHONHOME", null);
+        // Get the path value
+        String value = getHome().getParent().getRemote();
         // Check if on Windows
         if (isWindows())
-            // If on Windows add home folder and bin folder in PATH
-            environment.put("PATH+", getHome().getRemote() + ";" + getHome().child("bin").getRemote());
-        // Handle UNIX
-        else
-            // Add bin folder in PATH
-            environment.put("PATH+", getHome().child("bin").getRemote());
-        // Return environment
+            // Add the script folder on Windows
+            environment.put("PATH+", value + ";" + getHome().getParent().child("Scripts").getRemote());
+        // Return the environment
         return environment;
     }
 }

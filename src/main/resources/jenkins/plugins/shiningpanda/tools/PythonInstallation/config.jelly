@@ -24,7 +24,7 @@ If not, see <https://raw.github.com/jenkinsci/shiningpanda-plugin/master/LICENSE
   <f:entry title="${%Name}" field="name" help="${h.resourcePath}/plugin/shiningpanda/help/tools/PythonInstallation/help-name.html">
     <f:textbox />
   </f:entry>
-  <f:entry title="${%Home}" field="home" help="${h.resourcePath}/plugin/shiningpanda/help/tools/PythonInstallation/help-home.html">
+  <f:entry title="${%Home or executable}" field="home" help="${h.resourcePath}/plugin/shiningpanda/help/tools/PythonInstallation/help-home.html">
     <f:textbox />
   </f:entry>
 </j:jelly>
