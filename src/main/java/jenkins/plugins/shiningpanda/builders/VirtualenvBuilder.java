@@ -38,7 +38,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import jenkins.plugins.shiningpanda.Messages;
-import jenkins.plugins.shiningpanda.ShiningPanda;
 import jenkins.plugins.shiningpanda.command.CommandNature;
 import jenkins.plugins.shiningpanda.interpreters.Python;
 import jenkins.plugins.shiningpanda.interpreters.Virtualenv;
@@ -220,12 +219,6 @@ public class VirtualenvBuilder extends Builder implements Serializable
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder>
     {
-
-        /**
-         * Let Jelly access the hosted flag.
-         */
-        public static boolean HOSTED = ShiningPanda.HOSTED;
-
         /**
          * (non-Javadoc)
          * 

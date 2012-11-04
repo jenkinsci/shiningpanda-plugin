@@ -51,16 +51,9 @@ If not, see <https://raw.github.com/jenkinsci/shiningpanda-plugin/master/LICENSE
       <f:textbox field="home"/>
     </f:entry>
     <j:choose>
-      <j:when test="${descriptor.HOSTED}">
-        <f:invisibleEntry>
-          <input type="hidden" name="systemSitePackages" value="${it.systemSitePackages}"/>
-        </f:invisibleEntry>
-      </j:when>
-      <j:otherwise>
-        <f:entry field="systemSitePackages" title="${%System site packages}" help="${h.resourcePath}/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-systemSitePackages.html">
-          <f:checkbox checked="${it.systemSitePackages}" />
-        </f:entry>
-      </j:otherwise>
+      <f:entry field="systemSitePackages" title="${%System site packages}" help="${h.resourcePath}/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-systemSitePackages.html">
+        <f:checkbox checked="${it.systemSitePackages}" />
+      </f:entry>
     </j:choose>
     <f:entry title="${%Package manager}" help="${h.resourcePath}/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-useDistribute.html">
       <f:radio name="useDistribute" value="true" checked="${ instance==null || instance.useDistribute==true }" />

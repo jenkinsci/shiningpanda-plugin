@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jenkins.plugins.shiningpanda.ShiningPanda;
 import jenkins.plugins.shiningpanda.utils.EnvVarsUtil;
 import jenkins.plugins.shiningpanda.utils.FilePathUtil;
 import jenkins.plugins.shiningpanda.utils.LauncherUtil;
@@ -250,9 +249,8 @@ public class Virtualenv extends Python
         if (useDistribute)
             // Add the flag
             args.add("--distribute");
-        // If no site package required, add the flag. If hosted by ShiningPanda
-        // always add the flag
-        if (systemSitePackages && !ShiningPanda.HOSTED)
+        // If use system site package, add the flag
+        if (systemSitePackages)
             // Add the flag
             args.add("--system-site-packages");
         // Get the folder where packages can be found (PIP, ...)
