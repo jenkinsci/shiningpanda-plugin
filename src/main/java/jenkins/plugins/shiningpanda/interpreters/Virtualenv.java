@@ -56,6 +56,17 @@ public class Virtualenv extends Python
     /*
      * (non-Javadoc)
      * 
+     * @see jenkins.plugins.shiningpanda.interpreters.Python#isVirtualenv()
+     */
+    @Override
+    public Virtualenv isVirtualenv()
+    {
+        return this;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see jenkins.plugins.shiningpanda.interpreters.Python#isValid()
      */
     @Override
@@ -252,7 +263,7 @@ public class Virtualenv extends Python
         args.add(getHome().getRemote());
         // Do not set JYTHON_HOME in environment if this is JYTHON
         // See https://github.com/pypa/virtualenv/issues/185
-        boolean includeHomeKey = !interpreter.getExecutable().getRemote().toLowerCase().contains("jython");
+        boolean includeHomeKey = interpreter.isJython() == null;
         // Start creation
         boolean success = LauncherUtil.launch(launcher, listener, pwd,
                 EnvVarsUtil.override(environment, interpreter.getEnvironment(includeHomeKey)), args);

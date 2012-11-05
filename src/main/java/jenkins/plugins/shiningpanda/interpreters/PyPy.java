@@ -48,6 +48,17 @@ public class PyPy extends Python
     /*
      * (non-Javadoc)
      * 
+     * @see jenkins.plugins.shiningpanda.interpreters.Python#isPyPy()
+     */
+    @Override
+    public PyPy isPyPy()
+    {
+        return this;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see jenkins.plugins.shiningpanda.interpreters.Python#getExecutable()
      */
     @Override

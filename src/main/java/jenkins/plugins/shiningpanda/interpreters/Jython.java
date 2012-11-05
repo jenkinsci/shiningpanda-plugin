@@ -48,6 +48,17 @@ public class Jython extends Python
     /*
      * (non-Javadoc)
      * 
+     * @see jenkins.plugins.shiningpanda.interpreters.Python#isJython()
+     */
+    @Override
+    public Jython isJython()
+    {
+        return this;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see jenkins.plugins.shiningpanda.interpreters.Python#getExecutable()
      */
     @Override

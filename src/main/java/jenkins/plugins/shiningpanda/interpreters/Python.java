@@ -74,6 +74,66 @@ public abstract class Python
     }
 
     /**
+     * Is this a CPython implementation?
+     * 
+     * @return true if this is a CPython implementation, else false
+     */
+    public CPython isCPython()
+    {
+        return null;
+    }
+
+    /**
+     * Is this a PyPy implementation?
+     * 
+     * @return true if this is a PyPy implementation, else false
+     */
+    public PyPy isPyPy()
+    {
+        return null;
+    }
+
+    /**
+     * Is this a JYTHON implementation?
+     * 
+     * @return true if this is a JYTHON implementation, else false
+     */
+    public Jython isJython()
+    {
+        return null;
+    }
+
+    /**
+     * Is this a IronPython implementation?
+     * 
+     * @return true if this is a IronPython implementation, else false
+     */
+    public IronPython isIronPython()
+    {
+        return null;
+    }
+
+    /**
+     * Is this a VIRTUALENV?
+     * 
+     * @return true if this is a VIRTUALENV, else false
+     */
+    public Virtualenv isVirtualenv()
+    {
+        return null;
+    }
+
+    /**
+     * Is this an executable implementation?
+     * 
+     * @return true if this is an executable implementation, else false
+     */
+    public Executable isExecutable()
+    {
+        return null;
+    }
+
+    /**
      * Check if this is a valid interpreter.
      * 
      * @return true if this is a valid interpreter

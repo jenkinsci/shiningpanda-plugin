@@ -48,6 +48,17 @@ public class Executable extends Python
     /*
      * (non-Javadoc)
      * 
+     * @see jenkins.plugins.shiningpanda.interpreters.Python#isExecutable()
+     */
+    @Override
+    public Executable isExecutable()
+    {
+        return this;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see jenkins.plugins.shiningpanda.interpreters.Python#getExecutable()
      */
     @Override
