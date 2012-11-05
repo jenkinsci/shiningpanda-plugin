@@ -290,10 +290,8 @@ public abstract class Workspace
         else
             // Use the name of the project or the provided name if exists
             id = name != null ? name : project.getName();
-        // Get the home folder of this workspace
-        FilePath work = node.getRootPath().child(BASENAME).child("jobs").child(Util.getDigestOf(id).substring(0, 8));
         // Build the workspace from home
-        return fromHome(work);
+        return fromHome(WorkspaceHomeProperty.get(node).child(Util.getDigestOf(id).substring(0, 8)));
     }
 
     /**
