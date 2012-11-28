@@ -66,7 +66,7 @@ public class WorkspaceHomeProperty extends NodeProperty<Node>
                     // Return the home folder
                     return new FilePath(node.getChannel(), property.getHome());
         // Else relative to root
-        return node.getRootPath().child(Workspace.BASENAME);
+        return node.getRootPath().child(Workspace.BASENAME).child("jobs");
     }
 
     @Extension
