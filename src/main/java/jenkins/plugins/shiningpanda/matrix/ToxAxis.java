@@ -132,7 +132,7 @@ public class ToxAxis extends Axis
          * Default TOX environments
          */
         public static final List<String> DEFAULTS = Collections.unmodifiableList(Arrays.asList(new String[] { "py24", "py25",
-                "py26", "py27", "py30", "py31", "py32", "jython", "pypy" }));
+                "py26", "py27", "py30", "py31", "py32", "py33", "jython", "pypy" }));
 
         /*
          * (non-Javadoc)
