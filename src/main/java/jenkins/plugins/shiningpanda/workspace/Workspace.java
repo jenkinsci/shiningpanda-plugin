@@ -31,7 +31,6 @@ import hudson.model.AbstractProject;
 import hudson.model.Node;
 import hudson.model.Project;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -108,13 +107,23 @@ public abstract class Workspace
     }
 
     /**
+     * Folder containing the scripts on master
+     * 
+     * @return The folder containing the scripts
+     */
+    private FilePath getScriptsDir()
+    {
+        return Jenkins.getInstance().getRootPath().child("plugins").child("shiningpanda").child("scripts");
+    }
+
+    /**
      * Get the VIRTUALENV module file on master.
      * 
      * @return The VIRTUALENV module file
      */
     public FilePath getMasterVirtualenvPy()
     {
-        return new FilePath(new File(getClass().getResource(VIRTUALENV).getFile()));
+        return getScriptsDir().child(VIRTUALENV);
     }
 
     /**
@@ -133,7 +142,7 @@ public abstract class Workspace
      */
     public FilePath getMasterBootstrapPy()
     {
-        return new FilePath(new File(getClass().getResource(BOOTSTRAP).getFile()));
+        return getScriptsDir().child(BOOTSTRAP);
     }
 
     /**
