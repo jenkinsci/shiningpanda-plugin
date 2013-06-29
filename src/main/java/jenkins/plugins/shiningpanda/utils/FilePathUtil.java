@@ -23,6 +23,7 @@ package jenkins.plugins.shiningpanda.utils;
 
 import hudson.FilePath;
 import hudson.Functions;
+import hudson.Util;
 import hudson.remoting.Callable;
 
 import java.io.File;
@@ -212,6 +213,24 @@ public class FilePathUtil
     }
 
     /**
+     * Check if remote file contains the provided content.
+     * 
+     * @param filePath
+     *            The first file
+     * @param content
+     *            The content
+     * @return true if the file contains the provided content, else false
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static boolean differ(FilePath filePath, String content) throws IOException, InterruptedException
+    {
+        if (filePath.exists())
+            return filePath.digest() != Util.getDigestOf(content);
+        return true;
+    }
+
+    /**
      * Check if the provided path is a file
      * 
      * @param filePath
@@ -237,6 +256,27 @@ public class FilePathUtil
     public static boolean isDirectory(FilePath filePath) throws IOException, InterruptedException
     {
         return filePath != null && filePath.isDirectory();
+    }
+
+    /**
+     * Synchronize a file or all files in a directory.
+     * 
+     * @param filePath
+     *            The file to synchronize
+     * @param content
+     *            The content to synchronize
+     * @return The synchronized file
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static FilePath synchronize(FilePath filePath, String content) throws IOException, InterruptedException
+    {
+        // Check if differ
+        if (differ(filePath, content))
+            // If differ, write
+            filePath.write(content, "UTF-8");
+        // Return the file path
+        return filePath;
     }
 
     /**

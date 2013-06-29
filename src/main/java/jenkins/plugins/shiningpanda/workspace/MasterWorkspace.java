@@ -42,34 +42,12 @@ public class MasterWorkspace extends Workspace
     /*
      * (non-Javadoc)
      * 
-     * @see jenkins.plugins.shiningpanda.workspace.Workspace#getVirtualenvPy()
-     */
-    @Override
-    public FilePath getVirtualenvPy()
-    {
-        return getMasterVirtualenvPy();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see jenkins.plugins.shiningpanda.workspace.Workspace#getPackagesDir()
      */
     @Override
     public FilePath getPackagesDir() throws IOException, InterruptedException
     {
         return getMasterPackagesDir();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see jenkins.plugins.shiningpanda.workspace.Workspace#getBootstrapPy()
-     */
-    @Override
-    public FilePath getBootstrapPy() throws IOException, InterruptedException
-    {
-        return getMasterBootstrapPy();
     }
 
 }

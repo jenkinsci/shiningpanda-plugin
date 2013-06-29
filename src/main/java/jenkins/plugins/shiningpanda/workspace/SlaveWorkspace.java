@@ -45,17 +45,6 @@ public class SlaveWorkspace extends Workspace
     /*
      * (non-Javadoc)
      * 
-     * @see jenkins.plugins.shiningpanda.workspace.Workspace#getVirtualenvPy()
-     */
-    @Override
-    public FilePath getVirtualenvPy() throws IOException, InterruptedException
-    {
-        return FilePathUtil.synchronize(getMasterVirtualenvPy(), getHome().child(VIRTUALENV));
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see jenkins.plugins.shiningpanda.workspace.Workspace#getPackagesDir()
      */
     @Override
@@ -64,14 +53,4 @@ public class SlaveWorkspace extends Workspace
         return FilePathUtil.isDirectoryOrNull(FilePathUtil.synchronize(getMasterPackagesDir(), getHome().child(PACKAGES)));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see jenkins.plugins.shiningpanda.workspace.Workspace#getBootstrapPy()
-     */
-    @Override
-    public FilePath getBootstrapPy() throws IOException, InterruptedException
-    {
-        return FilePathUtil.synchronize(getMasterBootstrapPy(), getHome().child(BOOTSTRAP));
-    }
 }

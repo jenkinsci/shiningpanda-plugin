@@ -21,6 +21,7 @@
  */
 package jenkins.plugins.shiningpanda.workspace;
 
+import hudson.FilePath;
 import hudson.matrix.AxisList;
 import hudson.matrix.MatrixRun;
 import hudson.matrix.MatrixBuild;
@@ -42,14 +43,18 @@ import org.apache.commons.io.FileUtils;
 public class TestWorkspace extends ShiningPandaTestCase
 {
 
-    public void testGetMasterVirtualenvPy() throws Exception
+    public void testGetVirtualenvPy() throws Exception
     {
-        assertFile(getWorkspace().getMasterVirtualenvPy());
+        Workspace workspace = getWorkspace();
+        FilePath slavePy = workspace.getVirtualenvPy();
+        assertFile(slavePy);
     }
 
-    public void testGetMasterBootstrapPy() throws Exception
+    public void testGetBootstrapPy() throws Exception
     {
-        assertFile(getWorkspace().getMasterBootstrapPy());
+        Workspace workspace = getWorkspace();
+        FilePath slavePy = workspace.getBootstrapPy();
+        assertFile(slavePy);
     }
 
     public void testGetMasterPackageDirNotExists() throws Exception

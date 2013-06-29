@@ -30,6 +30,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Node;
 import hudson.model.Project;
+import hudson.util.IOUtils;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -107,23 +108,14 @@ public abstract class Workspace
     }
 
     /**
-     * Folder containing the scripts on master
+     * Get the VIRTUALENV module content.
      * 
-     * @return The folder containing the scripts
+     * @return The VIRTUALENV module content
+     * @throws IOException
      */
-    private FilePath getScriptsDir()
+    public String getVirtualenvPyContent() throws IOException
     {
-        return Jenkins.getInstance().getRootPath().child("plugins").child("shiningpanda").child("scripts");
-    }
-
-    /**
-     * Get the VIRTUALENV module file on master.
-     * 
-     * @return The VIRTUALENV module file
-     */
-    public FilePath getMasterVirtualenvPy()
-    {
-        return getScriptsDir().child(VIRTUALENV);
+        return IOUtils.toString(getClass().getResourceAsStream(VIRTUALENV));
     }
 
     /**
@@ -133,16 +125,20 @@ public abstract class Workspace
      * @throws IOException
      * @throws InterruptedException
      */
-    public abstract FilePath getVirtualenvPy() throws IOException, InterruptedException;
+    public FilePath getVirtualenvPy() throws IOException, InterruptedException
+    {
+        return FilePathUtil.synchronize(getHome().child(VIRTUALENV), getVirtualenvPyContent());
+    }
 
     /**
-     * Get the BUILDOUT bootstrap file on master.
+     * Get the BUILDOUT bootstrap module content.
      * 
-     * @return The BUILDOUT bootstrap module file
+     * @return The BUILDOUT bootstrap module content
+     * @throws IOException
      */
-    public FilePath getMasterBootstrapPy()
+    public String getBootstrapPyContent() throws IOException
     {
-        return getScriptsDir().child(BOOTSTRAP);
+        return IOUtils.toString(getClass().getResourceAsStream(BOOTSTRAP));
     }
 
     /**
@@ -152,7 +148,10 @@ public abstract class Workspace
      * @throws IOException
      * @throws InterruptedException
      */
-    public abstract FilePath getBootstrapPy() throws IOException, InterruptedException;
+    public FilePath getBootstrapPy() throws IOException, InterruptedException
+    {
+        return FilePathUtil.synchronize(getHome().child(BOOTSTRAP), getBootstrapPyContent());
+    }
 
     /**
      * Get the folder on master where user can put some packages to avoid

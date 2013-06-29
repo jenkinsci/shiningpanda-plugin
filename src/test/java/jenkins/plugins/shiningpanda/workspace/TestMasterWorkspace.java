@@ -28,16 +28,6 @@ import jenkins.plugins.shiningpanda.ShiningPandaTestCase;
 public class TestMasterWorkspace extends ShiningPandaTestCase
 {
 
-    public void testGetVirtualenvPy() throws Exception
-    {
-        assertEquals(getMasterWorkspace().getMasterVirtualenvPy(), getMasterWorkspace().getVirtualenvPy());
-    }
-
-    public void testGetBootstrapPy() throws Exception
-    {
-        assertEquals(getMasterWorkspace().getMasterBootstrapPy(), getMasterWorkspace().getBootstrapPy());
-    }
-
     public void testGetPackageDirNotExists() throws Exception
     {
         assertNull("master workspace should not have a package directory", getMasterWorkspace().getPackagesDir());

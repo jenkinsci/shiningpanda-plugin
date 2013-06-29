@@ -24,6 +24,7 @@ package jenkins.plugins.shiningpanda.interpreters;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
+import hudson.Util;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
 
@@ -455,7 +456,7 @@ public class Virtualenv extends Python
         // Add the executable MD5
         sb.append(executable.digest()).append("\n");
         // Get the VIRTUALENV script digest
-        sb.append(workspace.getMasterVirtualenvPy().digest()).append("\n");
+        sb.append(Util.getDigestOf(workspace.getVirtualenvPyContent())).append("\n");
         // Add the distribute flag
         sb.append(useDistribute).append("\n");
         // Add the systemSitePackages flag
