@@ -72,7 +72,7 @@ public class TestWorkspace extends ShiningPandaTestCase
     {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", true, true, false,
-                CommandNature.SHELL.getKey(), "echo", true);
+                CommandNature.SHELL.getKey(), "echo", true, "");
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -89,7 +89,7 @@ public class TestWorkspace extends ShiningPandaTestCase
         PythonInstallation installation2 = configureCPython2();
         PythonInstallation installation3 = configureCPython3();
         VirtualenvBuilder builder = new VirtualenvBuilder(null, "env", true, true, false, CommandNature.SHELL.getKey(), "echo",
-                false);
+                false, "");
         MatrixProject project = createMatrixProject();
         AxisList axes = new AxisList(new PythonAxis(new String[] { installation2.getName(), installation3.getName() }));
         project.setAxes(axes);

@@ -325,6 +325,24 @@ public class Virtualenv extends Python
     public boolean pipInstall(Launcher launcher, TaskListener listener, Workspace workspace, FilePath pwd, EnvVars environment,
             String packageName) throws InterruptedException, IOException
     {
+        ArgumentListBuilder args = makePipArgumentBuilder(workspace);
+
+        args.add(packageName);
+        // Start the process and return status
+        return LauncherUtil.launch(launcher, listener, pwd, EnvVarsUtil.override(environment, getEnvironment()), args);
+    }
+
+    /**
+     * Generate generic pip command line arguments independent of what to install.
+     *
+     * @param workspace
+     *            The workspace
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
+
+    private ArgumentListBuilder makePipArgumentBuilder(Workspace workspace) throws IOException, InterruptedException {
         // Create the arguments for the command line
         ArgumentListBuilder args = new ArgumentListBuilder();
         // Add path to PYTHON executable
@@ -344,7 +362,36 @@ public class Virtualenv extends Python
         // Ask for upgrade
         args.add("--upgrade");
         // The package to install
-        args.add(packageName);
+        return args;
+    }
+
+    /**
+     * Install dependencies from a requirements file with PIP.
+     *
+     * @param launcher
+     *            The launcher
+     * @param listener
+     *            The listener
+     * @param workspace
+     *            The workspace
+     * @param pwd
+     *            The working directory
+     * @param environment
+     *            The environment
+     * @param requirementsFile
+     *            The file containing the dependencies
+     * @return true if installation was successful, else false
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public boolean pipInstallRequirements(Launcher launcher, TaskListener listener, Workspace workspace, FilePath pwd, EnvVars environment,
+                              String requirementsFile) throws InterruptedException, IOException
+    {
+        // Create the arguments for the command line
+        ArgumentListBuilder args = makePipArgumentBuilder(workspace);
+        // the requirementsfile with flag
+        args.add("-r");
+        args.add(requirementsFile);
         // Start the process and return status
         return LauncherUtil.launch(launcher, listener, pwd, EnvVarsUtil.override(environment, getEnvironment()), args);
     }
