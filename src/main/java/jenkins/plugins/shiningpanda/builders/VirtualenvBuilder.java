@@ -21,11 +21,7 @@
  */
 package jenkins.plugins.shiningpanda.builders;
 
-import hudson.EnvVars;
-import hudson.Extension;
-import hudson.FilePath;
-import hudson.Functions;
-import hudson.Launcher;
+import hudson.*;
 import hudson.matrix.MatrixProject;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
@@ -100,6 +96,11 @@ public class VirtualenvBuilder extends Builder implements Serializable
     public final boolean ignoreExitCode;
 
     /**
+     * The requirement file (if any) from which to install dependencies.
+     */
+    public final String requirements;
+
+    /**
      * Constructor using fields
      * 
      * @param pythonName
@@ -120,10 +121,12 @@ public class VirtualenvBuilder extends Builder implements Serializable
      * @param ignoreExitCode
      *            Do not consider the build as a failure if any of the commands
      *            exits with a non-zero exit code
+     * @param requirements
+     *            Location of a requirements file.
      */
     @DataBoundConstructor
     public VirtualenvBuilder(String pythonName, String home, boolean clear, boolean useDistribute, boolean systemSitePackages,
-            String nature, String command, boolean ignoreExitCode)
+            String nature, String command, boolean ignoreExitCode, String requirements)
     {
         // Call super
         super();
@@ -143,6 +146,7 @@ public class VirtualenvBuilder extends Builder implements Serializable
         this.command = command;
         // Store the ignore flag
         this.ignoreExitCode = ignoreExitCode;
+        this.requirements = Util.fixEmptyAndTrim(requirements);
     }
 
     /*
@@ -185,12 +189,19 @@ public class VirtualenvBuilder extends Builder implements Serializable
         // Get the working directory
         FilePath pwd = build.getWorkspace();
         // Check if clean required or if configuration changed
-        if (clear || virtualenv.isOutdated(workspace, interpreter, useDistribute, systemSitePackages))
+        if (clear || virtualenv.isOutdated(workspace, interpreter, useDistribute, systemSitePackages)){
             // A new environment is required
             if (!virtualenv.create(launcher, listener, workspace, pwd, environment, interpreter, useDistribute,
                     systemSitePackages))
                 // Failed to create the environment, do not continue
                 return false;
+            if (requirements != null) {
+                if (!virtualenv.pipInstallRequirements(launcher, listener, workspace, pwd, environment, requirements)){
+                    // Failed to install the dependencies from the configured requirements file
+                    return false;
+                }
+            }
+        }
         // Launch script
         return BuilderUtil.launch(launcher, listener, pwd, environment, virtualenv, nature, command, ignoreExitCode);
     }

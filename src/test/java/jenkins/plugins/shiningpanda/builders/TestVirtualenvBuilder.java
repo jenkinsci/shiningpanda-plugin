@@ -21,6 +21,7 @@
  */
 package jenkins.plugins.shiningpanda.builders;
 
+import hudson.FilePath;
 import hudson.matrix.AxisList;
 import hudson.matrix.MatrixRun;
 import hudson.matrix.MatrixBuild;
@@ -29,6 +30,7 @@ import hudson.matrix.TextAxis;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 
+import java.io.File;
 import java.util.List;
 
 import jenkins.plugins.shiningpanda.Messages;
@@ -37,16 +39,19 @@ import jenkins.plugins.shiningpanda.command.CommandNature;
 import jenkins.plugins.shiningpanda.matrix.PythonAxis;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 
+import jenkins.plugins.shiningpanda.workspace.Workspace;
 import org.apache.commons.io.FileUtils;
 
 public class TestVirtualenvBuilder extends ShiningPandaTestCase
 {
 
+    public static final String PACKAGE_NAME = "tempdir";
+
     public void testRoundTripFreeStyle() throws Exception
     {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder before = new VirtualenvBuilder(installation.getName(), "env2", true, false, false,
-                CommandNature.SHELL.getKey(), "echo hello", true);
+                CommandNature.SHELL.getKey(), "echo hello", true, "");
         VirtualenvBuilder after = configFreeStyleRoundtrip(before);
         assertEqualBeans2(before, after, "pythonName,home,clear,useDistribute,systemSitePackages,nature,command,ignoreExitCode");
     }
@@ -54,7 +59,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
     public void testRoundTripMatrix() throws Exception
     {
         VirtualenvBuilder before = new VirtualenvBuilder("foobar", "env2", true, false, false, CommandNature.PYTHON.getKey(),
-                "echo hello", false);
+                "echo hello", false, "");
         VirtualenvBuilder after = configPythonMatrixRoundtrip(before);
         assertEqualBeans2(before, after, "home,clear,useDistribute,systemSitePackages,nature,command,ignoreExitCode");
     }
@@ -64,7 +69,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
         PythonInstallation installation = configurePython("Python", createFakePythonInstallationWithWhitespaces()
                 .getAbsolutePath());
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", false, true, false,
-                CommandNature.SHELL.getKey(), "echo hello", false);
+                CommandNature.SHELL.getKey(), "echo hello", false, "");
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -77,7 +82,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
     {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(null, "env", true, true, false, CommandNature.SHELL.getKey(),
-                "echo \"Welcome $TOTO\"", false);
+                "echo \"Welcome $TOTO\"", false, "");
         MatrixProject project = createMatrixProject();
         AxisList axes = new AxisList(new PythonAxis(new String[] { installation.getName(), }), new TextAxis("TOTO", "TUTU"));
         project.setAxes(axes);
@@ -95,7 +100,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
         configureCPython2();
         String name = "Toto";
         VirtualenvBuilder builder = new VirtualenvBuilder(name, "env", true, true, false, CommandNature.SHELL.getKey(),
-                "echo \"Welcome $TOTO\"", false);
+                "echo \"Welcome $TOTO\"", false, "");
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -107,7 +112,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
     {
         String name = "Toto";
         VirtualenvBuilder builder = new VirtualenvBuilder(name, "env", true, true, false, CommandNature.SHELL.getKey(),
-                "echo \"Welcome $TOTO\"", false);
+                "echo \"Welcome $TOTO\"", false, "");
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -120,7 +125,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
     {
         configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(null, "env", true, true, false, CommandNature.SHELL.getKey(),
-                "echo \"Welcome $TOTO\"", false);
+                "echo \"Welcome $TOTO\"", false, "");
         MatrixProject project = createMatrixProject();
         AxisList axes = new AxisList(new TextAxis("TOTO", "TUTU"));
         project.setAxes(axes);
@@ -137,7 +142,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
     {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", true, true, false,
-                CommandNature.SHELL.getKey(), "ls foobartrucmuch", true);
+                CommandNature.SHELL.getKey(), "ls foobartrucmuch", true, "");
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -149,7 +154,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
     {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", true, true, false,
-                CommandNature.SHELL.getKey(), "ls foobartrucmuch", false);
+                CommandNature.SHELL.getKey(), "ls foobartrucmuch", false, "");
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -161,7 +166,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
     {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", false, true, false,
-                CommandNature.SHELL.getKey(), "echo", false);
+                CommandNature.SHELL.getKey(), "echo", false, "");
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -176,7 +181,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
     {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", true, true, false,
-                CommandNature.SHELL.getKey(), "echo", false);
+                CommandNature.SHELL.getKey(), "echo", false, "");
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -191,7 +196,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
     {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", false, true, false,
-                CommandNature.SHELL.getKey(), "echo", false);
+                CommandNature.SHELL.getKey(), "echo", false, "");
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -207,7 +212,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
     {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", true, true, false,
-                CommandNature.PYTHON.getKey(), "import sys\nsys.stdout.write('hello world!\\n')", true);
+                CommandNature.PYTHON.getKey(), "import sys\nsys.stdout.write('hello world!\\n')", true, "");
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -220,7 +225,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
     {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", true, true, false,
-                CommandNature.XSHELL.getKey(), "echo %HOME%", true);
+                CommandNature.XSHELL.getKey(), "echo %HOME%", true, "");
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -228,5 +233,22 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase
         assertTrue("this build should have been successful:\n" + log, log.contains("SUCCESS"));
         String home = System.getProperty("user.home");
         assertTrue("this build should have say " + home + ":\n" + log, log.contains(home));
+    }
+
+    public void testInstallsRequirementsFromFile() throws Exception
+    {
+        PythonInstallation installation = configureCPython2();
+        Workspace workspace = getWorkspace();
+        FilePath workspaceHome = workspace.getHome();
+        File requirementsFile = toFile(workspaceHome.child("requirements.txt"));
+        FileUtils.writeStringToFile(requirementsFile, PACKAGE_NAME);
+        VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", true, true, false,
+                CommandNature.XSHELL.getKey(), "echo %HOME%", true, requirementsFile.getAbsolutePath());
+        FreeStyleProject project = createFreeStyleProject();
+        project.getBuildersList().add(builder);
+        FreeStyleBuild build = project.scheduleBuild2(0).get();
+        String log = FileUtils.readFileToString(build.getLogFile());
+        assertTrue("this build should have installed " + PACKAGE_NAME,
+                log.contains("collected packages: "+PACKAGE_NAME));
     }
 }
