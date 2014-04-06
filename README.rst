@@ -5,7 +5,7 @@
 ShiningPanda Plugin for Jenkins
 ===============================
 
-Copyright © 2011-2013, ShiningPanda S.A.S.
+Copyright © 2011-2014, ShiningPanda S.A.S.
 
 About
 -----
