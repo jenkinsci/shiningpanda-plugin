@@ -11,7 +11,7 @@ About
 -----
 
 This plugin is developed by `ShiningPanda S.A.S. <http://www.shiningpanda.com/>`_, the editor of `requires.io <https://requires.io/>`_, a web service to monitor the dependencies of your Python projects.
-`Contact us <https://requires.io/contact/>`_ for more informations!
+`Contact us <http://www.shiningpanda.com/contact/>`_ for more informations!
 
 Features
 --------
