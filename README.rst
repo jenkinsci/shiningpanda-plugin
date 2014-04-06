@@ -10,7 +10,7 @@ Copyright © 2011-2014, ShiningPanda S.A.S.
 About
 -----
 
-This plugin is developed by ShiningPanda S.A.S., the editor of `requires.io <https://requires.io/>`_, a web service to monitor the dependencies of your Python projects.
+This plugin is developed by `ShiningPanda S.A.S. <http://www.shiningpanda.com/>`_, the editor of `requires.io <https://requires.io/>`_, a web service to monitor the dependencies of your Python projects.
 `Contact us <https://requires.io/contact/>`_ for more informations!
 
 Features
