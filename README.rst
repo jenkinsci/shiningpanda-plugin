@@ -1,4 +1,4 @@
-.. image:: https://www.shiningpanda.com/static/latest/images/shiningpanda_github_readme.png
+.. image:: https://raw.githubusercontent.com/jenkinsci/shiningpanda-plugin/master/static/img/shiningpanda_github_readme.png
    :alt: ShiningPanda Logo
    :target: http://www.shiningpanda.com/
 
@@ -10,9 +10,8 @@ Copyright © 2011-2014, ShiningPanda S.A.S.
 About
 -----
 
-This plugin is developed by ShiningPanda S.A.S., a `Hosted Continuous Integration Service <https://www.shiningpanda-ci.com/>`_ provider
-and an expert in `Build and Release Management <http://www.shiningpanda.com/>`_ services.
-`Contact us <http://www.shiningpanda.com/contact/>`_ for more informations!
+This plugin is developed by ShiningPanda S.A.S., the editor of `requires.io <https://requires.io/>`_, a web service to monitor the dependencies of your Python projects.
+`Contact us <https://requires.io/contact/>`_ for more informations!
 
 Features
 --------
@@ -22,7 +21,7 @@ This plugin adds Python support to Jenkins with some useful builders and tools. 
 News
 ----------------
 
-Follow us on `Twitter <http://twitter.com/shiningpandaci>`_ and on `Blogger <http://www.shiningpanda.com/blog/>`_.
+Follow us on `Twitter <http://twitter.com/shiningpandaci>`_ and on our `Blog <http://www.shiningpanda.com/blog/>`_.
 
 License
 -------
