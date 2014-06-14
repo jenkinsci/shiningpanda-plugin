@@ -61,7 +61,7 @@ case $1 in
         echo "    run-hosted: execute clean hpi:run in hosted mode,"
         echo "    debug: execute clean hpi:run in debug mode,"
         echo "    debug-hosted: execute clean hpi:run in debug and hosted mode,"
-        echo "    release <github password>: release the plugin."
+        echo "    release: release the plugin."
         ;;
     *)
         echo "Invalid command: $1"
