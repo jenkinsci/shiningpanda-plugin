@@ -43,17 +43,11 @@ case $1 in
     run)
         mvn $OPTIONS clean hpi:run
         ;;
-    run-hosted)
-        mvn $OPTIONS clean hpi:run -Djenkins.plugins.shiningpanda.ShiningPanda.hosted=true
-        ;;
     debug)
         mvnDebug $OPTIONS clean hpi:run
         ;;
-    debug-hosted)
-        mvnDebug $OPTIONS clean hpi:run -Djenkins.plugins.shiningpanda.ShiningPanda.hosted=true
-        ;;
     release)
-        mvn $OPTIONS clean release:prepare release:perform -Dusername=omansion -Dpassword=$2
+        mvn $OPTIONS clean release:prepare release:perform -Darguments="-DskipTests" -Dusername=omansion -Dpassword=$2
         ;;
     help)
         echo "usage: sp <subcommand> [args]"

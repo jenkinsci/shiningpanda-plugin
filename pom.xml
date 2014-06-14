@@ -1,13 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.429</version>
-		<relativePath />
+		<version>1.532.3</version>
 	</parent>
 
+	<groupId>org.jenkins-ci.plugins</groupId>
 	<artifactId>shiningpanda</artifactId>
 	<version>0.21-SNAPSHOT</version>
 	<packaging>hpi</packaging>
@@ -19,10 +20,6 @@
 			<url>https://raw.github.com/jenkinsci/shiningpanda-plugin/master/LICENSE.txt</url>
 		</license>
 	</licenses>
-	<ciManagement>
-		<system>ShiningPanda</system>
-		<url>https://jenkins.shiningpanda.com/shiningpanda.org/job/shiningpanda-plugin/</url>
-	</ciManagement>
 
 	<developers>
 		<developer>
@@ -47,41 +44,9 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.0.1</version>
+			<version>2.4</version>
 		</dependency>
 	</dependencies>
-
-	<profiles>
-		<profile>
-			<id>jenkins</id>
-			<activation>
-				<property>
-					<name>env.JENKINS_URL</name>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>cobertura-maven-plugin</artifactId>
-						<configuration>
-							<formats>
-								<format>xml</format>
-							</formats>
-						</configuration>
-						<executions>
-							<execution>
-								<phase>package</phase>
-								<goals>
-									<goal>cobertura</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 
 	<repositories>
 		<repository>
@@ -89,6 +54,7 @@
 			<url>http://repo.jenkins-ci.org/public/</url>
 		</repository>
 	</repositories>
+
 	<pluginRepositories>
 		<pluginRepository>
 			<id>repo.jenkins-ci.org</id>

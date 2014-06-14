@@ -55,12 +55,5 @@ If not, see <https://raw.github.com/jenkinsci/shiningpanda-plugin/master/LICENSE
         <f:checkbox checked="${it.systemSitePackages}" />
       </f:entry>
     </j:choose>
-    <f:entry title="${%Package manager}" help="${h.resourcePath}/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-useDistribute.html">
-      <f:radio name="useDistribute" value="true" checked="${ instance==null || instance.useDistribute==true }" />
-      <label class="attach-previous">${%Distribute}</label>
-      <st:nbsp />
-      <f:radio name="useDistribute" value="false" checked="${ instance!=null and instance.useDistribute==false }"/>
-      <label class="attach-previous">${%Setuptools}</label>
-    </f:entry>
   </f:advanced>
 </j:jelly>

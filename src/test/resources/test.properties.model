@@ -18,7 +18,7 @@
 # You should have received a copy of the license along with this program.
 # If not, see <https://raw.github.com/jenkinsci/shiningpanda-plugin/master/LICENSE.txt>.
 
-CPython.2.Home = /opt/local/Library/Frameworks/Python.framework/Versions/2.7
-CPython.3.Home = /opt/local/Library/Frameworks/Python.framework/Versions/3.2
-PyPy.Home = /opt/local
-Jython.Home = /opt/local/share/java/jython
+CPython.2.Home = /System/Library/Frameworks/Python.framework/Versions/2.7
+CPython.3.Home = /Library/Frameworks/Python.framework/Versions/3.4
+PyPy.Home = /usr/local/Cellar/pypy/2.3.0
+Jython.Home = /usr/local/Cellar/jython/2.5.3

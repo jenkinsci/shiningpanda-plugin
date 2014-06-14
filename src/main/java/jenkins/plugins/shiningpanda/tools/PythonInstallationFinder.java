@@ -113,7 +113,7 @@ public class PythonInstallationFinder
         // Store candidates
         LinkedHashMap<String, String> candidates = new LinkedHashMap<String, String>();
         // MacPort
-        candidates.put("MacPort-CPython-2.5", "/opt/local/Library/Frameworks/Python.framework/Versions/2.5");
+        // candidates.put("MacPort-CPython-2.5", "/opt/local/Library/Frameworks/Python.framework/Versions/2.5");
         candidates.put("MacPort-CPython-2.6", "/opt/local/Library/Frameworks/Python.framework/Versions/2.6");
         candidates.put("MacPort-CPython-2.7", "/opt/local/Library/Frameworks/Python.framework/Versions/2.7");
         candidates.put("MacPort-CPython-3.1", "/opt/local/Library/Frameworks/Python.framework/Versions/3.1");
@@ -121,8 +121,8 @@ public class PythonInstallationFinder
         candidates.put("MacPort-Jython", "/opt/local/share/java/jython");
         candidates.put("MacPort-PyPy", "/opt/local/lib/pypy");
         // System
-        candidates.put("System-CPython-2.4", "/System/Library/Frameworks/Python.framework/Versions/2.4");
-        candidates.put("System-CPython-2.5", "/System/Library/Frameworks/Python.framework/Versions/2.5");
+        // candidates.put("System-CPython-2.4", "/System/Library/Frameworks/Python.framework/Versions/2.4");
+        // candidates.put("System-CPython-2.5", "/System/Library/Frameworks/Python.framework/Versions/2.5");
         candidates.put("System-CPython-2.6", "/System/Library/Frameworks/Python.framework/Versions/2.6");
         candidates.put("System-CPython-2.7", "/System/Library/Frameworks/Python.framework/Versions/2.7");
         candidates.put("System-CPython-3.0", "/System/Library/Frameworks/Python.framework/Versions/3.0");
@@ -142,8 +142,8 @@ public class PythonInstallationFinder
         // Store candidates
         LinkedHashMap<String, String> candidates = new LinkedHashMap<String, String>();
         // CPython
-        candidates.put("System-CPython-2.4", "/usr/bin/python2.4");
-        candidates.put("System-CPython-2.5", "/usr/bin/python2.5");
+        // candidates.put("System-CPython-2.4", "/usr/bin/python2.4");
+        // candidates.put("System-CPython-2.5", "/usr/bin/python2.5");
         candidates.put("System-CPython-2.6", "/usr/bin/python2.6");
         candidates.put("System-CPython-2.7", "/usr/bin/python2.7");
         candidates.put("System-CPython-3.0", "/usr/bin/python3.0");
@@ -165,8 +165,8 @@ public class PythonInstallationFinder
         // Store candidates
         LinkedHashMap<String, String> candidates = new LinkedHashMap<String, String>();
         // CPython
-        candidates.put("CPython-2.4", "C:\\Python24");
-        candidates.put("CPython-2.5", "C:\\Python25");
+        // candidates.put("CPython-2.4", "C:\\Python24");
+        // candidates.put("CPython-2.5", "C:\\Python25");
         candidates.put("CPython-2.6", "C:\\Python26");
         candidates.put("CPython-2.7", "C:\\Python27");
         candidates.put("CPython-3.0", "C:\\Python30");
