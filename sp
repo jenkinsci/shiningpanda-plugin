@@ -47,7 +47,7 @@ case $1 in
         mvnDebug $OPTIONS clean hpi:run
         ;;
     release)
-        mvn $OPTIONS clean release:prepare release:perform -Darguments="-DskipTests" -Dusername=omansion -Dpassword=$2
+        mvn $OPTIONS clean release:prepare release:perform -Darguments="-DskipTests"
         ;;
     help)
         echo "usage: sp <subcommand> [args]"
