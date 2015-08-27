@@ -50,20 +50,28 @@ public class BuildoutSCM extends NullSCM {
     /**
      * Content of the buildout.cfg file
      */
-    private String content;
+    private String buildoutContent;
+
+    /**
+     * Name of the fake DJANGO project
+     */
+    private String djangoProject;
 
     /**
      * Constructor using fields
      * 
      * @param buildoutCfg
      *            The buildout.cfg file
-     * @param content
+     * @param buildoutContent
      *            The buildout.cfg content
+     * @param djangoProject
+     *            Name of the fake DJANGO project
      */
-    public BuildoutSCM(String buildoutCfg, String content) {
+    public BuildoutSCM(String buildoutCfg, String buildoutContent, String djangoProject) {
 	super();
 	this.buildoutCfg = buildoutCfg;
-	this.content = content;
+	this.buildoutContent = buildoutContent;
+	this.djangoProject = djangoProject;
     }
 
     public SCMRevisionState calcRevisionsFromBuild(AbstractBuild<?, ?> build, Launcher launcher, TaskListener listener)
@@ -80,7 +88,11 @@ public class BuildoutSCM extends NullSCM {
     public boolean checkout(AbstractBuild<?, ?> build, Launcher launcher, FilePath remoteDir, BuildListener listener,
 	    File changeLogFile) throws IOException, InterruptedException {
 	FilePath filePath = build.getWorkspace().child(buildoutCfg);
-	FileUtils.writeStringToFile(new File(filePath.getRemote()), content);
+	FileUtils.writeStringToFile(new File(filePath.getRemote()), buildoutContent);
+	FilePath djangoDir = build.getWorkspace().child(djangoProject);
+	djangoDir.mkdirs();
+	FileUtils.writeStringToFile(new File(djangoDir.child("__init__.py").getRemote()), "");
+	FileUtils.writeStringToFile(new File(djangoDir.child("settings.py").getRemote()), "");
 	return createEmptyChangeLog(changeLogFile, listener, "log");
     }
 

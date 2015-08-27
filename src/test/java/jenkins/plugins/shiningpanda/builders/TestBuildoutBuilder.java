@@ -50,6 +50,7 @@ public class TestBuildoutBuilder extends ShiningPandaTestCase {
     public void test() throws Exception {
 	PythonInstallation installation = configureCPython2();
 	String buildoutCfg = "buildout.cfg";
+	String djangoProject = "HelloWorld";
 	BuildoutBuilder builder = new BuildoutBuilder(installation.getName(), buildoutCfg, CommandNature.SHELL.getKey(),
 		"django --help", true);
 	FreeStyleProject project = createFreeStyleProject();
@@ -58,13 +59,14 @@ public class TestBuildoutBuilder extends ShiningPandaTestCase {
 	sb.append("parts = django").append("\n");
 	sb.append("[django]").append("\n");
 	sb.append("recipe = djangorecipe").append("\n");
-	sb.append("project = HelloWorld").append("\n");
-	project.setScm(new BuildoutSCM(buildoutCfg, sb.toString()));
+	sb.append("project = " + djangoProject).append("\n");
+	sb.append("settings = settings").append("\n");
+	project.setScm(new BuildoutSCM(buildoutCfg, sb.toString(), djangoProject));
 	project.getBuildersList().add(builder);
 	FreeStyleBuild build = project.scheduleBuild2(0).get();
 	String log = FileUtils.readFileToString(build.getLogFile());
 	assertTrue("this build should have displayed django help:\n" + log,
-		log.contains("Usage: django subcommand [options] [args]"));
+		log.contains("Type 'django help <subcommand>' for help on a specific subcommand"));
 	assertTrue("this build should have been successful:\n" + log, log.contains("SUCCESS"));
     }
 }
