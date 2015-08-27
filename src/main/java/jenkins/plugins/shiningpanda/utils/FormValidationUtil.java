@@ -21,15 +21,13 @@
  */
 package jenkins.plugins.shiningpanda.utils;
 
-import hudson.Util;
-import hudson.util.FormValidation;
-
 import java.io.File;
 
+import hudson.Util;
+import hudson.util.FormValidation;
 import jenkins.plugins.shiningpanda.Messages;
 
-public class FormValidationUtil
-{
+public class FormValidationUtil {
 
     /**
      * Validate PYTHON: verify that specified, exists and has no whitespace in
@@ -39,36 +37,35 @@ public class FormValidationUtil
      *            The PYTHON home or executable to validate.
      * @return The validation result.
      */
-    public static FormValidation validatePython(String home)
-    {
-        // Get the file value as a string
-        home = Util.fixEmptyAndTrim(home);
-        // Check is a value was provided
-        if (home == null)
-            // Value is required
-            return FormValidation.error(Messages.FormValidationUtil_Python_Required());
-        // Expand the home
-        home = EnvVarsUtil.expand(home);
-        // Check that path does not contains some whitespace chars
-        if (StringUtil.hasWhitespace(home))
-            // No whitespace allowed
-            return FormValidation.error(Messages.FormValidationUtil_Python_WhitespaceNotAllowed());
-        // Get a file
-        File file = new File(home);
-        // Check if absolute
-        if (!file.isAbsolute())
-            // Absolute path required
-            return FormValidation.error(Messages.FormValidationUtil_Python_AbsolutePathRequired());
-        // Check that exists
-        if (!file.exists())
-            // Display an error
-            return FormValidation.error(Messages.FormValidationUtil_Python_NotExists());
-        // Check that file is executable
-        else if (file.isFile() && !file.canExecute())
-            // Display an error
-            return FormValidation.error(Messages.FormValidationUtil_Python_NotExecutable());
-        // Seems fine
-        return FormValidation.ok();
+    public static FormValidation validatePython(String home) {
+	// Get the file value as a string
+	home = Util.fixEmptyAndTrim(home);
+	// Check is a value was provided
+	if (home == null)
+	    // Value is required
+	    return FormValidation.error(Messages.FormValidationUtil_Python_Required());
+	// Expand the home
+	home = EnvVarsUtil.expand(home);
+	// Check that path does not contains some whitespace chars
+	if (StringUtil.hasWhitespace(home))
+	    // No whitespace allowed
+	    return FormValidation.error(Messages.FormValidationUtil_Python_WhitespaceNotAllowed());
+	// Get a file
+	File file = new File(home);
+	// Check if absolute
+	if (!file.isAbsolute())
+	    // Absolute path required
+	    return FormValidation.error(Messages.FormValidationUtil_Python_AbsolutePathRequired());
+	// Check that exists
+	if (!file.exists())
+	    // Display an error
+	    return FormValidation.error(Messages.FormValidationUtil_Python_NotExists());
+	// Check that file is executable
+	else if (file.isFile() && !file.canExecute())
+	    // Display an error
+	    return FormValidation.error(Messages.FormValidationUtil_Python_NotExecutable());
+	// Seems fine
+	return FormValidation.ok();
     }
 
 }

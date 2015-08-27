@@ -21,6 +21,8 @@
  */
 package jenkins.plugins.shiningpanda.utils;
 
+import java.io.IOException;
+
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -29,10 +31,7 @@ import hudson.model.TaskListener;
 import hudson.tasks.Messages;
 import hudson.util.ArgumentListBuilder;
 
-import java.io.IOException;
-
-public class LauncherUtil
-{
+public class LauncherUtil {
 
     /**
      * Launch a process.
@@ -51,24 +50,20 @@ public class LauncherUtil
      * @throws InterruptedException
      */
     public static boolean launch(Launcher launcher, TaskListener listener, FilePath pwd, EnvVars environment,
-            ArgumentListBuilder args) throws InterruptedException
-    {
-        // Be able to display error
-        try
-        {
-            // Launch the process
-            return 0 == launcher.launch().cmds(FilePathUtil.isUnix(pwd) ? args : args.toWindowsCommand()).envs(environment)
-                    .stdout(listener).pwd(pwd).join();
-        }
-        catch (IOException e)
-        {
-            // Something went wrong, display error
-            Util.displayIOException(e, listener);
-            // Log error message
-            e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_CommandFailed()));
-            // Return an error
-            return false;
-        }
+	    ArgumentListBuilder args) throws InterruptedException {
+	// Be able to display error
+	try {
+	    // Launch the process
+	    return 0 == launcher.launch().cmds(FilePathUtil.isUnix(pwd) ? args : args.toWindowsCommand())
+		    .envs(environment).stdout(listener).pwd(pwd).join();
+	} catch (IOException e) {
+	    // Something went wrong, display error
+	    Util.displayIOException(e, listener);
+	    // Log error message
+	    e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_CommandFailed()));
+	    // Return an error
+	    return false;
+	}
     }
 
     /**
@@ -87,24 +82,20 @@ public class LauncherUtil
      * @throws IOException
      */
     public static boolean createSymlink(Launcher launcher, TaskListener listener, FilePath target, FilePath link)
-            throws InterruptedException, IOException
-    {
-        // Get the arguments
-        ArgumentListBuilder args = new ArgumentListBuilder("ln", "-s", target.getRemote(), link.getRemote());
-        // Be able to display error
-        try
-        {
-            // Launch the process
-            return 0 == launcher.launch().cmds(args).stdout(listener).join();
-        }
-        catch (IOException e)
-        {
-            // Something went wrong, display error
-            Util.displayIOException(e, listener);
-            // Log error message
-            e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_CommandFailed()));
-            // Return an error
-            return false;
-        }
+	    throws InterruptedException, IOException {
+	// Get the arguments
+	ArgumentListBuilder args = new ArgumentListBuilder("ln", "-s", target.getRemote(), link.getRemote());
+	// Be able to display error
+	try {
+	    // Launch the process
+	    return 0 == launcher.launch().cmds(args).stdout(listener).join();
+	} catch (IOException e) {
+	    // Something went wrong, display error
+	    Util.displayIOException(e, listener);
+	    // Log error message
+	    e.printStackTrace(listener.fatalError(Messages.CommandInterpreter_CommandFailed()));
+	    // Return an error
+	    return false;
+	}
     }
 }

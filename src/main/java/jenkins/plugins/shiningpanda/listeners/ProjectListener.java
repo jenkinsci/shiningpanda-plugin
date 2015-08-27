@@ -27,8 +27,7 @@ import hudson.model.listeners.ItemListener;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 @Extension
-public class ProjectListener extends ItemListener
-{
+public class ProjectListener extends ItemListener {
 
     /*
      * (non-Javadoc)
@@ -36,10 +35,9 @@ public class ProjectListener extends ItemListener
      * @see hudson.model.listeners.ItemListener#onDeleted(hudson.model.Item)
      */
     @Override
-    public void onDeleted(Item item)
-    {
-        // Delegate
-        Workspace.delete(item);
+    public void onDeleted(Item item) {
+	// Delegate
+	Workspace.delete(item);
     }
 
     /*
@@ -49,10 +47,9 @@ public class ProjectListener extends ItemListener
      * java.lang.String, java.lang.String)
      */
     @Override
-    public void onRenamed(Item item, String oldName, String newName)
-    {
-        // Delegate
-        Workspace.delete(item, oldName);
+    public void onRenamed(Item item, String oldName, String newName) {
+	// Delegate
+	Workspace.delete(item, oldName);
     }
 
 }

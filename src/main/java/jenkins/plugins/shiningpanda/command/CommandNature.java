@@ -21,15 +21,13 @@
  */
 package jenkins.plugins.shiningpanda.command;
 
-import hudson.Util;
-
 import java.util.Arrays;
 import java.util.List;
 
+import hudson.Util;
 import jenkins.plugins.shiningpanda.Messages;
 
-public class CommandNature
-{
+public class CommandNature {
 
     /**
      * Shell command
@@ -67,14 +65,13 @@ public class CommandNature
      * @param key
      *            The key
      */
-    private CommandNature(String key, String name)
-    {
-        // Call super
-        super();
-        // Store the key
-        this.key = key;
-        // Store the name
-        this.name = name;
+    private CommandNature(String key, String name) {
+	// Call super
+	super();
+	// Store the key
+	this.key = key;
+	// Store the name
+	this.name = name;
     }
 
     /**
@@ -82,9 +79,8 @@ public class CommandNature
      * 
      * @return The key
      */
-    public String getKey()
-    {
-        return key;
+    public String getKey() {
+	return key;
     }
 
     /**
@@ -92,9 +88,8 @@ public class CommandNature
      * 
      * @return The name
      */
-    public String getName()
-    {
-        return name;
+    public String getName() {
+	return name;
     }
 
     /**
@@ -104,20 +99,19 @@ public class CommandNature
      *            The nature key
      * @return The nature object
      */
-    public static CommandNature get(String raw)
-    {
-        // Get the formated value
-        String nature = Util.fixEmptyAndTrim(raw);
-        // Check if PYTHON nature
-        if (PYTHON.getKey().equalsIgnoreCase(nature))
-            // Return the PYTHON nature
-            return PYTHON;
-        // Check if this is the XShell nature
-        if (XSHELL.getKey().equalsIgnoreCase(nature))
-            // Return the XShell nature
-            return XSHELL;
-        // By default return the shell nature
-        return SHELL;
+    public static CommandNature get(String raw) {
+	// Get the formated value
+	String nature = Util.fixEmptyAndTrim(raw);
+	// Check if PYTHON nature
+	if (PYTHON.getKey().equalsIgnoreCase(nature))
+	    // Return the PYTHON nature
+	    return PYTHON;
+	// Check if this is the XShell nature
+	if (XSHELL.getKey().equalsIgnoreCase(nature))
+	    // Return the XShell nature
+	    return XSHELL;
+	// By default return the shell nature
+	return SHELL;
     }
 
 }

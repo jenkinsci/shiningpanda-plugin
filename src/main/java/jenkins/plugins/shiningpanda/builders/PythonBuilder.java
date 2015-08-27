@@ -21,31 +21,29 @@
  */
 package jenkins.plugins.shiningpanda.builders;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.List;
+
+import org.kohsuke.stapler.DataBoundConstructor;
+
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Functions;
 import hudson.Launcher;
 import hudson.matrix.MatrixProject;
-import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.List;
-
 import jenkins.plugins.shiningpanda.Messages;
 import jenkins.plugins.shiningpanda.command.CommandNature;
 import jenkins.plugins.shiningpanda.interpreters.Python;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 import jenkins.plugins.shiningpanda.utils.BuilderUtil;
 
-import org.kohsuke.stapler.DataBoundConstructor;
-
-public class PythonBuilder extends Builder implements Serializable
-{
+public class PythonBuilder extends Builder implements Serializable {
 
     /**
      * Name of the PYTHON to invoke
@@ -82,52 +80,49 @@ public class PythonBuilder extends Builder implements Serializable
      *            exits with a non-zero exit code
      */
     @DataBoundConstructor
-    public PythonBuilder(String pythonName, String nature, String command, boolean ignoreExitCode)
-    {
-        // Call super
-        super();
-        // Store the name of the PYTHON to invoke
-        this.pythonName = pythonName;
-        // Store the nature of the command
-        this.nature = nature;
-        // Normalize and store the command
-        this.command = command;
-        // Store the ignore flag
-        this.ignoreExitCode = ignoreExitCode;
+    public PythonBuilder(String pythonName, String nature, String command, boolean ignoreExitCode) {
+	// Call super
+	super();
+	// Store the name of the PYTHON to invoke
+	this.pythonName = pythonName;
+	// Store the nature of the command
+	this.nature = nature;
+	// Normalize and store the command
+	this.command = command;
+	// Store the ignore flag
+	this.ignoreExitCode = ignoreExitCode;
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * hudson.tasks.BuildStepCompatibilityLayer#perform(hudson.model.AbstractBuild
-     * , hudson.Launcher, hudson.model.BuildListener)
+     * @see hudson.tasks.BuildStepCompatibilityLayer#perform(hudson.model.
+     * AbstractBuild , hudson.Launcher, hudson.model.BuildListener)
      */
     @Override
-    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException,
-            IOException
-    {
-        // Get the environment variables for this build
-        EnvVars environment = BuilderUtil.getEnvironment(build, listener);
-        // Check if this is a valid environment
-        if (environment == null)
-            // Invalid, no need to go further
-            return false;
-        // Get the PYTHON installation to use
-        PythonInstallation installation = BuilderUtil.getInstallation(build, listener, environment, pythonName);
-        // Check if an installation was found
-        if (installation == null)
-            // If not installation found, do not continue the build
-            return false;
-        // Get the interpreter
-        Python interpreter = BuilderUtil.getInterpreter(launcher, listener, installation.getHome());
-        // Check if got an interpreter
-        if (interpreter == null)
-            // If no interpreter found, do not continue the build
-            return false;
-        // Launch the process
-        return BuilderUtil.launch(launcher, listener, build.getWorkspace(), environment, interpreter, nature, command,
-                ignoreExitCode);
+    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
+	    throws InterruptedException, IOException {
+	// Get the environment variables for this build
+	EnvVars environment = BuilderUtil.getEnvironment(build, listener);
+	// Check if this is a valid environment
+	if (environment == null)
+	    // Invalid, no need to go further
+	    return false;
+	// Get the PYTHON installation to use
+	PythonInstallation installation = BuilderUtil.getInstallation(build, listener, environment, pythonName);
+	// Check if an installation was found
+	if (installation == null)
+	    // If not installation found, do not continue the build
+	    return false;
+	// Get the interpreter
+	Python interpreter = BuilderUtil.getInterpreter(launcher, listener, installation.getHome());
+	// Check if got an interpreter
+	if (interpreter == null)
+	    // If no interpreter found, do not continue the build
+	    return false;
+	// Launch the process
+	return BuilderUtil.launch(launcher, listener, build.getWorkspace(), environment, interpreter, nature, command,
+		ignoreExitCode);
     }
 
     private static final long serialVersionUID = 1L;
@@ -136,73 +131,66 @@ public class PythonBuilder extends Builder implements Serializable
      * Descriptor for this builder
      */
     @Extension
-    public static final class DescriptorImpl extends BuildStepDescriptor<Builder>
-    {
+    public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see hudson.model.Descriptor#getDisplayName()
-         */
-        @Override
-        public String getDisplayName()
-        {
-            return Messages.PythonBuilder_DisplayName();
-        }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hudson.model.Descriptor#getDisplayName()
+	 */
+	@Override
+	public String getDisplayName() {
+	    return Messages.PythonBuilder_DisplayName();
+	}
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see hudson.model.Descriptor#getHelpFile()
-         */
-        @Override
-        public String getHelpFile()
-        {
-            return Functions.getResourcePath() + "/plugin/shiningpanda/help/builders/PythonBuilder/help.html";
-        }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hudson.model.Descriptor#getHelpFile()
+	 */
+	@Override
+	public String getHelpFile() {
+	    return Functions.getResourcePath() + "/plugin/shiningpanda/help/builders/PythonBuilder/help.html";
+	}
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see hudson.tasks.BuildStepDescriptor#isApplicable(java.lang.Class)
-         */
-        @Override
-        public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> jobType)
-        {
-            // If there's no PYTHON configured, there's no point in PYTHON
-            // builders
-            return !PythonInstallation.isEmpty();
-        }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see hudson.tasks.BuildStepDescriptor#isApplicable(java.lang.Class)
+	 */
+	@Override
+	public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> jobType) {
+	    // If there's no PYTHON configured, there's no point in PYTHON
+	    // builders
+	    return !PythonInstallation.isEmpty();
+	}
 
-        /**
-         * Check if this is a matrix project.
-         * 
-         * @return true if this is a matrix project.
-         */
-        public boolean isMatrix(Object it)
-        {
-            return it instanceof MatrixProject;
-        }
+	/**
+	 * Check if this is a matrix project.
+	 * 
+	 * @return true if this is a matrix project.
+	 */
+	public boolean isMatrix(Object it) {
+	    return it instanceof MatrixProject;
+	}
 
-        /**
-         * Get the PYTHON installations.
-         * 
-         * @return The list of installations
-         */
-        public PythonInstallation[] getInstallations()
-        {
-            // Delegate
-            return PythonInstallation.list();
-        }
+	/**
+	 * Get the PYTHON installations.
+	 * 
+	 * @return The list of installations
+	 */
+	public PythonInstallation[] getInstallations() {
+	    // Delegate
+	    return PythonInstallation.list();
+	}
 
-        /**
-         * Get the list of the available command natures.
-         * 
-         * @return The list of natures
-         */
-        public List<CommandNature> getNatures()
-        {
-            return CommandNature.ALL;
-        }
+	/**
+	 * Get the list of the available command natures.
+	 * 
+	 * @return The list of natures
+	 */
+	public List<CommandNature> getNatures() {
+	    return CommandNature.ALL;
+	}
     }
 }

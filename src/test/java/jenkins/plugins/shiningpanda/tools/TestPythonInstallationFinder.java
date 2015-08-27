@@ -23,14 +23,12 @@ package jenkins.plugins.shiningpanda.tools;
 
 import jenkins.plugins.shiningpanda.ShiningPandaTestCase;
 
-public class TestPythonInstallationFinder extends ShiningPandaTestCase
-{
+public class TestPythonInstallationFinder extends ShiningPandaTestCase {
 
-    public void testConfigure() throws Exception
-    {
-        assertTrue(PythonInstallation.isEmpty());
-        PythonInstallationFinder.configure();
-        assertFalse(PythonInstallation.isEmpty());
+    public void testConfigure() throws Exception {
+	assertTrue(PythonInstallation.isEmpty());
+	PythonInstallationFinder.configure();
+	assertFalse(PythonInstallation.isEmpty());
     }
 
 }

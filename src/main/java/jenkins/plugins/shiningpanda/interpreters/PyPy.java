@@ -21,16 +21,14 @@
  */
 package jenkins.plugins.shiningpanda.interpreters;
 
-import hudson.FilePath;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import hudson.FilePath;
 import jenkins.plugins.shiningpanda.utils.FilePathUtil;
 
-public class PyPy extends Python
-{
+public class PyPy extends Python {
 
     /**
      * Constructor using fields
@@ -40,9 +38,8 @@ public class PyPy extends Python
      * @throws InterruptedException
      * @throws IOException
      */
-    protected PyPy(FilePath home) throws IOException, InterruptedException
-    {
-        super(home);
+    protected PyPy(FilePath home) throws IOException, InterruptedException {
+	super(home);
     }
 
     /*
@@ -51,9 +48,8 @@ public class PyPy extends Python
      * @see jenkins.plugins.shiningpanda.interpreters.Python#isPyPy()
      */
     @Override
-    public PyPy isPyPy()
-    {
-        return this;
+    public PyPy isPyPy() {
+	return this;
     }
 
     /*
@@ -62,14 +58,13 @@ public class PyPy extends Python
      * @see jenkins.plugins.shiningpanda.interpreters.Python#getExecutable()
      */
     @Override
-    public FilePath getExecutable() throws IOException, InterruptedException
-    {
-        // Check if on Windows
-        if (isWindows())
-            // If on windows look for executables in home folder
-            return FilePathUtil.isFileOrNull(getHome().child("pypy-c.exe"), getHome().child("pypy.exe"));
-        // Else look in bin folder
-        return FilePathUtil.isFileOrNull(getHome().child("bin").child("pypy-c"), getHome().child("bin").child("pypy"));
+    public FilePath getExecutable() throws IOException, InterruptedException {
+	// Check if on Windows
+	if (isWindows())
+	    // If on windows look for executables in home folder
+	    return FilePathUtil.isFileOrNull(getHome().child("pypy-c.exe"), getHome().child("pypy.exe"));
+	// Else look in bin folder
+	return FilePathUtil.isFileOrNull(getHome().child("bin").child("pypy-c"), getHome().child("bin").child("pypy"));
     }
 
     /*
@@ -79,27 +74,26 @@ public class PyPy extends Python
      * jenkins.plugins.shiningpanda.interpreters.Python#getEnvironment(boolean)
      */
     @Override
-    public Map<String, String> getEnvironment(boolean includeHomeKey) throws IOException, InterruptedException
-    {
-        // Store the environment
-        Map<String, String> environment = new HashMap<String, String>();
-        // Check if home variable required
-        if (includeHomeKey)
-            // Define PYTHONHOME
-            environment.put("PYTHONHOME", getHome().getRemote());
-        // Else delete it from environment
-        else
-            // Delete
-            environment.put("PYTHONHOME", null);
-        // Check if on Windows
-        if (isWindows())
-            // If on Windows add home folder and bin folder in PATH
-            environment.put("PATH+", getHome().getRemote() + ";" + getHome().child("bin").getRemote());
-        // Handle UNIX
-        else
-            // Add bin folder in PATH
-            environment.put("PATH+", getHome().child("bin").getRemote());
-        // Return environment
-        return environment;
+    public Map<String, String> getEnvironment(boolean includeHomeKey) throws IOException, InterruptedException {
+	// Store the environment
+	Map<String, String> environment = new HashMap<String, String>();
+	// Check if home variable required
+	if (includeHomeKey)
+	    // Define PYTHONHOME
+	    environment.put("PYTHONHOME", getHome().getRemote());
+	// Else delete it from environment
+	else
+	    // Delete
+	    environment.put("PYTHONHOME", null);
+	// Check if on Windows
+	if (isWindows())
+	    // If on Windows add home folder and bin folder in PATH
+	    environment.put("PATH+", getHome().getRemote() + ";" + getHome().child("bin").getRemote());
+	// Handle UNIX
+	else
+	    // Add bin folder in PATH
+	    environment.put("PATH+", getHome().child("bin").getRemote());
+	// Return environment
+	return environment;
     }
 }

@@ -21,17 +21,15 @@
  */
 package jenkins.plugins.shiningpanda.interpreters;
 
-import hudson.FilePath;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import hudson.FilePath;
 import jenkins.plugins.shiningpanda.utils.EnvVarsUtil;
 import jenkins.plugins.shiningpanda.utils.FilePathUtil;
 
-public class CPython extends Python
-{
+public class CPython extends Python {
 
     /**
      * Constructor using fields
@@ -41,9 +39,8 @@ public class CPython extends Python
      * @throws InterruptedException
      * @throws IOException
      */
-    protected CPython(FilePath home) throws IOException, InterruptedException
-    {
-        super(home);
+    protected CPython(FilePath home) throws IOException, InterruptedException {
+	super(home);
     }
 
     /*
@@ -52,9 +49,8 @@ public class CPython extends Python
      * @see jenkins.plugins.shiningpanda.interpreters.Python#isCPython()
      */
     @Override
-    public CPython isCPython()
-    {
-        return this;
+    public CPython isCPython() {
+	return this;
     }
 
     /*
@@ -63,14 +59,14 @@ public class CPython extends Python
      * @see jenkins.plugins.shiningpanda.interpreters.Python#getExecutable()
      */
     @Override
-    public FilePath getExecutable() throws IOException, InterruptedException
-    {
-        // Check if on Windows
-        if (isWindows())
-            // If on Windows, look for python.exe
-            return FilePathUtil.isFileOrNull(getHome().child("python.exe"));
-        // If on UNIX, this can be PYTHON 3 or PYTHON 2
-        return FilePathUtil.isFileOrNull(getHome().child("bin").child("python3"), getHome().child("bin").child("python"));
+    public FilePath getExecutable() throws IOException, InterruptedException {
+	// Check if on Windows
+	if (isWindows())
+	    // If on Windows, look for python.exe
+	    return FilePathUtil.isFileOrNull(getHome().child("python.exe"));
+	// If on UNIX, this can be PYTHON 3 or PYTHON 2
+	return FilePathUtil.isFileOrNull(getHome().child("bin").child("python3"),
+		getHome().child("bin").child("python"));
     }
 
     /*
@@ -80,33 +76,31 @@ public class CPython extends Python
      * jenkins.plugins.shiningpanda.interpreters.Python#getEnvironment(boolean)
      */
     @Override
-    public Map<String, String> getEnvironment(boolean includeHomeKey) throws IOException, InterruptedException
-    {
-        // Store the environment
-        Map<String, String> environment = new HashMap<String, String>();
-        // Check if home variable required
-        if (includeHomeKey)
-            // If required define PYTHONHOME
-            environment.put("PYTHONHOME", getHome().getRemote());
-        // Else delete it from environment
-        else
-            // Delete
-            environment.put("PYTHONHOME", null);
-        // Check if on Windows
-        if (isWindows())
-            // If on Windows add the home folder and the scripts folder in the
-            // PATH
-            environment.put("PATH+", getHome().getRemote() + ";" + getHome().child("Scripts").getRemote());
-        // Handle UNIX case
-        else
-        {
-            // Add the bin folder in the PATH
-            environment.put("PATH+", getHome().child("bin").getRemote());
-            // Add the library folder in the path to look for libraries
-            environment.putAll(EnvVarsUtil.getLibs(getHome().child("lib")));
-        }
-        // Return the environment
-        return environment;
+    public Map<String, String> getEnvironment(boolean includeHomeKey) throws IOException, InterruptedException {
+	// Store the environment
+	Map<String, String> environment = new HashMap<String, String>();
+	// Check if home variable required
+	if (includeHomeKey)
+	    // If required define PYTHONHOME
+	    environment.put("PYTHONHOME", getHome().getRemote());
+	// Else delete it from environment
+	else
+	    // Delete
+	    environment.put("PYTHONHOME", null);
+	// Check if on Windows
+	if (isWindows())
+	    // If on Windows add the home folder and the scripts folder in the
+	    // PATH
+	    environment.put("PATH+", getHome().getRemote() + ";" + getHome().child("Scripts").getRemote());
+	// Handle UNIX case
+	else {
+	    // Add the bin folder in the PATH
+	    environment.put("PATH+", getHome().child("bin").getRemote());
+	    // Add the library folder in the path to look for libraries
+	    environment.putAll(EnvVarsUtil.getLibs(getHome().child("lib")));
+	}
+	// Return the environment
+	return environment;
     }
 
 }

@@ -22,13 +22,12 @@
 package jenkins.plugins.shiningpanda.listeners;
 
 import hudson.Extension;
-import hudson.model.WorkspaceListener;
 import hudson.model.AbstractProject;
+import hudson.model.WorkspaceListener;
 import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 @Extension
-public class WipeOutListener extends WorkspaceListener
-{
+public class WipeOutListener extends WorkspaceListener {
 
     /*
      * (non-Javadoc)
@@ -37,9 +36,8 @@ public class WipeOutListener extends WorkspaceListener
      * hudson.model.WorkspaceListener#afterDelete(hudson.model.AbstractProject)
      */
     @Override
-    public void afterDelete(@SuppressWarnings("rawtypes") AbstractProject project)
-    {
-        // Delegate
-        Workspace.delete(project);
+    public void afterDelete(@SuppressWarnings("rawtypes") AbstractProject project) {
+	// Delegate
+	Workspace.delete(project);
     }
 }

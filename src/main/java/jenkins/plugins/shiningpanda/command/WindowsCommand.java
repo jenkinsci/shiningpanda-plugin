@@ -21,13 +21,12 @@
  */
 package jenkins.plugins.shiningpanda.command;
 
+import java.util.regex.Pattern;
+
 import hudson.FilePath;
 import hudson.util.ArgumentListBuilder;
 
-import java.util.regex.Pattern;
-
-public class WindowsCommand extends ShellCommand
-{
+public class WindowsCommand extends ShellCommand {
 
     /**
      * Store the variable pattern.
@@ -44,9 +43,8 @@ public class WindowsCommand extends ShellCommand
      * @param convert
      *            Convert shell to batch
      */
-    protected WindowsCommand(String command, boolean ignoreExitCode, boolean convert)
-    {
-        super(command, ignoreExitCode, convert);
+    protected WindowsCommand(String command, boolean ignoreExitCode, boolean convert) {
+	super(command, ignoreExitCode, convert);
     }
 
     /*
@@ -55,9 +53,8 @@ public class WindowsCommand extends ShellCommand
      * @see jenkins.plugins.shiningpanda.command.Command#getExtension()
      */
     @Override
-    protected String getExtension()
-    {
-        return ".bat";
+    protected String getExtension() {
+	return ".bat";
     }
 
     /*
@@ -67,9 +64,8 @@ public class WindowsCommand extends ShellCommand
      * jenkins.plugins.shiningpanda.command.ShellCommand#getOriginalContent()
      */
     @Override
-    protected String getSourceContent()
-    {
-        return getCommand() + "\r\nexit %ERRORLEVEL%";
+    protected String getSourceContent() {
+	return getCommand() + "\r\nexit %ERRORLEVEL%";
     }
 
     /*
@@ -79,9 +75,8 @@ public class WindowsCommand extends ShellCommand
      * jenkins.plugins.shiningpanda.command.ShellCommand#getSourceSeparator()
      */
     @Override
-    protected String getSourceSeparator()
-    {
-        return "/";
+    protected String getSourceSeparator() {
+	return "/";
     }
 
     /*
@@ -91,9 +86,8 @@ public class WindowsCommand extends ShellCommand
      * jenkins.plugins.shiningpanda.command.ShellCommand#getTargetSeparator()
      */
     @Override
-    protected String getTargetSeparator()
-    {
-        return "\\";
+    protected String getTargetSeparator() {
+	return "\\";
     }
 
     /*
@@ -103,9 +97,8 @@ public class WindowsCommand extends ShellCommand
      * jenkins.plugins.shiningpanda.command.ShellCommand#getSourceVariable()
      */
     @Override
-    protected Pattern getSourceVariable()
-    {
-        return VARIABLE;
+    protected Pattern getSourceVariable() {
+	return VARIABLE;
     }
 
     /*
@@ -115,9 +108,8 @@ public class WindowsCommand extends ShellCommand
      * jenkins.plugins.shiningpanda.command.ShellCommand#getTargetVariable()
      */
     @Override
-    protected String getTargetVariable()
-    {
-        return "%$1%";
+    protected String getTargetVariable() {
+	return "%$1%";
     }
 
     /*
@@ -128,9 +120,8 @@ public class WindowsCommand extends ShellCommand
      * )
      */
     @Override
-    protected ArgumentListBuilder getArguments(FilePath script)
-    {
-        return new ArgumentListBuilder("cmd.exe", "/c", "call", script.getRemote());
+    protected ArgumentListBuilder getArguments(FilePath script) {
+	return new ArgumentListBuilder("cmd.exe", "/c", "call", script.getRemote());
     }
 
 }

@@ -21,18 +21,16 @@
  */
 package jenkins.plugins.shiningpanda.command;
 
+import java.util.regex.Pattern;
+
 import hudson.FilePath;
 import hudson.model.Hudson;
 import hudson.remoting.VirtualChannel;
 import hudson.tasks.Shell;
 import hudson.util.ArgumentListBuilder;
-
-import java.util.regex.Pattern;
-
 import jenkins.plugins.shiningpanda.utils.StringUtil;
 
-public class UnixCommand extends ShellCommand
-{
+public class UnixCommand extends ShellCommand {
 
     /**
      * Store the variable pattern.
@@ -49,9 +47,8 @@ public class UnixCommand extends ShellCommand
      * @param convert
      *            Convert batch to shell
      */
-    protected UnixCommand(String command, boolean ignoreExitCode, boolean convert)
-    {
-        super(command, ignoreExitCode, convert);
+    protected UnixCommand(String command, boolean ignoreExitCode, boolean convert) {
+	super(command, ignoreExitCode, convert);
     }
 
     /*
@@ -60,9 +57,8 @@ public class UnixCommand extends ShellCommand
      * @see jenkins.plugins.shiningpanda.command.Command#getExtension()
      */
     @Override
-    protected String getExtension()
-    {
-        return ".sh";
+    protected String getExtension() {
+	return ".sh";
     }
 
     /*
@@ -72,9 +68,8 @@ public class UnixCommand extends ShellCommand
      * jenkins.plugins.shiningpanda.command.ShellCommand#getOriginalContent()
      */
     @Override
-    protected String getSourceContent()
-    {
-        return addCrForNonASCII(StringUtil.fixCrLf(getCommand()));
+    protected String getSourceContent() {
+	return addCrForNonASCII(StringUtil.fixCrLf(getCommand()));
     }
 
     /*
@@ -84,9 +79,8 @@ public class UnixCommand extends ShellCommand
      * jenkins.plugins.shiningpanda.command.ShellCommand#getSourceSeparator()
      */
     @Override
-    protected String getSourceSeparator()
-    {
-        return "\\";
+    protected String getSourceSeparator() {
+	return "\\";
     }
 
     /*
@@ -96,9 +90,8 @@ public class UnixCommand extends ShellCommand
      * jenkins.plugins.shiningpanda.command.ShellCommand#getTargetSeparator()
      */
     @Override
-    protected String getTargetSeparator()
-    {
-        return "/";
+    protected String getTargetSeparator() {
+	return "/";
     }
 
     /*
@@ -108,9 +101,8 @@ public class UnixCommand extends ShellCommand
      * jenkins.plugins.shiningpanda.command.ShellCommand#getSourceVariable()
      */
     @Override
-    protected Pattern getSourceVariable()
-    {
-        return VARIABLE;
+    protected Pattern getSourceVariable() {
+	return VARIABLE;
     }
 
     /*
@@ -120,9 +112,8 @@ public class UnixCommand extends ShellCommand
      * jenkins.plugins.shiningpanda.command.ShellCommand#getTargetVariable()
      */
     @Override
-    protected String getTargetVariable()
-    {
-        return "\\${$1}";
+    protected String getTargetVariable() {
+	return "\\${$1}";
     }
 
     /*
@@ -133,9 +124,9 @@ public class UnixCommand extends ShellCommand
      * )
      */
     @Override
-    protected ArgumentListBuilder getArguments(FilePath script)
-    {
-        return new ArgumentListBuilder(getShell(script.getChannel()), isExitCodeIgnored() ? "-x" : "-xe", script.getRemote());
+    protected ArgumentListBuilder getArguments(FilePath script) {
+	return new ArgumentListBuilder(getShell(script.getChannel()), isExitCodeIgnored() ? "-x" : "-xe",
+		script.getRemote());
     }
 
     /**
@@ -145,14 +136,13 @@ public class UnixCommand extends ShellCommand
      *            The string to fix
      * @return The fixed string
      */
-    protected static String addCrForNonASCII(String contents)
-    {
-        // Check if the first char is not already a line return
-        if (contents.indexOf('\n') != 0)
-            // If not add one
-            return "\n" + contents;
-        // Return the content
-        return contents;
+    protected static String addCrForNonASCII(String contents) {
+	// Check if the first char is not already a line return
+	if (contents.indexOf('\n') != 0)
+	    // If not add one
+	    return "\n" + contents;
+	// Return the content
+	return contents;
     }
 
     /**
@@ -162,8 +152,7 @@ public class UnixCommand extends ShellCommand
      *            The channel
      * @return The shell to use to launch the script file
      */
-    protected static String getShell(VirtualChannel channel)
-    {
-        return Hudson.getInstance().getDescriptorByType(Shell.DescriptorImpl.class).getShellOrDefault(channel);
+    protected static String getShell(VirtualChannel channel) {
+	return Hudson.getInstance().getDescriptorByType(Shell.DescriptorImpl.class).getShellOrDefault(channel);
     }
 }

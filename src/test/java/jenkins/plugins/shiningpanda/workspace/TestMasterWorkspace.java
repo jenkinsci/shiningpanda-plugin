@@ -25,18 +25,15 @@ import java.io.File;
 
 import jenkins.plugins.shiningpanda.ShiningPandaTestCase;
 
-public class TestMasterWorkspace extends ShiningPandaTestCase
-{
+public class TestMasterWorkspace extends ShiningPandaTestCase {
 
-    public void testGetPackageDirNotExists() throws Exception
-    {
-        assertNull("master workspace should not have a package directory", getMasterWorkspace().getPackagesDir());
+    public void testGetPackageDirNotExists() throws Exception {
+	assertNull("master workspace should not have a package directory", getMasterWorkspace().getPackagesDir());
     }
 
-    public void testGetPackageDirExists() throws Exception
-    {
-        File packagesDir = createPackagesDir();
-        assertEquals("invalid package directory", packagesDir.getPath(), getWorkspace().getPackagesDir().getRemote());
+    public void testGetPackageDirExists() throws Exception {
+	File packagesDir = createPackagesDir();
+	assertEquals("invalid package directory", packagesDir.getPath(), getWorkspace().getPackagesDir().getRemote());
     }
 
 }

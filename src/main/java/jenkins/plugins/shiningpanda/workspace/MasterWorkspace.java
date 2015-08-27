@@ -21,12 +21,11 @@
  */
 package jenkins.plugins.shiningpanda.workspace;
 
-import hudson.FilePath;
-
 import java.io.IOException;
 
-public class MasterWorkspace extends Workspace
-{
+import hudson.FilePath;
+
+public class MasterWorkspace extends Workspace {
 
     /**
      * Constructor using fields.
@@ -34,9 +33,8 @@ public class MasterWorkspace extends Workspace
      * @param home
      *            The home folder of the workspace.
      */
-    public MasterWorkspace(FilePath home)
-    {
-        super(home);
+    public MasterWorkspace(FilePath home) {
+	super(home);
     }
 
     /*
@@ -45,9 +43,8 @@ public class MasterWorkspace extends Workspace
      * @see jenkins.plugins.shiningpanda.workspace.Workspace#getPackagesDir()
      */
     @Override
-    public FilePath getPackagesDir() throws IOException, InterruptedException
-    {
-        return getMasterPackagesDir();
+    public FilePath getPackagesDir() throws IOException, InterruptedException {
+	return getMasterPackagesDir();
     }
 
 }

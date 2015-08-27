@@ -21,14 +21,13 @@
  */
 package jenkins.plugins.shiningpanda.command;
 
-import hudson.EnvVars;
-import hudson.FilePath;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class ShellCommand extends Command
-{
+import hudson.EnvVars;
+import hudson.FilePath;
+
+public abstract class ShellCommand extends Command {
 
     /**
      * Convert command to match platform specificities
@@ -45,12 +44,11 @@ public abstract class ShellCommand extends Command
      * @param convert
      *            Convert batch to shell
      */
-    protected ShellCommand(String command, boolean ignoreExitCode, boolean convert)
-    {
-        // Call super
-        super(command, ignoreExitCode);
-        // Store conversion flag
-        this.convert = convert;
+    protected ShellCommand(String command, boolean ignoreExitCode, boolean convert) {
+	// Call super
+	super(command, ignoreExitCode);
+	// Store conversion flag
+	this.convert = convert;
     }
 
     /**
@@ -91,23 +89,21 @@ public abstract class ShellCommand extends Command
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * jenkins.plugins.shiningpanda.command.Command#getEnvironment(hudson.FilePath
-     * , hudson.EnvVars)
+     * @see jenkins.plugins.shiningpanda.command.Command#getEnvironment(hudson.
+     * FilePath , hudson.EnvVars)
      */
     @Override
-    protected EnvVars getEnvironment(FilePath pwd, EnvVars environment)
-    {
-        // Check if conversion required
-        if (!convert)
-            // If not required return the environment directly
-            return environment;
-        // Get a new one
-        environment = new EnvVars(environment);
-        // Add the working directory in the path so `./` are useless on UNIX
-        environment.override("PATH+", pwd.getRemote());
-        // Return the environment
-        return environment;
+    protected EnvVars getEnvironment(FilePath pwd, EnvVars environment) {
+	// Check if conversion required
+	if (!convert)
+	    // If not required return the environment directly
+	    return environment;
+	// Get a new one
+	environment = new EnvVars(environment);
+	// Add the working directory in the path so `./` are useless on UNIX
+	environment.override("PATH+", pwd.getRemote());
+	// Return the environment
+	return environment;
     }
 
     /*
@@ -116,33 +112,32 @@ public abstract class ShellCommand extends Command
      * @see jenkins.plugins.shiningpanda.command.Command#getContents()
      */
     @Override
-    protected final String getContents()
-    {
-        // Get the script content
-        String contents = getSourceContent();
-        // Check if conversion required
-        if (!convert)
-            // If not return the content directly
-            return contents;
-        // Get a pattern for the path separator to replace
-        String pattern = Pattern.quote(getSourceSeparator());
-        // Get the matcher to replace the separator that does not match the
-        // platform
-        String matcher = Matcher.quoteReplacement(getTargetSeparator());
-        // Perform the translation
-        contents = contents.replaceAll(pattern, matcher);
-        // Get a string buffer to set processed content
-        StringBuffer sb = new StringBuffer();
-        // Get a variable matcher
-        Matcher m = getSourceVariable().matcher(contents);
-        // Find variables
-        while (m.find())
-            // Replace them by the correct ones
-            m.appendReplacement(sb, getTargetVariable());
-        // Add the end of the content
-        m.appendTail(sb);
-        // Return the contents
-        return sb.toString();
+    protected final String getContents() {
+	// Get the script content
+	String contents = getSourceContent();
+	// Check if conversion required
+	if (!convert)
+	    // If not return the content directly
+	    return contents;
+	// Get a pattern for the path separator to replace
+	String pattern = Pattern.quote(getSourceSeparator());
+	// Get the matcher to replace the separator that does not match the
+	// platform
+	String matcher = Matcher.quoteReplacement(getTargetSeparator());
+	// Perform the translation
+	contents = contents.replaceAll(pattern, matcher);
+	// Get a string buffer to set processed content
+	StringBuffer sb = new StringBuffer();
+	// Get a variable matcher
+	Matcher m = getSourceVariable().matcher(contents);
+	// Find variables
+	while (m.find())
+	    // Replace them by the correct ones
+	    m.appendReplacement(sb, getTargetVariable());
+	// Add the end of the content
+	m.appendTail(sb);
+	// Return the contents
+	return sb.toString();
     }
 
 }

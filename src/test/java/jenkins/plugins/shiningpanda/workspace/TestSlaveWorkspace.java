@@ -21,32 +21,28 @@
  */
 package jenkins.plugins.shiningpanda.workspace;
 
-import hudson.FilePath;
-
 import java.io.File;
-
-import jenkins.plugins.shiningpanda.ShiningPandaTestCase;
 
 import org.apache.commons.io.FileUtils;
 
-public class TestSlaveWorkspace extends ShiningPandaTestCase
-{
+import hudson.FilePath;
+import jenkins.plugins.shiningpanda.ShiningPandaTestCase;
 
-    public void testGetPackageDirNotExists() throws Exception
-    {
-        assertNull("slave workspace should not have a package directory", getSlaveWorkspace().getPackagesDir());
+public class TestSlaveWorkspace extends ShiningPandaTestCase {
+
+    public void testGetPackageDirNotExists() throws Exception {
+	assertNull("slave workspace should not have a package directory", getSlaveWorkspace().getPackagesDir());
     }
 
-    public void testGetPackageDirExists() throws Exception
-    {
-        File masterPackagesDir = createPackagesDir();
-        File masterPackagesFile = new File(masterPackagesDir, "toto.txt");
-        FileUtils.writeStringToFile(masterPackagesFile, "hello");
-        FilePath slavePackagesDir = getSlaveWorkspace().getPackagesDir();
-        File slavePackagesFile = new File(toFile(slavePackagesDir), "toto.txt");
-        assertContentEquals(masterPackagesFile, slavePackagesFile);
-        assertNotSame("path of package on slave should differ from master one", masterPackagesFile.getAbsolutePath(),
-                slavePackagesFile.getAbsoluteFile());
+    public void testGetPackageDirExists() throws Exception {
+	File masterPackagesDir = createPackagesDir();
+	File masterPackagesFile = new File(masterPackagesDir, "toto.txt");
+	FileUtils.writeStringToFile(masterPackagesFile, "hello");
+	FilePath slavePackagesDir = getSlaveWorkspace().getPackagesDir();
+	File slavePackagesFile = new File(toFile(slavePackagesDir), "toto.txt");
+	assertContentEquals(masterPackagesFile, slavePackagesFile);
+	assertNotSame("path of package on slave should differ from master one", masterPackagesFile.getAbsolutePath(),
+		slavePackagesFile.getAbsoluteFile());
     }
 
 }

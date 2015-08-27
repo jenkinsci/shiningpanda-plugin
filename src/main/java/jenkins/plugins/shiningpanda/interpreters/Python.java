@@ -21,15 +21,13 @@
  */
 package jenkins.plugins.shiningpanda.interpreters;
 
-import hudson.FilePath;
-
 import java.io.IOException;
 import java.util.Map;
 
+import hudson.FilePath;
 import jenkins.plugins.shiningpanda.utils.FilePathUtil;
 
-public abstract class Python
-{
+public abstract class Python {
 
     /**
      * Home folder.
@@ -44,12 +42,11 @@ public abstract class Python
      * @throws InterruptedException
      * @throws IOException
      */
-    protected Python(FilePath home) throws IOException, InterruptedException
-    {
-        // Call super
-        super();
-        // Store home folder with its absolute form
-        setHome(home.absolutize());
+    protected Python(FilePath home) throws IOException, InterruptedException {
+	// Call super
+	super();
+	// Store home folder with its absolute form
+	setHome(home.absolutize());
     }
 
     /**
@@ -57,9 +54,8 @@ public abstract class Python
      * 
      * @return The home folder
      */
-    public FilePath getHome()
-    {
-        return home;
+    public FilePath getHome() {
+	return home;
     }
 
     /**
@@ -68,9 +64,8 @@ public abstract class Python
      * @param home
      *            The home folder
      */
-    private void setHome(FilePath home)
-    {
-        this.home = home;
+    private void setHome(FilePath home) {
+	this.home = home;
     }
 
     /**
@@ -78,9 +73,8 @@ public abstract class Python
      * 
      * @return true if this is a CPython implementation, else false
      */
-    public CPython isCPython()
-    {
-        return null;
+    public CPython isCPython() {
+	return null;
     }
 
     /**
@@ -88,9 +82,8 @@ public abstract class Python
      * 
      * @return true if this is a PyPy implementation, else false
      */
-    public PyPy isPyPy()
-    {
-        return null;
+    public PyPy isPyPy() {
+	return null;
     }
 
     /**
@@ -98,9 +91,8 @@ public abstract class Python
      * 
      * @return true if this is a JYTHON implementation, else false
      */
-    public Jython isJython()
-    {
-        return null;
+    public Jython isJython() {
+	return null;
     }
 
     /**
@@ -108,9 +100,8 @@ public abstract class Python
      * 
      * @return true if this is a IronPython implementation, else false
      */
-    public IronPython isIronPython()
-    {
-        return null;
+    public IronPython isIronPython() {
+	return null;
     }
 
     /**
@@ -118,9 +109,8 @@ public abstract class Python
      * 
      * @return true if this is a VIRTUALENV, else false
      */
-    public Virtualenv isVirtualenv()
-    {
-        return null;
+    public Virtualenv isVirtualenv() {
+	return null;
     }
 
     /**
@@ -128,9 +118,8 @@ public abstract class Python
      * 
      * @return true if this is an executable implementation, else false
      */
-    public Executable isExecutable()
-    {
-        return null;
+    public Executable isExecutable() {
+	return null;
     }
 
     /**
@@ -140,10 +129,9 @@ public abstract class Python
      * @throws IOException
      * @throws InterruptedException
      */
-    public boolean isValid() throws IOException, InterruptedException
-    {
-        // Check that executable exists
-        return getExecutable() != null;
+    public boolean isValid() throws IOException, InterruptedException {
+	// Check that executable exists
+	return getExecutable() != null;
     }
 
     /**
@@ -153,9 +141,8 @@ public abstract class Python
      * @throws IOException
      * @throws InterruptedException
      */
-    protected boolean isWindows() throws IOException, InterruptedException
-    {
-        return FilePathUtil.isWindows(getHome());
+    protected boolean isWindows() throws IOException, InterruptedException {
+	return FilePathUtil.isWindows(getHome());
     }
 
     /**
@@ -165,9 +152,8 @@ public abstract class Python
      * @throws IOException
      * @throws InterruptedException
      */
-    protected boolean isUnix() throws IOException, InterruptedException
-    {
-        return FilePathUtil.isUnix(getHome());
+    protected boolean isUnix() throws IOException, InterruptedException {
+	return FilePathUtil.isUnix(getHome());
     }
 
     /**
@@ -197,9 +183,8 @@ public abstract class Python
      * @throws IOException
      * @throws InterruptedException
      */
-    public Map<String, String> getEnvironment() throws IOException, InterruptedException
-    {
-        return getEnvironment(true);
+    public Map<String, String> getEnvironment() throws IOException, InterruptedException {
+	return getEnvironment(true);
     }
 
     /**
@@ -211,19 +196,18 @@ public abstract class Python
      * @throws IOException
      * @throws InterruptedException
      */
-    public static Python fromHome(FilePath home) throws IOException, InterruptedException
-    {
-        // Get the possible interpreters
-        Python[] interpreters = new Python[] { new Executable(home), new Virtualenv(home), new Jython(home), new PyPy(home),
-                new IronPython(home), new CPython(home) };
-        // Go threw interpreters and try to find a valid one
-        for (Python interpreter : interpreters)
-            // Check its validity
-            if (interpreter.isValid())
-                // Found one, return it
-                return interpreter;
-        // Not found, return null
-        return null;
+    public static Python fromHome(FilePath home) throws IOException, InterruptedException {
+	// Get the possible interpreters
+	Python[] interpreters = new Python[] { new Executable(home), new Virtualenv(home), new Jython(home),
+		new PyPy(home), new IronPython(home), new CPython(home) };
+	// Go threw interpreters and try to find a valid one
+	for (Python interpreter : interpreters)
+	    // Check its validity
+	    if (interpreter.isValid())
+		// Found one, return it
+		return interpreter;
+	// Not found, return null
+	return null;
     }
 
 }

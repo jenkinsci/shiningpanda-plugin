@@ -23,8 +23,7 @@ package jenkins.plugins.shiningpanda.utils;
 
 import java.util.regex.Pattern;
 
-public class StringUtil
-{
+public class StringUtil {
 
     /**
      * Fix CR/LF and always make it Unix style
@@ -33,12 +32,11 @@ public class StringUtil
      *            The string to fix
      * @return The fixed string
      */
-    public static String fixCrLf(String s)
-    {
-        int idx;
-        while ((idx = s.indexOf("\r\n")) != -1)
-            s = s.substring(0, idx) + s.substring(idx + 1);
-        return s;
+    public static String fixCrLf(String s) {
+	int idx;
+	while ((idx = s.indexOf("\r\n")) != -1)
+	    s = s.substring(0, idx) + s.substring(idx + 1);
+	return s;
     }
 
     /**
@@ -48,11 +46,10 @@ public class StringUtil
      *            The value to check.
      * @return True if has whitespace, else false
      */
-    public static boolean hasWhitespace(String value)
-    {
-        if (value == null)
-            return false;
-        return Pattern.compile("\\s").matcher(value).find();
+    public static boolean hasWhitespace(String value) {
+	if (value == null)
+	    return false;
+	return Pattern.compile("\\s").matcher(value).find();
     }
 
     /**
@@ -63,9 +60,8 @@ public class StringUtil
      *            The array to fix
      * @return A fixed array
      */
-    public static String[] fixNull(String[] values)
-    {
-        return values != null ? values : new String[] {};
+    public static String[] fixNull(String[] values) {
+	return values != null ? values : new String[] {};
     }
 
 }

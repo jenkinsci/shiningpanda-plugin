@@ -21,13 +21,12 @@
  */
 package jenkins.plugins.shiningpanda.utils;
 
+import java.util.Map;
+
 import hudson.Util;
 import hudson.util.VariableResolver;
 
-import java.util.Map;
-
-public class UnixVariableResolver implements VariableResolver<String>
-{
+public class UnixVariableResolver implements VariableResolver<String> {
     /**
      * The map used to resolve variables.
      */
@@ -39,17 +38,15 @@ public class UnixVariableResolver implements VariableResolver<String>
      * @param data
      *            The data.
      */
-    public UnixVariableResolver(Map<String, String> data)
-    {
-        this.data = data;
+    public UnixVariableResolver(Map<String, String> data) {
+	this.data = data;
     }
 
     /**
      * Resolve a variable.
      */
-    public String resolve(String name)
-    {
-        // UNIX-like: blank if not found
-        return Util.fixNull(data.get(name));
+    public String resolve(String name) {
+	// UNIX-like: blank if not found
+	return Util.fixNull(data.get(name));
     }
 }

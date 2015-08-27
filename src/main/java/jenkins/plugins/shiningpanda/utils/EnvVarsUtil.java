@@ -21,14 +21,13 @@
  */
 package jenkins.plugins.shiningpanda.utils;
 
-import hudson.EnvVars;
-import hudson.FilePath;
-
 import java.util.HashMap;
 import java.util.Map;
 
-public class EnvVarsUtil
-{
+import hudson.EnvVars;
+import hudson.FilePath;
+
+public class EnvVarsUtil {
 
     /**
      * Get the library environment for the provided folder.
@@ -37,20 +36,19 @@ public class EnvVarsUtil
      *            The folder
      * @return The environment
      */
-    public static Map<String, String> getLibs(FilePath filePath)
-    {
-        // Create the map to store the environment
-        Map<String, String> environment = new HashMap<String, String>();
-        // General UNIX
-        environment.put("LD_LIBRARY_PATH+", filePath.getRemote());
-        // OSX
-        environment.put("DYLD_LIBRARY_PATH+", filePath.getRemote());
-        // AIX
-        environment.put("LIBPATH+", filePath.getRemote());
-        // HP-UX
-        environment.put("SHLIB_PATH+", filePath.getRemote());
-        // Return the environment
-        return environment;
+    public static Map<String, String> getLibs(FilePath filePath) {
+	// Create the map to store the environment
+	Map<String, String> environment = new HashMap<String, String>();
+	// General UNIX
+	environment.put("LD_LIBRARY_PATH+", filePath.getRemote());
+	// OSX
+	environment.put("DYLD_LIBRARY_PATH+", filePath.getRemote());
+	// AIX
+	environment.put("LIBPATH+", filePath.getRemote());
+	// HP-UX
+	environment.put("SHLIB_PATH+", filePath.getRemote());
+	// Return the environment
+	return environment;
     }
 
     /**
@@ -58,9 +56,8 @@ public class EnvVarsUtil
      * 
      * @return The list of variables
      */
-    public static String[] getPythonHomeKeys()
-    {
-        return new String[] { "PYTHONHOME", "JYTHON_HOME", "VIRTUAL_ENV" };
+    public static String[] getPythonHomeKeys() {
+	return new String[] { "PYTHONHOME", "JYTHON_HOME", "VIRTUAL_ENV" };
     }
 
     /**
@@ -73,14 +70,13 @@ public class EnvVarsUtil
      *            The environment that overrides the original one
      * @return The environment object
      */
-    public static EnvVars override(EnvVars original, Map<String, String> additional)
-    {
-        // Copy the original environment
-        EnvVars environment = new EnvVars(original);
-        // Override all to suppress all "+"
-        environment.overrideAll(additional);
-        // Return the object
-        return environment;
+    public static EnvVars override(EnvVars original, Map<String, String> additional) {
+	// Copy the original environment
+	EnvVars environment = new EnvVars(original);
+	// Override all to suppress all "+"
+	environment.overrideAll(additional);
+	// Return the object
+	return environment;
     }
 
     /**
@@ -90,9 +86,8 @@ public class EnvVarsUtil
      *            The value to expand
      * @return The expanded value
      */
-    public static String expand(String value)
-    {
-        return new EnvVars(EnvVars.masterEnvVars).expand(value);
+    public static String expand(String value) {
+	return new EnvVars(EnvVars.masterEnvVars).expand(value);
     }
 
 }

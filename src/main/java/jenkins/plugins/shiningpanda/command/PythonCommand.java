@@ -25,8 +25,7 @@ import hudson.FilePath;
 import hudson.util.ArgumentListBuilder;
 import jenkins.plugins.shiningpanda.utils.StringUtil;
 
-public class PythonCommand extends Command
-{
+public class PythonCommand extends Command {
 
     /**
      * Is this on UNIX?
@@ -50,14 +49,13 @@ public class PythonCommand extends Command
      * @param ignoreExitCode
      *            Is exit code ignored?
      */
-    protected PythonCommand(boolean isUnix, String executable, String command, boolean ignoreExitCode)
-    {
-        // Call super
-        super(command, ignoreExitCode);
-        // Store UNIX flag
-        this.isUnix = isUnix;
-        // Store executable
-        this.executable = executable;
+    protected PythonCommand(boolean isUnix, String executable, String command, boolean ignoreExitCode) {
+	// Call super
+	super(command, ignoreExitCode);
+	// Store UNIX flag
+	this.isUnix = isUnix;
+	// Store executable
+	this.executable = executable;
     }
 
     /*
@@ -66,9 +64,8 @@ public class PythonCommand extends Command
      * @see jenkins.plugins.shiningpanda.command.Command#getExtension()
      */
     @Override
-    protected String getExtension()
-    {
-        return ".py";
+    protected String getExtension() {
+	return ".py";
     }
 
     /*
@@ -77,9 +74,8 @@ public class PythonCommand extends Command
      * @see jenkins.plugins.shiningpanda.command.Command#getContents()
      */
     @Override
-    protected String getContents()
-    {
-        return StringUtil.fixCrLf(getCommand());
+    protected String getContents() {
+	return StringUtil.fixCrLf(getCommand());
     }
 
     /*
@@ -90,11 +86,10 @@ public class PythonCommand extends Command
      * )
      */
     @Override
-    protected ArgumentListBuilder getArguments(FilePath script)
-    {
-        // Get the arguments
-        ArgumentListBuilder args = new ArgumentListBuilder(executable, script.getRemote());
-        // Check if on UNIX to return the right command
-        return isUnix ? args : args.toWindowsCommand();
+    protected ArgumentListBuilder getArguments(FilePath script) {
+	// Get the arguments
+	ArgumentListBuilder args = new ArgumentListBuilder(executable, script.getRemote());
+	// Check if on UNIX to return the right command
+	return isUnix ? args : args.toWindowsCommand();
     }
 }

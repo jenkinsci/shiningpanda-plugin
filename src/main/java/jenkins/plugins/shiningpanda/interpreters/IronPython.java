@@ -21,16 +21,14 @@
  */
 package jenkins.plugins.shiningpanda.interpreters;
 
-import hudson.FilePath;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import hudson.FilePath;
 import jenkins.plugins.shiningpanda.utils.FilePathUtil;
 
-public class IronPython extends Python
-{
+public class IronPython extends Python {
 
     /**
      * Constructor using fields
@@ -40,9 +38,8 @@ public class IronPython extends Python
      * @throws InterruptedException
      * @throws IOException
      */
-    protected IronPython(FilePath home) throws IOException, InterruptedException
-    {
-        super(home);
+    protected IronPython(FilePath home) throws IOException, InterruptedException {
+	super(home);
     }
 
     /*
@@ -51,9 +48,8 @@ public class IronPython extends Python
      * @see jenkins.plugins.shiningpanda.interpreters.Python#isIronPython()
      */
     @Override
-    public IronPython isIronPython()
-    {
-        return this;
+    public IronPython isIronPython() {
+	return this;
     }
 
     /*
@@ -62,15 +58,14 @@ public class IronPython extends Python
      * @see jenkins.plugins.shiningpanda.interpreters.Python#getExecutable()
      */
     @Override
-    public FilePath getExecutable() throws IOException, InterruptedException
-    {
-        // Check if on Windows
-        if (isWindows())
-            // If on windows look for executables in home folder
-            return FilePathUtil.isFileOrNull(getHome().child("ipy64.exe"), getHome().child("ipy.exe"));
-        // Else look for a wrapper around mono calling the executable (not
-        // provided in distributions)
-        return FilePathUtil.isFileOrNull(getHome().child("ipy64"), getHome().child("ipy"));
+    public FilePath getExecutable() throws IOException, InterruptedException {
+	// Check if on Windows
+	if (isWindows())
+	    // If on windows look for executables in home folder
+	    return FilePathUtil.isFileOrNull(getHome().child("ipy64.exe"), getHome().child("ipy.exe"));
+	// Else look for a wrapper around mono calling the executable (not
+	// provided in distributions)
+	return FilePathUtil.isFileOrNull(getHome().child("ipy64"), getHome().child("ipy"));
     }
 
     /*
@@ -80,13 +75,12 @@ public class IronPython extends Python
      * jenkins.plugins.shiningpanda.interpreters.Python#getEnvironment(boolean)
      */
     @Override
-    public Map<String, String> getEnvironment(boolean includeHomeKey) throws IOException, InterruptedException
-    {
-        // Store the environment
-        Map<String, String> environment = new HashMap<String, String>();
-        // Add the home folder in the path
-        environment.put("PATH+", getHome().getRemote());
-        // Return environment
-        return environment;
+    public Map<String, String> getEnvironment(boolean includeHomeKey) throws IOException, InterruptedException {
+	// Store the environment
+	Map<String, String> environment = new HashMap<String, String>();
+	// Add the home folder in the path
+	environment.put("PATH+", getHome().getRemote());
+	// Return environment
+	return environment;
     }
 }
