@@ -21,6 +21,8 @@
  */
 package jenkins.plugins.shiningpanda.builders;
 
+import org.apache.commons.io.FileUtils;
+
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import jenkins.plugins.shiningpanda.ShiningPandaTestCase;
@@ -28,47 +30,41 @@ import jenkins.plugins.shiningpanda.command.CommandNature;
 import jenkins.plugins.shiningpanda.scm.BuildoutSCM;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 
-import org.apache.commons.io.FileUtils;
+public class TestBuildoutBuilder extends ShiningPandaTestCase {
 
-public class TestBuildoutBuilder extends ShiningPandaTestCase
-{
-
-    public void testRoundTripFreeStyle() throws Exception
-    {
-        PythonInstallation installation = configureCPython2();
-        BuildoutBuilder before = new BuildoutBuilder(installation.getName(), "foo/buildout.cfg", CommandNature.SHELL.getKey(),
-                "echo hello", true);
-        BuildoutBuilder after = configFreeStyleRoundtrip(before);
-        assertEqualBeans2(before, after, "pythonName,buildoutCfg,nature,command,ignoreExitCode");
+    public void testRoundTripFreeStyle() throws Exception {
+	PythonInstallation installation = configureCPython2();
+	BuildoutBuilder before = new BuildoutBuilder(installation.getName(), "foo/buildout.cfg",
+		CommandNature.SHELL.getKey(), "echo hello", true);
+	BuildoutBuilder after = configFreeStyleRoundtrip(before);
+	assertEqualBeans2(before, after, "pythonName,buildoutCfg,nature,command,ignoreExitCode");
     }
 
-    public void testRoundTripMatrix() throws Exception
-    {
-        BuildoutBuilder before = new BuildoutBuilder("foobar", "bar/dev.cfg", CommandNature.PYTHON.getKey(), "echo hello",
-                false);
-        BuildoutBuilder after = configPythonMatrixRoundtrip(before);
-        assertEqualBeans2(before, after, "buildoutCfg,nature,command,ignoreExitCode");
+    public void testRoundTripMatrix() throws Exception {
+	BuildoutBuilder before = new BuildoutBuilder("foobar", "bar/dev.cfg", CommandNature.PYTHON.getKey(),
+		"echo hello", false);
+	BuildoutBuilder after = configPythonMatrixRoundtrip(before);
+	assertEqualBeans2(before, after, "buildoutCfg,nature,command,ignoreExitCode");
     }
 
-    public void test() throws Exception
-    {
-        PythonInstallation installation = configureCPython2();
-        String buildoutCfg = "buildout.cfg";
-        BuildoutBuilder builder = new BuildoutBuilder(installation.getName(), buildoutCfg, CommandNature.SHELL.getKey(),
-                "django --help", true);
-        FreeStyleProject project = createFreeStyleProject();
-        StringBuffer sb = new StringBuffer();
-        sb.append("[buildout]").append("\n");
-        sb.append("parts = django").append("\n");
-        sb.append("[django]").append("\n");
-        sb.append("recipe = djangorecipe").append("\n");
-        sb.append("project = HelloWorld").append("\n");
-        project.setScm(new BuildoutSCM(buildoutCfg, sb.toString()));
-        project.getBuildersList().add(builder);
-        FreeStyleBuild build = project.scheduleBuild2(0).get();
-        String log = FileUtils.readFileToString(build.getLogFile());
-        assertTrue("this build should have displayed django help:\n" + log,
-                log.contains("Usage: django subcommand [options] [args]"));
-        assertTrue("this build should have been successful:\n" + log, log.contains("SUCCESS"));
+    public void test() throws Exception {
+	PythonInstallation installation = configureCPython2();
+	String buildoutCfg = "buildout.cfg";
+	BuildoutBuilder builder = new BuildoutBuilder(installation.getName(), buildoutCfg, CommandNature.SHELL.getKey(),
+		"django --help", true);
+	FreeStyleProject project = createFreeStyleProject();
+	StringBuffer sb = new StringBuffer();
+	sb.append("[buildout]").append("\n");
+	sb.append("parts = django").append("\n");
+	sb.append("[django]").append("\n");
+	sb.append("recipe = djangorecipe").append("\n");
+	sb.append("project = HelloWorld").append("\n");
+	project.setScm(new BuildoutSCM(buildoutCfg, sb.toString()));
+	project.getBuildersList().add(builder);
+	FreeStyleBuild build = project.scheduleBuild2(0).get();
+	String log = FileUtils.readFileToString(build.getLogFile());
+	assertTrue("this build should have displayed django help:\n" + log,
+		log.contains("Usage: django subcommand [options] [args]"));
+	assertTrue("this build should have been successful:\n" + log, log.contains("SUCCESS"));
     }
 }

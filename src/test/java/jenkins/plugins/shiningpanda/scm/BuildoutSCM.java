@@ -21,27 +21,26 @@
  */
 package jenkins.plugins.shiningpanda.scm;
 
-import hudson.Extension;
-import hudson.FilePath;
-import hudson.Launcher;
-import hudson.model.BuildListener;
-import hudson.model.TaskListener;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.scm.ChangeLogParser;
-import hudson.scm.NullChangeLogParser;
-import hudson.scm.PollingResult;
-import hudson.scm.SCMDescriptor;
-import hudson.scm.SCMRevisionState;
-import hudson.scm.NullSCM;
-
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 
-public class BuildoutSCM extends NullSCM
-{
+import hudson.Extension;
+import hudson.FilePath;
+import hudson.Launcher;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
+import hudson.model.TaskListener;
+import hudson.scm.ChangeLogParser;
+import hudson.scm.NullChangeLogParser;
+import hudson.scm.NullSCM;
+import hudson.scm.PollingResult;
+import hudson.scm.SCMDescriptor;
+import hudson.scm.SCMRevisionState;
+
+public class BuildoutSCM extends NullSCM {
 
     /**
      * Path to the buildout.cfg file
@@ -61,49 +60,42 @@ public class BuildoutSCM extends NullSCM
      * @param content
      *            The buildout.cfg content
      */
-    public BuildoutSCM(String buildoutCfg, String content)
-    {
-        super();
-        this.buildoutCfg = buildoutCfg;
-        this.content = content;
+    public BuildoutSCM(String buildoutCfg, String content) {
+	super();
+	this.buildoutCfg = buildoutCfg;
+	this.content = content;
     }
 
     public SCMRevisionState calcRevisionsFromBuild(AbstractBuild<?, ?> build, Launcher launcher, TaskListener listener)
-            throws IOException, InterruptedException
-    {
-        return null;
+	    throws IOException, InterruptedException {
+	return null;
     }
 
-    protected PollingResult compareRemoteRevisionWith(@SuppressWarnings("rawtypes") AbstractProject project, Launcher launcher,
-            FilePath workspace, TaskListener listener, SCMRevisionState baseline) throws IOException, InterruptedException
-    {
-        return PollingResult.NO_CHANGES;
+    protected PollingResult compareRemoteRevisionWith(@SuppressWarnings("rawtypes") AbstractProject project,
+	    Launcher launcher, FilePath workspace, TaskListener listener, SCMRevisionState baseline)
+		    throws IOException, InterruptedException {
+	return PollingResult.NO_CHANGES;
     }
 
     public boolean checkout(AbstractBuild<?, ?> build, Launcher launcher, FilePath remoteDir, BuildListener listener,
-            File changeLogFile) throws IOException, InterruptedException
-    {
-        FilePath filePath = build.getWorkspace().child(buildoutCfg);
-        FileUtils.writeStringToFile(new File(filePath.getRemote()), content);
-        return createEmptyChangeLog(changeLogFile, listener, "log");
+	    File changeLogFile) throws IOException, InterruptedException {
+	FilePath filePath = build.getWorkspace().child(buildoutCfg);
+	FileUtils.writeStringToFile(new File(filePath.getRemote()), content);
+	return createEmptyChangeLog(changeLogFile, listener, "log");
     }
 
-    public ChangeLogParser createChangeLogParser()
-    {
-        return new NullChangeLogParser();
+    public ChangeLogParser createChangeLogParser() {
+	return new NullChangeLogParser();
     }
 
     @Extension
-    public static class DescriptorImpl extends SCMDescriptor<NullSCM>
-    {
-        public DescriptorImpl()
-        {
-            super(null);
-        }
+    public static class DescriptorImpl extends SCMDescriptor<NullSCM> {
+	public DescriptorImpl() {
+	    super(null);
+	}
 
-        public String getDisplayName()
-        {
-            return getClass().getName();
-        }
+	public String getDisplayName() {
+	    return getClass().getName();
+	}
     }
 }
