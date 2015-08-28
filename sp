@@ -1,6 +1,6 @@
 #!/bin/sh
 # ShiningPanda plug-in for Jenkins
-# Copyright (C) 2011-2014 ShiningPanda S.A.S.
+# Copyright (C) 2011-2015 ShiningPanda S.A.S.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
