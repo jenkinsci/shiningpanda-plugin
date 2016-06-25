@@ -5,3 +5,6 @@ target/
 .project
 *.pyc
 .DS_Store
+.idea
+*.iml
+
