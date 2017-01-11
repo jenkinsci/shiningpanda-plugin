@@ -14,6 +14,11 @@ Features
 
 This plugin adds Python support to Jenkins with some useful builders and tools. For more details see `Jenkins' wiki <https://wiki.jenkins-ci.org/display/JENKINS/ShiningPanda+Plugin>`_.
 
+Bugs
+----
+
+I don't see where I can report bugs with the plugin.  It doesn't find HTML reports with coverage.py 4.0b2, and I'd like to discuss solutions.
+
 News
 ----------------
 
