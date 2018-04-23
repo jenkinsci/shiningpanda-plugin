@@ -303,9 +303,9 @@ public class Virtualenv extends Python {
 	// Add path to PYTHON executable
 	args.add(getExecutable().getRemote());
 	// Call PIP via command line
-	args.add("-c");
+	args.add("-m");
 	// Command line script to call PIP
-	args.add("import pip; pip.main();");
+	args.add("pip");
 	// Require an installation
 	args.add("install");
 	// Get the folder where packages can be found (PIP, ...)
