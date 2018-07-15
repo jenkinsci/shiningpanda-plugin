@@ -3,11 +3,11 @@
  * Copyright (C) 2011-2015 ShiningPanda S.A.S.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of its license which incorporates the terms and 
- * conditions of version 3 of the GNU Affero General Public License, 
+ * it under the terms of its license which incorporates the terms and
+ * conditions of version 3 of the GNU Affero General Public License,
  * supplemented by the additional permissions under the GNU Affero GPL
- * version 3 section 7: if you modify this program, or any covered work, 
- * by linking or combining it with other code, such other code is not 
+ * version 3 section 7: if you modify this program, or any covered work,
+ * by linking or combining it with other code, such other code is not
  * for that reason alone subject to any of the requirements of the GNU
  * Affero GPL version 3.
  *
@@ -41,7 +41,7 @@ public class Virtualenv extends Python {
 
     /**
      * Constructor using fields
-     * 
+     *
      * @param home
      *            The home folder
      * @throws InterruptedException
@@ -53,7 +53,7 @@ public class Virtualenv extends Python {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see jenkins.plugins.shiningpanda.interpreters.Python#isVirtualenv()
      */
     @Override
@@ -63,7 +63,7 @@ public class Virtualenv extends Python {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see jenkins.plugins.shiningpanda.interpreters.Python#isValid()
      */
     @Override
@@ -86,7 +86,7 @@ public class Virtualenv extends Python {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * jenkins.plugins.shiningpanda.interpreters.Python#getEnvironment(boolean)
      */
@@ -137,7 +137,7 @@ public class Virtualenv extends Python {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see jenkins.plugins.shiningpanda.interpreters.Python#getExecutable()
      */
     @Override
@@ -157,7 +157,7 @@ public class Virtualenv extends Python {
      * Check if this VIRTUALENV is out dated. It can be out dated if it does not
      * exist, if it is not valid, or if the signature doesn't match the desired
      * one.
-     * 
+     *
      * @param workspace
      *            The workspace
      * @param interpreter
@@ -178,7 +178,7 @@ public class Virtualenv extends Python {
 
     /**
      * Get the signature file path.
-     * 
+     *
      * @return The signature file path
      */
     public FilePath getSignatureFile() {
@@ -187,7 +187,7 @@ public class Virtualenv extends Python {
 
     /**
      * Delete this VIRTUALENV
-     * 
+     *
      * @throws IOException
      * @throws InterruptedException
      */
@@ -197,7 +197,7 @@ public class Virtualenv extends Python {
 
     /**
      * Create this VIRTUALENV
-     * 
+     *
      * @param launcher
      *            The launcher
      * @param listener
@@ -279,7 +279,7 @@ public class Virtualenv extends Python {
 
     /**
      * Install a package with PIP.
-     * 
+     *
      * @param launcher
      *            The launcher
      * @param listener
@@ -303,9 +303,8 @@ public class Virtualenv extends Python {
 	// Add path to PYTHON executable
 	args.add(getExecutable().getRemote());
 	// Call PIP via command line
-	args.add("-c");
-	// Command line script to call PIP
-	args.add("import pip; pip.main();");
+	args.add("-m");
+	args.add("pip");
 	// Require an installation
 	args.add("install");
 	// Get the folder where packages can be found (PIP, ...)
@@ -324,7 +323,7 @@ public class Virtualenv extends Python {
 
     /**
      * Call TOX.
-     * 
+     *
      * @param launcher
      *            The launcher
      * @param listener
@@ -363,7 +362,7 @@ public class Virtualenv extends Python {
 
     /**
      * Bootstrap BUILDOUT and start its binary.
-     * 
+     *
      * @param launcher
      *            The launcher
      * @param listener
@@ -403,7 +402,7 @@ public class Virtualenv extends Python {
 
     /**
      * Get a virtual environment signature.
-     * 
+     *
      * @param workspace
      *            The workspace
      * @param interpreter

@@ -76,11 +76,6 @@ public abstract class Workspace {
     protected static String WHEEL = "wheel-0-py2.py3-none-any.whl";
 
     /**
-     * Name of the ARGPARSE wheel.
-     */
-    protected static String ARGPARSE = "argparse-0-py2.py3-none-any.whl";
-
-    /**
      * Name of the BUILDOUT bootstrap module.
      */
     protected static String BOOTSTRAP = "bootstrap.py";
@@ -140,11 +135,10 @@ public abstract class Workspace {
      * @throws InterruptedException
      */
     public FilePath getVirtualenvPy() throws IOException, InterruptedException {
-	// TODO: optimize transfer of PIP, SETUPTOOLS, WHEEL and ARGPARSE
+	// TODO: optimize transfer of PIP, SETUPTOOLS, WHEEL
 	getHome().child(SETUPTOOLS).copyFrom(getClass().getResource(SETUPTOOLS));
 	getHome().child(PIP).copyFrom(getClass().getResource(PIP));
 	getHome().child(WHEEL).copyFrom(getClass().getResource(WHEEL));
-	getHome().child(ARGPARSE).copyFrom(getClass().getResource(ARGPARSE));
 	return FilePathUtil.synchronize(getHome().child(VIRTUALENV), getVirtualenvPyContent());
     }
 

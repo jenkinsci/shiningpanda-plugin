@@ -48,7 +48,7 @@ public class TestBuildoutBuilder extends ShiningPandaTestCase {
     }
 
     public void test() throws Exception {
-	PythonInstallation installation = configureCPython2();
+	PythonInstallation installation = configureCPython3();
 	String buildoutCfg = "buildout.cfg";
 	String djangoProject = "HelloWorld";
 	BuildoutBuilder builder = new BuildoutBuilder(installation.getName(), buildoutCfg, CommandNature.SHELL.getKey(),

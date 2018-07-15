@@ -19,6 +19,6 @@
 # If not, see <https://raw.github.com/jenkinsci/shiningpanda-plugin/master/LICENSE.txt>.
 
 CPython.2.Home = /System/Library/Frameworks/Python.framework/Versions/2.7
-CPython.3.Home = /Library/Frameworks/Python.framework/Versions/3.4
-PyPy.Home = /usr/local/Cellar/pypy/2.3.0
-Jython.Home = /usr/local/Cellar/jython/2.5.3
+CPython.3.Home = /Users/olivier/.pyenv/versions/3.6.2
+PyPy.Home = /usr/local/Cellar/pypy/6.0.0
+Jython.Home = /usr/local/Cellar/jython/2.7.1
