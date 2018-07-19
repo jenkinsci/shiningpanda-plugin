@@ -1,24 +1,24 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
 		<version>1.609</version>
 	</parent>
-
 	<artifactId>shiningpanda</artifactId>
 	<version>0.24-SNAPSHOT</version>
 	<packaging>hpi</packaging>
-
 	<name>ShiningPanda Plugin</name>
-	<url>http://wiki.jenkins-ci.org/display/JENKINS/ShiningPanda+Plugin</url>
+	<description>This plugin adds Python support to Jenkins with some useful builders (Python builder, virtualenv builder, tox builder...) and the ability to use a Python axis in multi-configuration projects (for testing on multiple versions of Python).</description>
 	<licenses>
 		<license>
+			<name>GNU Affero GPL version 3</name>
 			<url>https://raw.github.com/jenkinsci/shiningpanda-plugin/master/LICENSE.txt</url>
 		</license>
 	</licenses>
-
 	<developers>
 		<developer>
 			<id>omansion</id>
@@ -31,14 +31,12 @@
 			<email>alexis.tabary@shiningpanda.com</email>
 		</developer>
 	</developers>
-
+	<url>http://wiki.jenkins-ci.org/display/JENKINS/ShiningPanda+Plugin</url>
 	<scm>
 		<connection>scm:git:ssh://git@github.com/jenkinsci/shiningpanda-plugin.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/shiningpanda-plugin.git</developerConnection>
 		<url>https://github.com/jenkinsci/shiningpanda-plugin</url>
-		<tag>HEAD</tag>
 	</scm>
-
 	<dependencies>
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -51,21 +49,29 @@
 			<version>1.6</version>
 		</dependency>
 	</dependencies>
-
 	<repositories>
 		<repository>
 			<id>repo.jenkins-ci.org</id>
-			<url>http://repo.jenkins-ci.org/public/</url>
+			<url>https://repo.jenkins-ci.org/public/</url>
 		</repository>
 	</repositories>
-
 	<pluginRepositories>
 		<pluginRepository>
 			<id>repo.jenkins-ci.org</id>
-			<url>http://repo.jenkins-ci.org/public/</url>
+			<url>https://repo.jenkins-ci.org/public/</url>
 		</pluginRepository>
 	</pluginRepositories>
-
+	<distributionManagement>
+		<repository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>maven.jenkins-ci.org</id>
+			<url>https://repo.jenkins-ci.org/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>maven.jenkins-ci.org</id>
+			<url>https://repo.jenkins-ci.org/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 	<build>
 		<plugins>
 			<plugin>
@@ -77,7 +83,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>  
-  
-
