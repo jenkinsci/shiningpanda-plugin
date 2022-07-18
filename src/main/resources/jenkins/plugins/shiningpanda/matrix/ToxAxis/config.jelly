@@ -19,6 +19,7 @@ license for more details.
 You should have received a copy of the license along with this program.
 If not, see <https://raw.github.com/jenkinsci/shiningpanda-plugin/master/LICENSE.txt>.
 -->
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
   <f:entry title="${%Default environments}" help="${h.resourcePath}/plugin/shiningpanda/help/matrix/ToxAxis/help-toxenv.html">
     <j:forEach var="toxenv" items="${descriptor.DEFAULTS}">

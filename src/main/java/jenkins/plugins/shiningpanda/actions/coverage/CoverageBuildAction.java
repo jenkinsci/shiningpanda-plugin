@@ -3,11 +3,11 @@
  * Copyright (C) 2011-2015 ShiningPanda S.A.S.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of its license which incorporates the terms and 
- * conditions of version 3 of the GNU Affero General Public License, 
+ * it under the terms of its license which incorporates the terms and
+ * conditions of version 3 of the GNU Affero General Public License,
  * supplemented by the additional permissions under the GNU Affero GPL
- * version 3 section 7: if you modify this program, or any covered work, 
- * by linking or combining it with other code, such other code is not 
+ * version 3 section 7: if you modify this program, or any covered work,
+ * by linking or combining it with other code, such other code is not
  * for that reason alone subject to any of the requirements of the GNU
  * Affero GPL version 3.
  *
@@ -21,15 +21,13 @@
  */
 package jenkins.plugins.shiningpanda.actions.coverage;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-
+import hudson.model.AbstractBuild;
+import jenkins.plugins.shiningpanda.publishers.CoveragePublisher;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-import hudson.model.AbstractBuild;
-import jenkins.plugins.shiningpanda.publishers.CoveragePublisher;
+import javax.servlet.ServletException;
+import java.io.IOException;
 
 public class CoverageBuildAction extends CoverageAction {
 
@@ -40,39 +38,36 @@ public class CoverageBuildAction extends CoverageAction {
 
     /**
      * Constructor using fields.
-     * 
-     * @param build
-     *            The build
+     *
+     * @param build The build
      */
     public CoverageBuildAction(AbstractBuild<?, ?> build) {
-	// Call super
-	super();
-	// Store the build
-	this.build = build;
+        // Call super
+        super();
+        // Store the build
+        this.build = build;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see jenkins.plugins.shiningpanda.actions.coverage.CoverageAction#show()
      */
     protected boolean show() {
-	// Delegate
-	return hasReports(CoveragePublisher.getHtmlDir(build));
+        // Delegate
+        return hasReports(CoveragePublisher.getHtmlDir(build));
     }
 
     /**
      * Serve report files.
-     * 
-     * @param req
-     *            The request
-     * @param rsp
-     *            The response
+     *
+     * @param req The request
+     * @param rsp The response
      * @throws IOException
      * @throws ServletException
      */
     public void doDynamic(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
-	// Delegate
-	serve(req, rsp, build.getFullDisplayName(), CoveragePublisher.getHtmlDir(build), getPath(req));
+        // Delegate
+        serve(req, rsp, build.getFullDisplayName(), CoveragePublisher.getHtmlDir(build), getPath(req));
     }
 }

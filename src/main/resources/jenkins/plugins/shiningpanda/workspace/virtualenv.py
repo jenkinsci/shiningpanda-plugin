@@ -1518,7 +1518,7 @@ def fix_local_scheme(home_dir, symlink=True):
     except ImportError:
         pass
     else:
-        if sysconfig._get_default_scheme() == 'posix_local':
+        if sysconfig.get_default_scheme() == 'posix_local':
             local_path = os.path.join(home_dir, 'local')
             if not os.path.exists(local_path):
                 os.mkdir(local_path)
