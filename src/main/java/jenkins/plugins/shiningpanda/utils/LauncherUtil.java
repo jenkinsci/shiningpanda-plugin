@@ -29,6 +29,7 @@ import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
 
 import java.io.IOException;
+import java.nio.file.Files;
 
 public class LauncherUtil {
 

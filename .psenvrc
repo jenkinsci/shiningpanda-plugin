@@ -1,0 +1,4 @@
+$env:JAVA_HOME="C:\Java\jdk-11"
+$env:AWS_PROFILE="cxp_dev_admin_12"
+$env:PROJECT="jenkins-shiningpanda-plugin"
+$env:PATH=$env:JAVA_HOME+"\bin;"+$env:PATH

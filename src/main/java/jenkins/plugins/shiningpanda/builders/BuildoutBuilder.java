@@ -149,14 +149,16 @@ public class BuildoutBuilder extends Builder implements Serializable {
             return false;
         // Get the working directory
         FilePath pwd = build.getWorkspace();
-        // Does VIRTUALENV use system site packages
-        boolean vSystemSitePackages = false;
         // Check if clean required or if configuration changed
-        if (virtualenv.isOutdated(workspace, interpreter, vSystemSitePackages))
+        if (virtualenv.isOutdated(workspace, interpreter, false))
             // A new environment is required
-            if (!virtualenv.create(launcher, listener, workspace, pwd, environment, interpreter, vSystemSitePackages))
+            if (!virtualenv.create(launcher, listener, workspace, pwd, environment, interpreter, false, false))
                 // Failed to create the environment, do not continue
                 return false;
+        // Install or upgrade Buildout
+        if (!virtualenv.pipInstall(launcher, listener, workspace, pwd, environment, "zc.buildout"))
+            // Failed to install buildout, do not continue
+            return false;
         // Bootstrap
         if (!virtualenv.buildout(launcher, listener, workspace, pwd, environment, buildoutCfg))
             // Failed to bootstrap, no need to continue

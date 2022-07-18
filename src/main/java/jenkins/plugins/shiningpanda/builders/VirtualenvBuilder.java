@@ -83,6 +83,8 @@ public class VirtualenvBuilder extends Builder implements Serializable {
      */
     public boolean systemSitePackages;
 
+    public boolean upgradeDependencies;
+
     /**
      * The nature of the command: PYTHON, shell, X shell
      */
@@ -114,7 +116,7 @@ public class VirtualenvBuilder extends Builder implements Serializable {
      */
     @DataBoundConstructor
     public VirtualenvBuilder(String pythonName, String home, boolean clear, boolean systemSitePackages, String nature,
-                             String command, boolean ignoreExitCode) {
+                             String command, boolean ignoreExitCode, boolean upgradeDependencies) {
         // Call super
         super();
         // Store the name of the PYTHON to invoke
@@ -131,6 +133,7 @@ public class VirtualenvBuilder extends Builder implements Serializable {
         this.command = command;
         // Store the ignore flag
         this.ignoreExitCode = ignoreExitCode;
+        this.upgradeDependencies = upgradeDependencies;
     }
 
     /*
@@ -173,7 +176,7 @@ public class VirtualenvBuilder extends Builder implements Serializable {
         // Check if clean required or if configuration changed
         if (clear || virtualenv.isOutdated(workspace, interpreter, systemSitePackages))
             // A new environment is required
-            if (!virtualenv.create(launcher, listener, workspace, pwd, environment, interpreter, systemSitePackages))
+            if (!virtualenv.create(launcher, listener, workspace, pwd, environment, interpreter, systemSitePackages, upgradeDependencies))
                 // Failed to create the environment, do not continue
                 return false;
         // Launch script

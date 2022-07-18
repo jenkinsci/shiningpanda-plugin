@@ -163,6 +163,8 @@ public abstract class Python {
      */
     public abstract FilePath getExecutable() throws IOException, InterruptedException;
 
+    public abstract FilePath getExecutable(String executable) throws IOException, InterruptedException;
+
     /**
      * Get the environment for this interpreter.
      *

@@ -30,11 +30,12 @@ import hudson.model.AbstractProject;
 import hudson.model.Item;
 import hudson.model.Node;
 import hudson.model.Project;
-import hudson.util.IOUtils;
 import jenkins.model.Jenkins;
 import jenkins.plugins.shiningpanda.utils.FilePathUtil;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,37 +49,37 @@ public abstract class Workspace {
     /**
      * Base name of the workspace under the node.
      */
-    public static String BASENAME = "shiningpanda";
+    public static final String BASENAME = "shiningpanda";
 
     /**
      * Base name of the folder containing the packages.
      */
-    public static String PACKAGES = "packages";
+    public static final String PACKAGES = "packages";
 
     /**
      * Name of the VIRTUALENV module.
      */
-    protected static String VIRTUALENV = "virtualenv.py";
+    protected static final String VIRTUALENV = "virtualenv.py";
 
     /**
      * Name of the SETUPTOOLS wheel.
      */
-    protected static String SETUPTOOLS = "setuptools-0-py2.py3-none-any.whl";
+    protected static final String SETUPTOOLS = "setuptools-0-py2.py3-none-any.whl";
 
     /**
      * Name of the PIP wheel.
      */
-    protected static String PIP = "pip-0-py2.py3-none-any.whl";
+    protected static final String PIP = "pip-0-py2.py3-none-any.whl";
 
     /**
      * Name of the WHEEL wheel.
      */
-    protected static String WHEEL = "wheel-0-py2.py3-none-any.whl";
+    protected static final String WHEEL = "wheel-0-py2.py3-none-any.whl";
 
     /**
      * Name of the BUILDOUT bootstrap module.
      */
-    protected static String BOOTSTRAP = "bootstrap.py";
+    protected static final String BOOTSTRAP = "bootstrap.py";
 
     /**
      * Home folder for the workspace.
@@ -90,7 +91,7 @@ public abstract class Workspace {
      *
      * @param home The home folder of the workspace.
      */
-    public Workspace(FilePath home) {
+    protected Workspace(FilePath home) {
         // Call super
         super();
         // Store home folder
@@ -121,8 +122,8 @@ public abstract class Workspace {
      * @return The VIRTUALENV module content
      * @throws IOException
      */
-    public String getVirtualenvPyContent() throws IOException {
-        return IOUtils.toString(getClass().getResourceAsStream(VIRTUALENV));
+    private String getVirtualenvPyContent() throws IOException {
+        return IOUtils.toString(getClass().getResourceAsStream(VIRTUALENV), StandardCharsets.UTF_8);
     }
 
     /**
@@ -132,7 +133,7 @@ public abstract class Workspace {
      * @throws IOException
      * @throws InterruptedException
      */
-    public FilePath getVirtualenvPy() throws IOException, InterruptedException {
+    private FilePath getVirtualenvPy() throws IOException, InterruptedException {
         // TODO: optimize transfer of PIP, SETUPTOOLS, WHEEL
         getHome().child(SETUPTOOLS).copyFrom(getClass().getResource(SETUPTOOLS));
         getHome().child(PIP).copyFrom(getClass().getResource(PIP));
@@ -146,8 +147,8 @@ public abstract class Workspace {
      * @return The BUILDOUT bootstrap module content
      * @throws IOException
      */
-    public String getBootstrapPyContent() throws IOException {
-        return IOUtils.toString(getClass().getResourceAsStream(BOOTSTRAP));
+    private String getBootstrapPyContent() throws IOException {
+        return IOUtils.toString(getClass().getResourceAsStream(BOOTSTRAP), StandardCharsets.UTF_8);
     }
 
     /**
@@ -157,7 +158,7 @@ public abstract class Workspace {
      * @throws IOException
      * @throws InterruptedException
      */
-    public FilePath getBootstrapPy() throws IOException, InterruptedException {
+    private FilePath getBootstrapPy() throws IOException, InterruptedException {
         return FilePathUtil.synchronize(getHome().child(BOOTSTRAP), getBootstrapPyContent());
     }
 
@@ -170,7 +171,7 @@ public abstract class Workspace {
      * @throws InterruptedException
      */
     public FilePath getMasterPackagesDir() throws IOException, InterruptedException {
-        return FilePathUtil.isDirectoryOrNull(Jenkins.getInstance().getRootPath().child(BASENAME).child(PACKAGES));
+        return FilePathUtil.isDirectoryOrNull(Jenkins.get().getRootPath().child(BASENAME).child(PACKAGES));
     }
 
     /**

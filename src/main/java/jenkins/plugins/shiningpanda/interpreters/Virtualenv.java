@@ -38,33 +38,13 @@ import java.util.List;
 import java.util.Map;
 
 public class Virtualenv extends Python {
-
-    /**
-     * Constructor using fields
-     *
-     * @param home The home folder
-     * @throws InterruptedException
-     * @throws IOException
-     */
     public Virtualenv(FilePath home) throws IOException, InterruptedException {
         super(home);
     }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.interpreters.Python#isVirtualenv()
-     */
     @Override
     public Virtualenv isVirtualenv() {
         return this;
     }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.interpreters.Python#isValid()
-     */
     @Override
     public boolean isValid() throws IOException, InterruptedException {
         // Check if on Windows
@@ -82,13 +62,6 @@ public class Virtualenv extends Python {
         // Activation script found, look for executable
         return super.isValid();
     }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jenkins.plugins.shiningpanda.interpreters.Python#getEnvironment(boolean)
-     */
     @Override
     public Map<String, String> getEnvironment(boolean includeHomeKey) throws IOException, InterruptedException {
         // Store the environment
@@ -133,12 +106,6 @@ public class Virtualenv extends Python {
         // Return the environment
         return environment;
     }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.interpreters.Python#getExecutable()
-     */
     @Override
     public FilePath getExecutable() throws IOException, InterruptedException {
         // Check if on Windows
@@ -151,19 +118,6 @@ public class Virtualenv extends Python {
         return FilePathUtil.existsOrNull(getHome().child("bin").child("jython"), getHome().child("bin").child("pypy"),
                 getHome().child("bin").child("python"));
     }
-
-    /**
-     * Check if this VIRTUALENV is out dated. It can be out dated if it does not
-     * exist, if it is not valid, or if the signature doesn't match the desired
-     * one.
-     *
-     * @param workspace          The workspace
-     * @param interpreter        The interpreter
-     * @param systemSitePackages True if include system packages, else false
-     * @return true if this VIRTUALENV is out dated, else false
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public boolean isOutdated(Workspace workspace, Python interpreter, boolean systemSitePackages)
             throws IOException, InterruptedException {
         // Out dated if invalid, or if no signature file, or if signatures
@@ -171,42 +125,14 @@ public class Virtualenv extends Python {
         return !isValid() || !getSignatureFile().exists() || !FilePathUtil.read(getSignatureFile(), "UTF-8")
                 .equals(getSignature(workspace, interpreter, systemSitePackages));
     }
-
-    /**
-     * Get the signature file path.
-     *
-     * @return The signature file path
-     */
     public FilePath getSignatureFile() {
         return getHome().child(".signature");
     }
-
-    /**
-     * Delete this VIRTUALENV
-     *
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public void delete() throws IOException, InterruptedException {
         getHome().deleteRecursive();
     }
-
-    /**
-     * Create this VIRTUALENV
-     *
-     * @param launcher           The launcher
-     * @param listener           The listener
-     * @param workspace          The workspace
-     * @param pwd                The working directory
-     * @param environment        The environment
-     * @param interpreter        The interpreter
-     * @param systemSitePackages Give access to the global site-packages directory
-     * @return true if creation was successful, else false
-     * @throws InterruptedException
-     * @throws IOException
-     */
     public boolean create(Launcher launcher, TaskListener listener, Workspace workspace, FilePath pwd,
-                          EnvVars environment, Python interpreter, boolean systemSitePackages)
+                          EnvVars environment, Python interpreter, boolean systemSitePackages, boolean upgradeDependencies)
             throws InterruptedException, IOException {
         // Cleanup
         delete();
@@ -215,11 +141,16 @@ public class Virtualenv extends Python {
         // Call PYTHON executable
         args.add(interpreter.getExecutable().getRemote());
         // Path to the script on local computer
-        args.add(workspace.getVirtualenvPy().getRemote());
+        args.add("-m");
+        args.add("venv");
         // If use system site package, add the flag
-        if (systemSitePackages)
+        if (systemSitePackages) {
             // Add the flag
             args.add("--system-site-packages");
+        }
+        if (upgradeDependencies) {
+            args.add("--upgrade-deps");
+        }
         // Get the folder where packages can be found (PIP, ...)
         FilePath extraSearchDir = workspace.getPackagesDir();
         // If this folder exists, add as search directory
@@ -234,51 +165,14 @@ public class Virtualenv extends Python {
         // Start creation
         boolean success = LauncherUtil.launch(launcher, listener, pwd,
                 EnvVarsUtil.override(environment, interpreter.getEnvironment(includeHomeKey)), args);
-        // Add links to libraries
-        // See https://github.com/pypa/virtualenv/issues/216
-        if (isUnix()) {
-            // Get the list of libraries
-            List<FilePath> libs = FilePathUtil.listSharedLibraries(interpreter);
-            // Check if got at least one
-            if (!libs.isEmpty()) {
-                // Get the VIRTUALENV library folder
-                FilePath libDir = getHome().child("lib");
-                // Create it if required
-                libDir.mkdirs();
-                // Go threw the libraries and create links
-                for (FilePath lib : libs) {
-                    // Get the link path
-                    FilePath link = libDir.child(lib.getName());
-                    // Check that not already exists
-                    if (!link.exists())
-                        // Create the link
-                        if (!LauncherUtil.createSymlink(launcher, listener, lib, link))
-                            // Failed to create link
-                            return false;
-                }
-            }
-        }
         // Check if was successful
-        if (success)
+        if (success) {
             // Write down the virtual environment signature
             getSignatureFile().write(getSignature(workspace, interpreter, systemSitePackages), "UTF-8");
+        }
         // Return success flag
         return success;
     }
-
-    /**
-     * Install a package with PIP.
-     *
-     * @param launcher    The launcher
-     * @param listener    The listener
-     * @param workspace   The workspace
-     * @param pwd         The working directory
-     * @param environment The environment
-     * @param packageName The package to install
-     * @return true if installation was successful, else false
-     * @throws InterruptedException
-     * @throws IOException
-     */
     public boolean pipInstall(Launcher launcher, TaskListener listener, Workspace workspace, FilePath pwd,
                               EnvVars environment, String packageName) throws InterruptedException, IOException {
         // Create the arguments for the command line
@@ -303,20 +197,6 @@ public class Virtualenv extends Python {
         // Start the process and return status
         return LauncherUtil.launch(launcher, listener, pwd, EnvVarsUtil.override(environment, getEnvironment()), args);
     }
-
-    /**
-     * Call TOX.
-     *
-     * @param launcher    The launcher
-     * @param listener    The listener
-     * @param pwd         The working directory
-     * @param environment The environment
-     * @param toxIni      The tox.ini file
-     * @param recreate    If true recreate the environments
-     * @return true if TOX was successful, else false
-     * @throws InterruptedException
-     * @throws IOException
-     */
     public boolean tox(Launcher launcher, TaskListener listener, FilePath pwd, EnvVars environment, String toxIni,
                        boolean recreate) throws InterruptedException, IOException {
         // Create the arguments for the command line
@@ -336,20 +216,6 @@ public class Virtualenv extends Python {
         // Start the process and return status
         return LauncherUtil.launch(launcher, listener, pwd, EnvVarsUtil.override(environment, getEnvironment()), args);
     }
-
-    /**
-     * Bootstrap BUILDOUT and start its binary.
-     *
-     * @param launcher    The launcher
-     * @param listener    The listener
-     * @param workspace   The workspace
-     * @param pwd         The working folder
-     * @param environment The environment
-     * @param buildoutCfg The BUILDOUT configuration file
-     * @return true if setup was successful, else false
-     * @throws InterruptedException
-     * @throws IOException
-     */
     public boolean buildout(Launcher launcher, TaskListener listener, Workspace workspace, FilePath pwd,
                             EnvVars environment, String buildoutCfg) throws InterruptedException, IOException {
         // Get the environment
@@ -370,17 +236,6 @@ public class Virtualenv extends Python {
         return LauncherUtil.launch(launcher, listener, pwd, finalEnvironment, new ArgumentListBuilder(
                 pwd.child(buildoutCfg).getParent().child("bin").child("buildout").getRemote(), "-c", buildoutCfg));
     }
-
-    /**
-     * Get a virtual environment signature.
-     *
-     * @param workspace          The workspace
-     * @param interpreter        The interpreter
-     * @param systemSitePackages Use system packages
-     * @return The signature
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public static String getSignature(Workspace workspace, Python interpreter, boolean systemSitePackages)
             throws IOException, InterruptedException {
         StringBuilder sb = new StringBuilder();
@@ -390,8 +245,6 @@ public class Virtualenv extends Python {
         sb.append(executable.getRemote()).append("\n");
         // Add the executable MD5
         sb.append(executable.digest()).append("\n");
-        // Get the VIRTUALENV script digest
-        sb.append(Util.getDigestOf(workspace.getVirtualenvPyContent())).append("\n");
         // Add the systemSitePackages flag
         sb.append(systemSitePackages).append("\n");
         // Get the folder containing packages on the master
