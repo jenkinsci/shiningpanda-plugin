@@ -34,37 +34,20 @@ import org.kohsuke.stapler.StaplerResponse;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class CoverageAction implements Action {
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see hudson.model.Action#getDisplayName()
-     */
     public String getDisplayName() {
         return Messages.CoverageAction_DisplayName();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see hudson.model.Action#getUrlName()
-     */
     public String getUrlName() {
         return CoveragePublisher.BASENAME;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see hudson.model.Action#getIconFileName()
-     */
     public String getIconFileName() {
         // Check if folder exists
         if (show())
@@ -74,19 +57,8 @@ public abstract class CoverageAction implements Action {
         return null;
     }
 
-    /**
-     * Check if show the coverage action.
-     *
-     * @return True if the action must be visible, else false
-     */
     protected abstract boolean show();
 
-    /**
-     * Get the request path.
-     *
-     * @param req The request
-     * @return The path
-     */
     protected String getPath(StaplerRequest req) {
         // Get the remaining part of the URL
         String path = req.getRestOfPath();
@@ -98,23 +70,11 @@ public abstract class CoverageAction implements Action {
         return path;
     }
 
-    /**
-     * Check if a directory contains some reports.
-     *
-     * @param base The base directory
-     * @return True if contains reports, else false
-     */
     protected boolean hasReports(File base) {
         // If not null then check that at least one report
         return base == null ? false : !getReports(base).isEmpty();
     }
 
-    /**
-     * Get the list of available reports.
-     *
-     * @param base The base directory
-     * @return The list of relative paths to reports
-     */
     protected List<String> getReports(File base) {
         // Store reports
         List<String> dirs = new ArrayList<String>();
@@ -143,17 +103,6 @@ public abstract class CoverageAction implements Action {
         return dirs;
     }
 
-    /**
-     * Server a request.
-     *
-     * @param req   The request
-     * @param rsp   The response
-     * @param title The title if an index page is generated
-     * @param base  The base folder
-     * @param path  The path to serve
-     * @throws IOException
-     * @throws ServletException
-     */
     protected void serve(StaplerRequest req, StaplerResponse rsp, String title, File base, String path)
             throws IOException, ServletException {
         // Check if base folder is specified
@@ -206,12 +155,6 @@ public abstract class CoverageAction implements Action {
         rsp.serveFile(req, Files.newInputStream(file.toPath()), file.lastModified(), -1, file.length(), file.getName());
     }
 
-    /**
-     * Check if the provided folder is a report folder.
-     *
-     * @param base The folder to check
-     * @return True if this is a report, else false
-     */
     protected boolean isReport(File base) {
         // Check that not null and that the three file exists
         return base != null && new File(base, CoveragePublisher.INDEX).exists()
@@ -220,31 +163,11 @@ public abstract class CoverageAction implements Action {
                 || new File(base, CoveragePublisher.STATUS).exists());
     }
 
-    /**
-     * Bean used to generate page.
-     */
     public class Entry {
-        /**
-         * Children.
-         */
         public List<Entry> children = new ArrayList<Entry>();
-
-        /**
-         * The title.
-         */
         public String title;
-
-        /**
-         * The related link.
-         */
         public String target;
 
-        /**
-         * Constructor using fields.
-         *
-         * @param title  The title
-         * @param target The link
-         */
         public Entry(String title, String target) {
             // Call super
             super();

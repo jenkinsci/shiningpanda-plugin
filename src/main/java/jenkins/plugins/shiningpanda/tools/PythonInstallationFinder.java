@@ -36,34 +36,19 @@ import java.util.List;
 import java.util.Map;
 
 public class PythonInstallationFinder {
-
-    /**
-     * Configure some installations.
-     *
-     * @return The list of configured installations
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public static List<PythonInstallation> configure() throws IOException, InterruptedException {
         // Get the installations
         List<PythonInstallation> installations = getInstallations();
         // Set the installations
-        Jenkins.getInstance().getDescriptorByType(PythonInstallation.DescriptorImpl.class)
-                .setInstallations(installations.toArray(new PythonInstallation[installations.size()]));
+        Jenkins.get().getDescriptorByType(PythonInstallation.DescriptorImpl.class)
+                .setInstallations(installations.toArray(new PythonInstallation[0]));
         // Return the installations
         return installations;
     }
 
-    /**
-     * Get all available PYTHON installations.
-     *
-     * @return The available PYTHON installations
-     * @throws InterruptedException
-     * @throws IOException
-     */
     public static List<PythonInstallation> getInstallations() throws IOException, InterruptedException {
         // Store installations
-        List<PythonInstallation> installations = new ArrayList<PythonInstallation>();
+        List<PythonInstallation> installations = new ArrayList<>();
         // Look for candidates
         Map<String, String> candidates = getCandidates();
         // Go threw the candidates
@@ -79,11 +64,6 @@ public class PythonInstallationFinder {
         return installations;
     }
 
-    /**
-     * Get the possible PYTHON locations.
-     *
-     * @return The candidates
-     */
     private static LinkedHashMap<String, String> getCandidates() {
         // Check if on Windows
         if (Platform.current() == Platform.WINDOWS)
@@ -97,11 +77,6 @@ public class PythonInstallationFinder {
         return getUnixCandidates();
     }
 
-    /**
-     * Get the possible PYTHON locations on MacOS.
-     *
-     * @return The candidates
-     */
     private static LinkedHashMap<String, String> getDarwinCandidates() {
         // Store candidates
         LinkedHashMap<String, String> candidates = new LinkedHashMap<String, String>();
@@ -132,11 +107,6 @@ public class PythonInstallationFinder {
         return candidates;
     }
 
-    /**
-     * Get the possible PYTHON locations on Unix.
-     *
-     * @return The candidates
-     */
     private static LinkedHashMap<String, String> getUnixCandidates() {
         // Store candidates
         LinkedHashMap<String, String> candidates = new LinkedHashMap<String, String>();
@@ -156,11 +126,6 @@ public class PythonInstallationFinder {
         return candidates;
     }
 
-    /**
-     * Get the possible PYTHON locations on Windows.
-     *
-     * @return The candidates
-     */
     private static LinkedHashMap<String, String> getWindowsCandidates() {
         // Store candidates
         LinkedHashMap<String, String> candidates = new LinkedHashMap<String, String>();

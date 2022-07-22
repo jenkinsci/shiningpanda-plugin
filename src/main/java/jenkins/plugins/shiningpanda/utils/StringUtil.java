@@ -24,13 +24,6 @@ package jenkins.plugins.shiningpanda.utils;
 import java.util.regex.Pattern;
 
 public class StringUtil {
-
-    /**
-     * Fix CR/LF and always make it Unix style
-     *
-     * @param s The string to fix
-     * @return The fixed string
-     */
     public static String fixCrLf(String s) {
         int idx;
         while ((idx = s.indexOf("\r\n")) != -1)
@@ -38,25 +31,12 @@ public class StringUtil {
         return s;
     }
 
-    /**
-     * Check that the provided value has no whitespace.
-     *
-     * @param value The value to check.
-     * @return True if has whitespace, else false
-     */
     public static boolean hasWhitespace(String value) {
         if (value == null)
             return false;
         return Pattern.compile("\\s").matcher(value).find();
     }
 
-    /**
-     * Check that the provided array is not null. If null fix it by returning an
-     * empty array.
-     *
-     * @param values The array to fix
-     * @return A fixed array
-     */
     public static String[] fixNull(String[] values) {
         return values != null ? values : new String[]{};
     }

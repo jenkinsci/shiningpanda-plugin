@@ -40,57 +40,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class Workspace {
-
-    /**
-     * Get a logger.
-     */
     private static final Logger LOGGER = Logger.getLogger(Workspace.class.getName());
-
-    /**
-     * Base name of the workspace under the node.
-     */
     public static final String BASENAME = "shiningpanda";
-
-    /**
-     * Base name of the folder containing the packages.
-     */
     public static final String PACKAGES = "packages";
-
-    /**
-     * Name of the VIRTUALENV module.
-     */
     protected static final String VIRTUALENV = "virtualenv.py";
-
-    /**
-     * Name of the SETUPTOOLS wheel.
-     */
     protected static final String SETUPTOOLS = "setuptools-0-py2.py3-none-any.whl";
-
-    /**
-     * Name of the PIP wheel.
-     */
     protected static final String PIP = "pip-0-py2.py3-none-any.whl";
-
-    /**
-     * Name of the WHEEL wheel.
-     */
     protected static final String WHEEL = "wheel-0-py2.py3-none-any.whl";
-
-    /**
-     * Name of the BUILDOUT bootstrap module.
-     */
     protected static final String BOOTSTRAP = "bootstrap.py";
-
-    /**
-     * Home folder for the workspace.
-     */
     private FilePath home;
 
-    /**
-     * Constructor using fields.
-     *
-     * @param home The home folder of the workspace.
-     */
     protected Workspace(FilePath home) {
         // Call super
         super();
@@ -98,41 +57,18 @@ public abstract class Workspace {
         setHome(home);
     }
 
-    /**
-     * Get the home folder of this workspace.
-     *
-     * @return The home folder
-     */
     public FilePath getHome() {
         return home;
     }
 
-    /**
-     * Set the home folder for this workspace.
-     *
-     * @param home The home folder
-     */
     private void setHome(FilePath home) {
         this.home = home;
     }
 
-    /**
-     * Get the VIRTUALENV module content.
-     *
-     * @return The VIRTUALENV module content
-     * @throws IOException
-     */
     private String getVirtualenvPyContent() throws IOException {
         return IOUtils.toString(getClass().getResourceAsStream(VIRTUALENV), StandardCharsets.UTF_8);
     }
 
-    /**
-     * Get the VIRTUALENV module file on executor.
-     *
-     * @return The VIRTUALENV module file
-     * @throws IOException
-     * @throws InterruptedException
-     */
     private FilePath getVirtualenvPy() throws IOException, InterruptedException {
         // TODO: optimize transfer of PIP, SETUPTOOLS, WHEEL
         getHome().child(SETUPTOOLS).copyFrom(getClass().getResource(SETUPTOOLS));
@@ -141,83 +77,32 @@ public abstract class Workspace {
         return FilePathUtil.synchronize(getHome().child(VIRTUALENV), getVirtualenvPyContent());
     }
 
-    /**
-     * Get the BUILDOUT bootstrap module content.
-     *
-     * @return The BUILDOUT bootstrap module content
-     * @throws IOException
-     */
     private String getBootstrapPyContent() throws IOException {
         return IOUtils.toString(getClass().getResourceAsStream(BOOTSTRAP), StandardCharsets.UTF_8);
     }
 
-    /**
-     * Get the BUILDOUT bootstrap module file on executor.
-     *
-     * @return The BUILDOUT bootstrap module file
-     * @throws IOException
-     * @throws InterruptedException
-     */
     private FilePath getBootstrapPy() throws IOException, InterruptedException {
         return FilePathUtil.synchronize(getHome().child(BOOTSTRAP), getBootstrapPyContent());
     }
 
-    /**
-     * Get the folder on master where user can put some packages to avoid
-     * downloads when creating a VIRTUALENV.
-     *
-     * @return The packages folder
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public FilePath getMasterPackagesDir() throws IOException, InterruptedException {
         return FilePathUtil.isDirectoryOrNull(Jenkins.get().getRootPath().child(BASENAME).child(PACKAGES));
     }
 
-    /**
-     * Get the folder on executor containing the packages provided by user to
-     * avoid downloads when creating a VIRTUALENV.
-     *
-     * @return The packages folder
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public abstract FilePath getPackagesDir() throws IOException, InterruptedException;
 
-    /**
-     * Get the VIRTUALENV home for this workspace, where TOX (or other tools)
-     * can be installed for instance.
-     *
-     * @return The VIRTUALENV home
-     */
     public FilePath getToolsHome() {
         return getHome().child("tools");
     }
 
-    /**
-     * Get the VIRTUALENV home for the provided VIRTUALENV name.
-     *
-     * @param name The name of the VIRTUALENV
-     * @return The VIRTUALENV home
-     */
     public FilePath getVirtualenvHome(String name) {
         return getHome().child("virtualenvs").child(Util.getDigestOf(Util.fixNull(name)).substring(0, 8));
     }
 
-    /**
-     * Get the VIRTUALENV home dedicated to BUILDOUT for the provided PYTHON
-     * installation name.
-     *
-     * @param name The name of the PYTHON installation
-     * @return The VIRTUALENV home
-     */
     public FilePath getBuildoutHome(String name) {
         return getHome().child("buildouts").child(Util.getDigestOf(Util.fixNull(name)).substring(0, 8));
     }
 
-    /**
-     * Delete this workspace without throwing exceptions on error.
-     */
     protected void delete() {
         // Get errors
         try {
@@ -229,47 +114,18 @@ public abstract class Workspace {
         }
     }
 
-    /**
-     * Create the workspace from its home folder.
-     *
-     * @param home The home folder
-     * @return The workspace
-     */
     public static Workspace fromHome(FilePath home) {
         return home.isRemote() ? new SlaveWorkspace(home) : new MasterWorkspace(home);
     }
 
-    /**
-     * Create a workspace from the build.
-     *
-     * @param build The build
-     * @return The workspace
-     */
     public static Workspace fromBuild(AbstractBuild<?, ?> build) {
         return fromNode(build.getBuiltOn(), build.getProject(), null);
     }
 
-    /**
-     * Get a workspace from a project.
-     *
-     * @param project The project
-     * @param name    Base name used to compute the workspace location. If null then
-     *                use the name of the project
-     * @return The workspace if exists, else null
-     */
     public static Workspace fromProject(Project<?, ?> project, String name) {
         return fromNode(project.getLastBuiltOn(), project, name);
     }
 
-    /**
-     * Create a workspace from the node and the project.
-     *
-     * @param node    The node
-     * @param project The project
-     * @param name    Base name used to compute the workspace location. If null then
-     *                use the name of the project
-     * @return The workspace
-     */
     public static Workspace fromNode(Node node, AbstractProject<?, ?> project, String name) {
         // Check if node exists
         if (node == null)
@@ -290,22 +146,11 @@ public abstract class Workspace {
         return fromHome(WorkspaceHomeProperty.get(node).child(Util.getDigestOf(id).substring(0, 8)));
     }
 
-    /**
-     * Clean item related workspaces.
-     *
-     * @param item The item
-     */
     public static void delete(Item item) {
         // Delegate
         delete(item, null);
     }
 
-    /**
-     * Clean item related workspaces.
-     *
-     * @param item The item
-     * @param name The name to use to compute the workspace location
-     */
     public static void delete(Item item, String name) {
         // Check if this is a matrix project
         if (item instanceof MatrixProject)

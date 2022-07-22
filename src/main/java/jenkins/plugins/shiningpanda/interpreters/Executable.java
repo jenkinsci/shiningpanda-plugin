@@ -29,49 +29,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Executable extends Python {
-
-    /**
-     * Constructor using fields.
-     *
-     * @param home The executable
-     * @throws InterruptedException
-     * @throws IOException
-     */
     protected Executable(FilePath home) throws IOException, InterruptedException {
         super(home);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.interpreters.Python#isExecutable()
-     */
     @Override
     public Executable isExecutable() {
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.interpreters.Python#getExecutable()
-     */
     @Override
     public FilePath getExecutable() throws IOException, InterruptedException {
         // Check if the executable path exists
         return FilePathUtil.isFileOrNull(getHome());
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jenkins.plugins.shiningpanda.interpreters.Python#getEnvironment(boolean)
-     */
     @Override
     public Map<String, String> getEnvironment(boolean includeHomeKey) throws IOException, InterruptedException {
         // Store the environment
-        Map<String, String> environment = new HashMap<String, String>();
+        Map<String, String> environment = new HashMap<>();
         // Get the path value
         String value = getHome().getParent().getRemote();
         // Check if on Windows

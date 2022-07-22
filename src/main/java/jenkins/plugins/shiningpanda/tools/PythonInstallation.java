@@ -49,14 +49,6 @@ import java.util.List;
 
 public class PythonInstallation extends ToolInstallation
         implements EnvironmentSpecific<PythonInstallation>, NodeSpecific<PythonInstallation> {
-
-    /**
-     * Constructor using fields.
-     *
-     * @param name       The name of the PYTHON
-     * @param home       The home folder for this PYTHON
-     * @param properties The properties
-     */
     @DataBoundConstructor
     public PythonInstallation(String name, String home, List<? extends ToolProperty<?>> properties) {
         super(name, home, properties);
@@ -64,67 +56,27 @@ public class PythonInstallation extends ToolInstallation
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Get the installation for the environment.
-     *
-     * @param environment The environment
-     * @return The new installation
-     */
     public PythonInstallation forEnvironment(EnvVars environment) {
         return new PythonInstallation(getName(), environment.expand(getHome()), getProperties().toList());
     }
 
-    /**
-     * Get the installation for the provided node.
-     *
-     * @param node     The node
-     * @param listener The listener
-     * @return The new installation
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public PythonInstallation forNode(Node node, TaskListener listener) throws IOException, InterruptedException {
         return new PythonInstallation(getName(), translateFor(node, listener), getProperties().toList());
     }
 
-    /**
-     * Get the installation for the provided build.
-     *
-     * @param listener    The build listener
-     * @param environment The environment
-     * @return The new installation
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public PythonInstallation forBuild(TaskListener listener, EnvVars environment)
             throws IOException, InterruptedException {
         return forNode(Computer.currentComputer().getNode(), listener).forEnvironment(environment);
     }
 
-    /**
-     * Check if at least one installation is defined.
-     *
-     * @return true if at least one installation is defined, else false
-     */
     public static boolean isEmpty() {
         return list().length == 0;
     }
 
-    /**
-     * Get the installations.
-     *
-     * @return The installations
-     */
     public static PythonInstallation[] list() {
         return ToolInstallation.all().get(DescriptorImpl.class).getInstallations();
     }
 
-    /**
-     * Get the installation from its name.
-     *
-     * @param name The name of the installation
-     * @return The installation if found, else null
-     */
     public static PythonInstallation fromName(String name) {
         // Go threw the installations
         for (PythonInstallation installation : list()) {
@@ -137,60 +89,30 @@ public class PythonInstallation extends ToolInstallation
         return null;
     }
 
-    /**
-     * Installation descriptor
-     */
     @Extension
     public static class DescriptorImpl extends ToolDescriptor<PythonInstallation> {
-
-        /**
-         * All installations
-         */
         @CopyOnWrite
         private volatile PythonInstallation[] installations = new PythonInstallation[0];
 
-        /**
-         * Default constructor
-         */
         public DescriptorImpl() {
             // Load saved data on disk (with backward compatibility)
             DescriptorUtil.load(XSTREAM, this, "jenkins.plugins.shiningpanda.StandardPythonInstallation");
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see hudson.model.Descriptor#getHelpFile()
-         */
         @Override
         public String getHelpFile() {
             return Functions.getResourcePath() + "/plugin/shiningpanda/help/tools/PythonInstallation/help.html";
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see hudson.model.Descriptor#getDisplayName()
-         */
         @Override
         public String getDisplayName() {
             return Messages.PythonInstallation_DisplayName();
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see hudson.tools.ToolDescriptor#getInstallations()
-         */
         public PythonInstallation[] getInstallations() {
             return installations;
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see hudson.tools.ToolDescriptor#setInstallations(T[])
-         */
         public void setInstallations(PythonInstallation... installations) {
             // Store installations
             this.installations = installations;
@@ -198,26 +120,16 @@ public class PythonInstallation extends ToolInstallation
             save();
         }
 
-        /**
-         * Checks if the PYTHONHOME is valid
-         *
-         * @param value The value to check
-         */
         public FormValidation doCheckHome(@QueryParameter String value) {
             // This can be used to check the existence of a file on the
             // server, so needs to be protected
-            if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER))
+            if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER))
                 // Do not perform the validation
                 return FormValidation.ok();
             // Validate PYTHON home
             return FormValidationUtil.validatePython(value);
         }
 
-        /**
-         * Check that the PYTHON name is specified
-         *
-         * @param value The value to check
-         */
         public FormValidation doCheckName(@QueryParameter String value) {
             // Trim name
             String name = Util.fixEmptyAndTrim(value);
@@ -233,9 +145,6 @@ public class PythonInstallation extends ToolInstallation
             return FormValidation.ok();
         }
 
-        /**
-         * Thread safe stream.
-         */
         private static final XStream2 XSTREAM = new XStream2();
 
         static {

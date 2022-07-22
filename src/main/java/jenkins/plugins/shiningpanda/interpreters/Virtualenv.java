@@ -24,7 +24,6 @@ package jenkins.plugins.shiningpanda.interpreters;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.Util;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
 import jenkins.plugins.shiningpanda.utils.EnvVarsUtil;
@@ -34,38 +33,32 @@ import jenkins.plugins.shiningpanda.workspace.Workspace;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Virtualenv extends Python {
     public Virtualenv(FilePath home) throws IOException, InterruptedException {
         super(home);
     }
+
     @Override
     public Virtualenv isVirtualenv() {
         return this;
     }
+
     @Override
     public boolean isValid() throws IOException, InterruptedException {
-        // Check if on Windows
-        if (isWindows()) {
-            // Look for activate.bat script
-            if (FilePathUtil.existsOrNull(getHome().child("bin").child("activate.bat"),
-                    getHome().child("Scripts").child("activate.bat")) == null)
-                // Not found, this VIRTUALENV is not valid
-                return false;
-        }
-        // If on UNIX, look for activate script
-        else if (FilePathUtil.existsOrNull(getHome().child("bin").child("activate")) == null)
-            // Not found, this VIRTUALENV is not valid
+        FilePath activateScript = getExecutable("activate");
+        if (activateScript == null || !activateScript.exists()) {
             return false;
+        }
         // Activation script found, look for executable
         return super.isValid();
     }
+
     @Override
     public Map<String, String> getEnvironment(boolean includeHomeKey) throws IOException, InterruptedException {
         // Store the environment
-        Map<String, String> environment = new HashMap<String, String>();
+        Map<String, String> environment = new HashMap<>();
         // Delete PYTHONHOME variable
         environment.put("PYTHONHOME", null);
         // Delete JYTHON_HOME variable
@@ -106,18 +99,13 @@ public class Virtualenv extends Python {
         // Return the environment
         return environment;
     }
+
     @Override
     public FilePath getExecutable() throws IOException, InterruptedException {
-        // Check if on Windows
-        if (isWindows())
-            // Look for executables in bin folder if JYTHON or PYPY, in scripts
-            // if standard interpreter
-            return FilePathUtil.existsOrNull(getHome().child("bin").child("jython.bat"),
-                    getHome().child("bin").child("pypy.exe"), getHome().child("Scripts").child("python.exe"));
-        // On UNIX look for executable in bin folder
-        return FilePathUtil.existsOrNull(getHome().child("bin").child("jython"), getHome().child("bin").child("pypy"),
-                getHome().child("bin").child("python"));
+        return FilePathUtil.existsOrNull(getExecutable("jython"),
+                getExecutable("pypy"), getExecutable("python"));
     }
+
     public boolean isOutdated(Workspace workspace, Python interpreter, boolean systemSitePackages)
             throws IOException, InterruptedException {
         // Out dated if invalid, or if no signature file, or if signatures
@@ -125,12 +113,15 @@ public class Virtualenv extends Python {
         return !isValid() || !getSignatureFile().exists() || !FilePathUtil.read(getSignatureFile(), "UTF-8")
                 .equals(getSignature(workspace, interpreter, systemSitePackages));
     }
+
     public FilePath getSignatureFile() {
         return getHome().child(".signature");
     }
+
     public void delete() throws IOException, InterruptedException {
         getHome().deleteRecursive();
     }
+
     public boolean create(Launcher launcher, TaskListener listener, Workspace workspace, FilePath pwd,
                           EnvVars environment, Python interpreter, boolean systemSitePackages, boolean upgradeDependencies)
             throws InterruptedException, IOException {
@@ -173,6 +164,7 @@ public class Virtualenv extends Python {
         // Return success flag
         return success;
     }
+
     public boolean pipInstall(Launcher launcher, TaskListener listener, Workspace workspace, FilePath pwd,
                               EnvVars environment, String packageName) throws InterruptedException, IOException {
         // Create the arguments for the command line
@@ -197,16 +189,13 @@ public class Virtualenv extends Python {
         // Start the process and return status
         return LauncherUtil.launch(launcher, listener, pwd, EnvVarsUtil.override(environment, getEnvironment()), args);
     }
+
     public boolean tox(Launcher launcher, TaskListener listener, FilePath pwd, EnvVars environment, String toxIni,
                        boolean recreate) throws InterruptedException, IOException {
         // Create the arguments for the command line
         ArgumentListBuilder args = new ArgumentListBuilder();
-        // Add the path to PYTHON executable
-        args.add(getExecutable().getRemote());
         // Call TOX via command line
-        args.add("-c");
-        // Command line script to call TOX
-        args.add("import tox; tox.cmdline();");
+        args.add(getExecutable("tox").getRemote());
         // Add the configuration
         args.add("-c").add(toxIni);
         // Check if recreation asked
@@ -216,16 +205,16 @@ public class Virtualenv extends Python {
         // Start the process and return status
         return LauncherUtil.launch(launcher, listener, pwd, EnvVarsUtil.override(environment, getEnvironment()), args);
     }
+
     public boolean buildout(Launcher launcher, TaskListener listener, Workspace workspace, FilePath pwd,
                             EnvVars environment, String buildoutCfg) throws InterruptedException, IOException {
         // Get the environment
         EnvVars finalEnvironment = EnvVarsUtil.override(environment, getEnvironment());
         // Create the arguments for the command line
         ArgumentListBuilder args = new ArgumentListBuilder();
-        // Add the path to PYTHON executable
-        args.add(getExecutable().getRemote());
-        // Path to the script on local computer
-        args.add(workspace.getBootstrapPy().getRemote());
+        // Add the path to bootstrap executable
+        args.add(getExecutable("buildout").getRemote());
+        args.add("bootstrap");
         // Add the configuration
         args.add("-c").add(buildoutCfg);
         // Start bootstrap
@@ -233,9 +222,9 @@ public class Virtualenv extends Python {
             // Failed to bootstrap, no need to go further
             return false;
         // Call BUILDOUT and return status
-        return LauncherUtil.launch(launcher, listener, pwd, finalEnvironment, new ArgumentListBuilder(
-                pwd.child(buildoutCfg).getParent().child("bin").child("buildout").getRemote(), "-c", buildoutCfg));
+        return LauncherUtil.launch(launcher, listener, pwd, finalEnvironment, new ArgumentListBuilder(getExecutable("buildout").getRemote(), "-c", buildoutCfg));
     }
+
     public static String getSignature(Workspace workspace, Python interpreter, boolean systemSitePackages)
             throws IOException, InterruptedException {
         StringBuilder sb = new StringBuilder();

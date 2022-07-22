@@ -21,6 +21,7 @@
  */
 package jenkins.plugins.shiningpanda.actions.coverage;
 
+import hudson.Extension;
 import hudson.model.AbstractBuild;
 import jenkins.plugins.shiningpanda.publishers.CoveragePublisher;
 import org.kohsuke.stapler.StaplerRequest;
@@ -30,17 +31,8 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 
 public class CoverageBuildAction extends CoverageAction {
-
-    /**
-     * The build.
-     */
     private final AbstractBuild<?, ?> build;
 
-    /**
-     * Constructor using fields.
-     *
-     * @param build The build
-     */
     public CoverageBuildAction(AbstractBuild<?, ?> build) {
         // Call super
         super();
@@ -48,24 +40,11 @@ public class CoverageBuildAction extends CoverageAction {
         this.build = build;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.actions.coverage.CoverageAction#show()
-     */
     protected boolean show() {
         // Delegate
         return hasReports(CoveragePublisher.getHtmlDir(build));
     }
 
-    /**
-     * Serve report files.
-     *
-     * @param req The request
-     * @param rsp The response
-     * @throws IOException
-     * @throws ServletException
-     */
     public void doDynamic(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         // Delegate
         serve(req, rsp, build.getFullDisplayName(), CoveragePublisher.getHtmlDir(build), getPath(req));

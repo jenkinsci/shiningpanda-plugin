@@ -28,14 +28,6 @@ import jenkins.plugins.shiningpanda.Messages;
 import java.io.File;
 
 public class FormValidationUtil {
-
-    /**
-     * Validate PYTHON: verify that specified, exists and has no whitespace in
-     * it.
-     *
-     * @param home The PYTHON home or executable to validate.
-     * @return The validation result.
-     */
     public static FormValidation validatePython(String home) {
         // Get the file value as a string
         home = Util.fixEmptyAndTrim(home);

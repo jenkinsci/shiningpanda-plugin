@@ -28,42 +28,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CommandNature {
-
-    /**
-     * Shell command
-     */
     public final static CommandNature SHELL = new CommandNature("shell", Messages.CommandNature_Shell_DisplayName());
-
-    /**
-     * XShell command
-     */
     public final static CommandNature XSHELL = new CommandNature("xshell", Messages.CommandNature_XShell_DisplayName());
-
-    /**
-     * PYTHON command
-     */
     public final static CommandNature PYTHON = new CommandNature("python", Messages.CommandNature_Python_DisplayName());
-
-    /**
-     * All natures
-     */
     public final static List<CommandNature> ALL = Arrays.asList(SHELL, XSHELL, PYTHON);
-
-    /**
-     * The key
-     */
     private String key;
-
-    /**
-     * The name
-     */
     private String name;
 
-    /**
-     * Constructor using fields.
-     *
-     * @param key The key
-     */
     private CommandNature(String key, String name) {
         // Call super
         super();
@@ -73,30 +44,14 @@ public class CommandNature {
         this.name = name;
     }
 
-    /**
-     * Get the nature key.
-     *
-     * @return The key
-     */
     public String getKey() {
         return key;
     }
 
-    /**
-     * Get the nature name.
-     *
-     * @return The name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * Get the nature object.
-     *
-     * @param raw The nature key
-     * @return The nature object
-     */
     public static CommandNature get(String raw) {
         // Get the formated value
         String nature = Util.fixEmptyAndTrim(raw);

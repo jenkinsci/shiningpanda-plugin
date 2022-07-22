@@ -49,52 +49,14 @@ import java.io.Serializable;
 import java.util.List;
 
 public class BuildoutBuilder extends Builder implements Serializable {
-
-    /**
-     * Name of the PYTHON to invoke
-     */
     public final String pythonName;
-
-    /**
-     * Path to the buildout.cfg file
-     */
     public final String buildoutCfg;
-
-    /**
-     * Use Distribute instead of SETUPTOOLS
-     *
-     * @deprecated since 0.14
-     */
     @Deprecated
     public transient Boolean useDistribute;
-
-    /**
-     * The nature of the command: PYTHON, shell, X shell
-     */
     public final String nature;
-
-    /**
-     * The command to execute in the PYTHON environment
-     */
     public final String command;
-
-    /**
-     * Do not consider the build as a failure if any of the commands exits with
-     * a non-zero exit code.
-     */
     public final boolean ignoreExitCode;
 
-    /**
-     * Constructor using fields
-     *
-     * @param pythonName     The name of the PYTHON to use to create the VIRTUALENV that
-     *                       starts BUILDOUT
-     * @param buildoutCfg    The BUILDOUT configuration file
-     * @param nature         The nature of the command: PYTHON, shell, X shell
-     * @param command        The command to execute
-     * @param ignoreExitCode Do not consider the build as a failure if any of the commands
-     *                       exits with a non-zero exit code
-     */
     @DataBoundConstructor
     public BuildoutBuilder(String pythonName, String buildoutCfg, String nature, String command,
                            boolean ignoreExitCode) {
@@ -112,12 +74,6 @@ public class BuildoutBuilder extends Builder implements Serializable {
         this.ignoreExitCode = ignoreExitCode;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see hudson.tasks.BuildStepCompatibilityLayer#perform(hudson.model.
-     * AbstractBuild , hudson.Launcher, hudson.model.BuildListener)
-     */
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
             throws InterruptedException, IOException {
@@ -171,78 +127,38 @@ public class BuildoutBuilder extends Builder implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Descriptor for this builder
-     */
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
-        /*
-         * (non-Javadoc)
-         *
-         * @see hudson.model.Descriptor#getDisplayName()
-         */
         @Override
         public String getDisplayName() {
             return Messages.BuildoutBuilder_DisplayName();
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see hudson.model.Descriptor#getHelpFile()
-         */
         @Override
         public String getHelpFile() {
             return Functions.getResourcePath() + "/plugin/shiningpanda/help/builders/BuildoutBuilder/help.html";
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see jenkins.plugins.shiningpanda.InstalledPythonBuildStepDescriptor#
-         * isApplicable(java.lang.Class)
-         */
         @Override
-        public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> jobType) {
+        public boolean isApplicable(Class<? extends AbstractProject> jobType) {
             // If there's no PYTHON configured, there's no point in PYTHON
             // builders
             return !PythonInstallation.isEmpty();
         }
 
-        /**
-         * Check if this is a matrix project.
-         *
-         * @return true if this is a matrix project.
-         */
         public boolean isMatrix(Object it) {
             return it instanceof MatrixProject;
         }
 
-        /**
-         * Get the PYTHON installations.
-         *
-         * @return The list of installations
-         */
         public PythonInstallation[] getInstallations() {
             // Delegate
             return PythonInstallation.list();
         }
 
-        /**
-         * Get the list of the available command natures.
-         *
-         * @return The list of natures
-         */
         public List<CommandNature> getNatures() {
             return CommandNature.ALL;
         }
 
-        /**
-         * Checks if the BUILDOUT configuration file is specified.
-         *
-         * @param value The value to check
-         * @return The validation result
-         */
         public FormValidation doCheckBuildoutCfg(@QueryParameter String value) {
             // Check that path is specified
             if (Util.fixEmptyAndTrim(value) == null)

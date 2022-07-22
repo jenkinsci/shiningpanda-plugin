@@ -26,25 +26,9 @@ import hudson.util.ArgumentListBuilder;
 import jenkins.plugins.shiningpanda.utils.StringUtil;
 
 public class PythonCommand extends Command {
-
-    /**
-     * Is this on UNIX?
-     */
     private boolean isUnix;
-
-    /**
-     * Store PYTHON executable
-     */
     private String executable;
 
-    /**
-     * Constructor using fields.
-     *
-     * @param isUnix         Is this on UNIX?
-     * @param executable     The PYTHON executable
-     * @param command        The content of the execution script
-     * @param ignoreExitCode Is exit code ignored?
-     */
     protected PythonCommand(boolean isUnix, String executable, String command, boolean ignoreExitCode) {
         // Call super
         super(command, ignoreExitCode);
@@ -54,33 +38,16 @@ public class PythonCommand extends Command {
         this.executable = executable;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.command.Command#getExtension()
-     */
     @Override
     protected String getExtension() {
         return ".py";
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.command.Command#getContents()
-     */
     @Override
     protected String getContents() {
         return StringUtil.fixCrLf(getCommand());
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jenkins.plugins.shiningpanda.command.Command#getArguments(hudson.FilePath
-     * )
-     */
     @Override
     protected ArgumentListBuilder getArguments(FilePath script) {
         // Get the arguments

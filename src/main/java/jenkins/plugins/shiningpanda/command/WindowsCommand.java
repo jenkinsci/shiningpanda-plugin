@@ -27,95 +27,42 @@ import hudson.util.ArgumentListBuilder;
 import java.util.regex.Pattern;
 
 public class WindowsCommand extends ShellCommand {
-
-    /**
-     * Store the variable pattern.
-     */
     private final static Pattern VARIABLE = Pattern.compile("\\$\\{?(\\w+)\\}?");
 
-    /**
-     * Constructor using fields.
-     *
-     * @param command        The content of the execution script
-     * @param ignoreExitCode Is exit code ignored?
-     * @param convert        Convert shell to batch
-     */
     protected WindowsCommand(String command, boolean ignoreExitCode, boolean convert) {
         super(command, ignoreExitCode, convert);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.command.Command#getExtension()
-     */
     @Override
     protected String getExtension() {
         return ".bat";
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jenkins.plugins.shiningpanda.command.ShellCommand#getOriginalContent()
-     */
     @Override
     protected String getSourceContent() {
         return getCommand() + "\r\nexit %ERRORLEVEL%";
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jenkins.plugins.shiningpanda.command.ShellCommand#getSourceSeparator()
-     */
     @Override
     protected String getSourceSeparator() {
         return "/";
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jenkins.plugins.shiningpanda.command.ShellCommand#getTargetSeparator()
-     */
     @Override
     protected String getTargetSeparator() {
         return "\\";
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jenkins.plugins.shiningpanda.command.ShellCommand#getSourceVariable()
-     */
     @Override
     protected Pattern getSourceVariable() {
         return VARIABLE;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jenkins.plugins.shiningpanda.command.ShellCommand#getTargetVariable()
-     */
     @Override
     protected String getTargetVariable() {
         return "%$1%";
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jenkins.plugins.shiningpanda.command.Command#getArguments(hudson.FilePath
-     * )
-     */
     @Override
     protected ArgumentListBuilder getArguments(FilePath script) {
         return new ArgumentListBuilder("cmd.exe", "/c", "call", script.getRemote());

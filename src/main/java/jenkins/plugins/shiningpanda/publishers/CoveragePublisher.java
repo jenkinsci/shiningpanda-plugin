@@ -54,42 +54,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class CoveragePublisher extends Recorder {
-
-    /**
-     * Base name for the HTML report folder on master.
-     */
     public final static String BASENAME = "coveragepy";
-
-    /**
-     * Script file contained in report folders.
-     */
     public final static String JS = "coverage_html.js";
-
-    /**
-     * Index file in report folders.
-     */
     public final static String INDEX = "index.html";
-
-    /**
-     * Status file in report folders for coverage <= 3.
-     */
     public final static String STATUS_LTE_3 = "status.dat";
-
-    /**
-     * Status file in report folders for coverage >= 4.
-     */
     public final static String STATUS = "status.json";
-
-    /**
-     * Path to the HTML folder in the workspace.
-     */
     public final String htmlDir;
 
-    /**
-     * Constructor using fields.
-     *
-     * @param htmlDir The HTML directory
-     */
     @DataBoundConstructor
     public CoveragePublisher(String htmlDir) {
         // Call super
@@ -98,12 +69,6 @@ public class CoveragePublisher extends Recorder {
         this.htmlDir = Util.fixEmptyAndTrim(htmlDir);
     }
 
-    /**
-     * Look for HTML reports.
-     *
-     * @param workspace   The workspace
-     * @param environment If environment
-     */
     private List<FilePath> getHtmlDirs(FilePath workspace, EnvVars environment)
             throws IOException, InterruptedException {
         // Get the candidates
@@ -128,14 +93,6 @@ public class CoveragePublisher extends Recorder {
         return dirs;
     }
 
-    /**
-     * Get the HTML target folder.
-     *
-     * @param base      The base target directory
-     * @param workspace The workspace
-     * @param dir       The directory in workspace containing reports
-     * @param single    Is there more than one report
-     */
     private FilePath getHtmlTargetDir(FilePath base, FilePath workspace, FilePath dir, boolean single) {
         // If only one report, copy it in the base folder
         if (single)
@@ -149,12 +106,6 @@ public class CoveragePublisher extends Recorder {
         return base.child(dir.getRemote().substring(beginIndex));
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see hudson.tasks.BuildStepCompatibilityLayer#perform(hudson.model.
-     * AbstractBuild , hudson.Launcher, hudson.model.BuildListener)
-     */
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
             throws InterruptedException, IOException {
@@ -193,82 +144,37 @@ public class CoveragePublisher extends Recorder {
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * hudson.tasks.BuildStepCompatibilityLayer#getProjectActions(hudson.model
-     * .AbstractProject)
-     */
     @Override
     public Collection<Action> getProjectActions(AbstractProject<?, ?> project) {
         // Return the project action
         return Collections.<Action>singleton(new CoverageProjectAction(project));
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see hudson.tasks.BuildStep#getRequiredMonitorService()
-     */
     public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.NONE;
     }
 
-    /**
-     * Get the folder containing the HTML on the master for a build.
-     *
-     * @param run The build
-     * @return The path to the HTML folder
-     */
     public static File getHtmlDir(Run<?, ?> run) {
         // Check if the provided run exists
         return run == null ? null : new File(run.getRootDir(), BASENAME);
     }
 
-    /**
-     * Recorder descriptor.
-     */
     @Extension
     public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
-        /*
-         * (non-Javadoc)
-         *
-         * @see hudson.model.Descriptor#getDisplayName()
-         */
         public String getDisplayName() {
             return Messages.CoverageArchiver_DisplayName();
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see hudson.model.Descriptor#getHelpFile()
-         */
         @Override
         public String getHelpFile() {
             return Functions.getResourcePath() + "/plugin/shiningpanda/help/publishers/CoveragePublisher/help.html";
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see hudson.tasks.BuildStepDescriptor#isApplicable(java.lang.Class)
-         */
-        public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> jobType) {
+        public boolean isApplicable(Class<? extends AbstractProject> jobType) {
             // Always applicable
             return true;
         }
 
-        /**
-         * Check if the HTML folder is relative to the workspace.
-         *
-         * @param project The project
-         * @param value   The value to check
-         * @return Success if the value is relative
-         * @throws IOException
-         * @throws ServletException
-         */
         public FormValidation doCheckHtmlDir(@AncestorInPath AbstractProject<?, ?> project,
                                              @QueryParameter String value) throws IOException, ServletException {
             // Get a workspace

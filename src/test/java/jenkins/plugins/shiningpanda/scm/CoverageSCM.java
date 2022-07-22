@@ -40,17 +40,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class CoverageSCM extends NullSCM {
-
-    /**
-     * List of the folders to create
-     */
     private String[] htmlDirs;
 
-    /**
-     * Constructor using fields
-     *
-     * @param htmlDirs The folders to create
-     */
     public CoverageSCM(String... htmlDirs) {
         super();
         this.htmlDirs = htmlDirs;

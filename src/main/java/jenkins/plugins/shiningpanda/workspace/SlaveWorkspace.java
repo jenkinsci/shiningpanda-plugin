@@ -27,22 +27,11 @@ import jenkins.plugins.shiningpanda.utils.FilePathUtil;
 import java.io.IOException;
 
 public class SlaveWorkspace extends Workspace {
-
-    /**
-     * Constructor using fields.
-     *
-     * @param home The home folder of the workspace.
-     */
     public SlaveWorkspace(FilePath home) {
         // Call super
         super(home);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.workspace.Workspace#getPackagesDir()
-     */
     @Override
     public FilePath getPackagesDir() throws IOException, InterruptedException {
         return FilePathUtil

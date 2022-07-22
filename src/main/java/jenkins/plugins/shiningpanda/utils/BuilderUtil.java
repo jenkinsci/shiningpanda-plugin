@@ -40,16 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BuilderUtil {
-
-    /**
-     * Get the consolidated environment for the provided build.
-     *
-     * @param build    The build
-     * @param listener The build listener
-     * @return The consolidated environment
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public static EnvVars getEnvironment(AbstractBuild<?, ?> build, BuildListener listener)
             throws IOException, InterruptedException {
         // Get the base environment
@@ -69,17 +59,6 @@ public class BuilderUtil {
         return environment;
     }
 
-    /**
-     * Get the PYTHON installation.
-     *
-     * @param build       The build
-     * @param listener    The listener
-     * @param environment The environment
-     * @param name        The name
-     * @return The PYTHON installation for this build
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public static PythonInstallation getInstallation(AbstractBuild<?, ?> build, BuildListener listener,
                                                      EnvVars environment, String name) throws IOException, InterruptedException {
         // Check if this is a matrix build
@@ -114,16 +93,6 @@ public class BuilderUtil {
         return installation.forBuild(listener, environment);
     }
 
-    /**
-     * Get an interpreter.
-     *
-     * @param launcher The launcher
-     * @param listener The listener
-     * @param home     The home of the interpreter
-     * @return The interpreter if exists, else null
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public static Python getInterpreter(Launcher launcher, BuildListener listener, String home)
             throws IOException, InterruptedException {
         // Get an interpreter given its home
@@ -148,15 +117,6 @@ public class BuilderUtil {
         return interpreter;
     }
 
-    /**
-     * Get a VIRTUALENV from its home folder.
-     *
-     * @param listener The listener
-     * @param home     The home folder
-     * @return The VIRTUALENV
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public static Virtualenv getVirtualenv(BuildListener listener, FilePath home)
             throws IOException, InterruptedException {
         // Create the VIRTUAL environment
@@ -173,21 +133,6 @@ public class BuilderUtil {
         return virtualenv;
     }
 
-    /**
-     * Launch a command.
-     *
-     * @param launcher       The launcher
-     * @param listener       The build listener
-     * @param pwd            The working directory
-     * @param environment    The environment
-     * @param interpreter    The interpreter
-     * @param nature         The nature of the command: PYTHON, shell, X shell
-     * @param command        The command to execute
-     * @param ignoreExitCode Is the exit code ignored?
-     * @return true if was successful, else false
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public static boolean launch(Launcher launcher, BuildListener listener, FilePath pwd, EnvVars environment,
                                  Python interpreter, String nature, String command, boolean ignoreExitCode)
             throws IOException, InterruptedException {
@@ -202,16 +147,6 @@ public class BuilderUtil {
                 .launch(launcher, listener, environment, pwd);
     }
 
-    /**
-     * Get the first available interpreter on the executor.
-     *
-     * @param launcher    The launcher
-     * @param listener    The build listener
-     * @param environment The environment
-     * @return The first available interpreter
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public static Python getInterpreter(Launcher launcher, BuildListener listener, EnvVars environment)
             throws IOException, InterruptedException {
         // Get the list of existing interpreter
@@ -226,16 +161,6 @@ public class BuilderUtil {
         return null;
     }
 
-    /**
-     * Get the list of the valid interpreter on an executor.
-     *
-     * @param launcher    The launcher
-     * @param listener    The build listener
-     * @param environment The environment
-     * @return The list of available interpreter
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public static List<Python> getInterpreters(Launcher launcher, BuildListener listener, EnvVars environment)
             throws IOException, InterruptedException {
         // Create the interpreter list

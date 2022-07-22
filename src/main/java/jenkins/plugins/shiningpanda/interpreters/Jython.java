@@ -29,57 +29,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Jython extends Python {
-
-    /**
-     * Constructor using fields
-     *
-     * @param home The home folder
-     * @throws InterruptedException
-     * @throws IOException
-     */
     protected Jython(FilePath home) throws IOException, InterruptedException {
         super(home);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.interpreters.Python#isJython()
-     */
     @Override
     public Jython isJython() {
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.interpreters.Python#getExecutable()
-     */
     @Override
     public FilePath getExecutable() throws IOException, InterruptedException {
         // For JYTHON 2.2.1, binary is only in the home folder, for later
         // versions use the one in the bin folder (for those versions, do not
         // use the binary available in the home to avoid $JAVA_HOME and
         // $JYTHON_HOME_FALLBACK exports in script header)
-        // Check if on Windows
-        if (isWindows())
-            // If on Windows, look for .bat
-            return FilePathUtil.isFileOrNull(getHome().child("bin").child("jython.bat"), getHome().child("jython.bat"));
-        // On UNIX no extension
-        return FilePathUtil.isFileOrNull(getHome().child("bin").child("jython"), getHome().child("jython"));
+        return FilePathUtil.existsOrNull(getExecutable("jython"));
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jenkins.plugins.shiningpanda.interpreters.Python#getEnvironment(boolean)
-     */
     @Override
     public Map<String, String> getEnvironment(boolean includeHomeKey) throws IOException, InterruptedException {
         // Store the environment
-        Map<String, String> environment = new HashMap<String, String>();
+        Map<String, String> environment = new HashMap<>();
         // Check if home variable is required
         if (includeHomeKey)
             // If required define JYTHON_HOME

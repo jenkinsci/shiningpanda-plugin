@@ -30,54 +30,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CPython extends Python {
-
-    /**
-     * Constructor using fields
-     *
-     * @param home The home folder
-     * @throws InterruptedException
-     * @throws IOException
-     */
     protected CPython(FilePath home) throws IOException, InterruptedException {
         super(home);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.interpreters.Python#isCPython()
-     */
     @Override
     public CPython isCPython() {
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.interpreters.Python#getExecutable()
-     */
     @Override
     public FilePath getExecutable() throws IOException, InterruptedException {
-        // Check if on Windows
-        if (isWindows())
-            // If on Windows, look for python.exe
-            return FilePathUtil.isFileOrNull(getHome().child("python.exe"));
-        // If on UNIX, this can be PYTHON 3 or PYTHON 2
-        return FilePathUtil.isFileOrNull(getHome().child("bin").child("python3"),
-                getHome().child("bin").child("python"));
+        return FilePathUtil.existsOrNull(getExecutable("python3"), getExecutable("python"));
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jenkins.plugins.shiningpanda.interpreters.Python#getEnvironment(boolean)
-     */
     @Override
     public Map<String, String> getEnvironment(boolean includeHomeKey) throws IOException, InterruptedException {
         // Store the environment
-        Map<String, String> environment = new HashMap<String, String>();
+        Map<String, String> environment = new HashMap<>();
         // Check if home variable required
         if (includeHomeKey)
             // If required define PYTHONHOME

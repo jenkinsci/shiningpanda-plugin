@@ -21,6 +21,7 @@
  */
 package jenkins.plugins.shiningpanda.actions.coverage;
 
+import hudson.Extension;
 import hudson.matrix.MatrixConfiguration;
 import hudson.matrix.MatrixProject;
 import hudson.matrix.MatrixRun;
@@ -39,17 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CoverageProjectAction extends CoverageAction implements ProminentProjectAction {
-
-    /**
-     * The project.
-     */
     private final AbstractProject<?, ?> project;
 
-    /**
-     * Constructor using fields.
-     *
-     * @param project The project
-     */
     public CoverageProjectAction(AbstractProject<?, ?> project) {
         // Call super
         super();
@@ -57,11 +49,6 @@ public class CoverageProjectAction extends CoverageAction implements ProminentPr
         this.project = project;
     }
 
-    /**
-     * Check if this is a matrix project.
-     *
-     * @return The cast project is this is a matrix project
-     */
     private MatrixProject isMatrix() {
         // Check if this is a matrix project
         if (project instanceof MatrixProject)
@@ -71,11 +58,6 @@ public class CoverageProjectAction extends CoverageAction implements ProminentPr
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.actions.coverage.CoverageAction#show()
-     */
     protected boolean show() {
         // Check if this is a matrix project
         MatrixProject matrix = isMatrix();
@@ -93,14 +75,6 @@ public class CoverageProjectAction extends CoverageAction implements ProminentPr
         return false;
     }
 
-    /**
-     * Serve report files.
-     *
-     * @param req The request
-     * @param rsp The response
-     * @throws IOException
-     * @throws ServletException
-     */
     public void doDynamic(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         // First of all set this flag to avoid cache as this report may change
         // quickly

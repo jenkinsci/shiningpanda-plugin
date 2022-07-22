@@ -28,13 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EnvVarsUtil {
-
-    /**
-     * Get the library environment for the provided folder.
-     *
-     * @param filePath The folder
-     * @return The environment
-     */
     public static Map<String, String> getLibs(FilePath filePath) {
         // Create the map to store the environment
         Map<String, String> environment = new HashMap<String, String>();
@@ -50,23 +43,10 @@ public class EnvVarsUtil {
         return environment;
     }
 
-    /**
-     * Return the list of variables used to define an installation home.
-     *
-     * @return The list of variables
-     */
     public static String[] getPythonHomeKeys() {
         return new String[]{"PYTHONHOME", "JYTHON_HOME", "VIRTUAL_ENV"};
     }
 
-    /**
-     * Clone the original environment and override it with additional one
-     * (potentially containing some "+").
-     *
-     * @param original   The original environment
-     * @param additional The environment that overrides the original one
-     * @return The environment object
-     */
     public static EnvVars override(EnvVars original, Map<String, String> additional) {
         // Copy the original environment
         EnvVars environment = new EnvVars(original);
@@ -76,12 +56,6 @@ public class EnvVarsUtil {
         return environment;
     }
 
-    /**
-     * Expand a value with the current environment variable.
-     *
-     * @param value The value to expand
-     * @return The expanded value
-     */
     public static String expand(String value) {
         return new EnvVars(EnvVars.masterEnvVars).expand(value);
     }

@@ -52,29 +52,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class ToxBuilder extends Builder implements Serializable {
-
-    /**
-     * Path to the tox.ini file
-     */
     public final String toxIni;
-
-    /**
-     * Force recreation of virtual environments
-     */
     public final boolean recreate;
-
-    /**
-     * If there is no TOX axis, use this field to get the TOX environment.
-     */
     public final String toxenvPattern;
 
-    /**
-     * Constructor using fields.
-     *
-     * @param toxIni        The TOX configuration file
-     * @param recreate      Create a new environment each time
-     * @param toxenvPattern The pattern used to build the TOXENV environment variable
-     */
     @DataBoundConstructor
     public ToxBuilder(String toxIni, boolean recreate, String toxenvPattern) {
         // Call super
@@ -87,12 +68,6 @@ public class ToxBuilder extends Builder implements Serializable {
         this.toxenvPattern = Util.fixEmptyAndTrim(toxenvPattern);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see hudson.tasks.BuildStepCompatibilityLayer#perform(hudson.model.
-     * AbstractBuild , hudson.Launcher, hudson.model.BuildListener)
-     */
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
             throws InterruptedException, IOException {
@@ -181,48 +156,24 @@ public class ToxBuilder extends Builder implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Descriptor for this builder
-     */
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
-        /*
-         * (non-Javadoc)
-         *
-         * @see hudson.model.Descriptor#getDisplayName()
-         */
         @Override
         public String getDisplayName() {
             return Messages.ToxBuilder_DisplayName();
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see hudson.model.Descriptor#getHelpFile()
-         */
         @Override
         public String getHelpFile() {
             return Functions.getResourcePath() + "/plugin/shiningpanda/help/builders/ToxBuilder/help.html";
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see hudson.tasks.BuildStepDescriptor#isApplicable(java.lang.Class)
-         */
         @Override
         public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> jobType) {
             // Only available in matrix projects if some installations exist
             return !PythonInstallation.isEmpty() && jobType.equals(MatrixProject.class);
         }
 
-        /**
-         * Checks if the TOX configuration file is specified.
-         *
-         * @param value The value to check
-         * @return The validation result
-         */
         public FormValidation doCheckToxIni(@QueryParameter String value) {
             // Check that path is specified
             if (Util.fixEmptyAndTrim(value) == null)

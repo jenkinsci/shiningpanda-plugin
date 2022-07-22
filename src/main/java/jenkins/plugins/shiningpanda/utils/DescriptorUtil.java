@@ -32,42 +32,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DescriptorUtil {
-
-    /**
-     * A logger.
-     */
     private static final Logger LOGGER = Logger.getLogger(DescriptorUtil.class.getName());
 
-    /**
-     * Get the configuration file for the provided ID
-     *
-     * @param xs The XML stream
-     * @param id The ID
-     * @return The configuration file
-     */
     public static XmlFile getConfigFile(XStream xs, String id) {
         return new XmlFile(xs, new File(Jenkins.getInstance().getRootDir(), id + ".xml"));
     }
 
-    /**
-     * Get the configuration file for the provided descriptor
-     *
-     * @param xs         The XML stream
-     * @param descriptor The descriptor
-     * @return The configuration file
-     */
     public static XmlFile getConfigFile(XStream xs, Descriptor<?> descriptor) {
         return getConfigFile(xs, descriptor.getId());
     }
 
-    /**
-     * Load the configuration by looking first for the nominal file, and then by
-     * looking for the provided IDs.
-     *
-     * @param xs         The XML stream
-     * @param descriptor The descriptor
-     * @param ids        The addition IDs
-     */
     public synchronized static void load(XStream xs, Descriptor<?> descriptor, String... ids) {
         // Get the nominal configuration file
         XmlFile file = getConfigFile(xs, descriptor);
@@ -92,12 +66,6 @@ public class DescriptorUtil {
         }
     }
 
-    /**
-     * Load a configuration file.
-     *
-     * @param descriptor The descriptor to load to
-     * @param file       The configuration file
-     */
     private static void load(Descriptor<?> descriptor, XmlFile file) {
         try {
             file.unmarshal(descriptor);

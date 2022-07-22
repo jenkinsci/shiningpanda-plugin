@@ -33,16 +33,8 @@ import jenkins.plugins.shiningpanda.Messages;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 public class WorkspaceHomeProperty extends NodeProperty<Node> {
-    /**
-     * The home folder.
-     */
     public String home;
 
-    /**
-     * Constructor using fields.
-     *
-     * @param home The home folder
-     */
     @DataBoundConstructor
     public WorkspaceHomeProperty(String home) {
         // Call super
@@ -51,21 +43,10 @@ public class WorkspaceHomeProperty extends NodeProperty<Node> {
         this.home = home;
     }
 
-    /**
-     * Get the home folder.
-     *
-     * @return The home folder
-     */
     public String getHome() {
         return home;
     }
 
-    /**
-     * Get the home directory for the given node.
-     *
-     * @param node The node
-     * @return The home directory
-     */
     public static FilePath get(Node node) {
         // Get the potential properties
         WorkspaceHomeProperty[] properties = new WorkspaceHomeProperty[]{
@@ -85,12 +66,6 @@ public class WorkspaceHomeProperty extends NodeProperty<Node> {
 
     @Extension
     public static class WorkspaceHomePropertyDescriptor extends NodePropertyDescriptor {
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see hudson.model.Descriptor#getHelpFile()
-         */
         @Override
         public String getHelpFile() {
             return Functions.getResourcePath() + "/plugin/shiningpanda/help/workspace/WorkspaceHomeProperty/help.html";

@@ -55,45 +55,13 @@ import static org.junit.Assert.*;
 import static org.jvnet.hudson.test.JenkinsRule.NO_PROPERTIES;
 
 public abstract class ShiningPandaTestCase {
-
-    /**
-     * Key for CPython 2.x's home in test.properties file.
-     */
     private final static String CPYTHON_2_HOME_KEY = "CPython.2.Home";
-
-    /**
-     * Key for CPython 3.x's home in test.properties file.
-     */
     private final static String CPYTHON_3_HOME_KEY = "CPython.3.Home";
-
-    /**
-     * Key for PyPy's home in test.properties file.
-     */
     private final static String PYPY_HOME_KEY = "PyPy.Home";
-
-    /**
-     * Key for Jython's home in test.properties file.
-     */
     private final static String JYTHON_HOME_KEY = "Jython.Home";
-
-    /**
-     * Name of CPython 2.x.
-     */
     private final static String CPYTHON_2_NAME = "CPython-2";
-
-    /**
-     * Name of CPython 3.x.
-     */
     private final static String CPYTHON_3_NAME = "CPython-3";
-
-    /**
-     * Name of PyPy.
-     */
     private final static String PYPY_NAME = "PyPy";
-
-    /**
-     * Name of JYTHON.
-     */
     private final static String JYTHON_NAME = "Jython";
 
     @Rule
@@ -101,12 +69,6 @@ public abstract class ShiningPandaTestCase {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    /**
-     * Load the test properties. First load the test.properties.model file, and
-     * then test.properties if exists.
-     *
-     * @return The test properties.
-     */
     protected Properties getTestProperties() {
 
         try {
@@ -121,12 +83,6 @@ public abstract class ShiningPandaTestCase {
         }
     }
 
-    /**
-     * Get the value for the given test properties key.
-     *
-     * @param key The key.
-     * @return The value.
-     */
     protected String getTestProperty(String key) {
         String value = System.getProperty(key);
         if (value == null)
@@ -136,47 +92,22 @@ public abstract class ShiningPandaTestCase {
         return value;
     }
 
-    /**
-     * Get the CPython 2.x's home.
-     *
-     * @return The home folder.
-     */
     protected String getCPython2Home() {
         return getTestProperty(CPYTHON_2_HOME_KEY);
     }
 
-    /**
-     * Get the PyPy's home.
-     *
-     * @return The home folder.
-     */
     protected String getPyPyHome() {
         return getTestProperty(PYPY_HOME_KEY);
     }
 
-    /**
-     * Get the Jython's home.
-     *
-     * @return The home folder.
-     */
     protected String getJythonHome() {
         return getTestProperty(JYTHON_HOME_KEY);
     }
 
-    /**
-     * Get the CPython 3.x's home
-     *
-     * @return The home folder.
-     */
     protected String getCPython3Home() {
         return getTestProperty(CPYTHON_3_HOME_KEY);
     }
 
-    /**
-     * Delete a VIRTUALENV.
-     *
-     * @param home The home folder of the VIRTUALENV.
-     */
     protected void deleteVirtualenv(File home) {
         // Check if exists
         if (!home.exists())
@@ -218,12 +149,6 @@ public abstract class ShiningPandaTestCase {
         }
     }
 
-    /**
-     * Create a VIRTUALENV.
-     *
-     * @param home The home of this VIRTUALENV.
-     * @return The home of the VIRTUALENV
-     */
     protected File createVirtualenv(File home) {
         // Clean
         deleteVirtualenv(home);
@@ -241,11 +166,6 @@ public abstract class ShiningPandaTestCase {
         }
     }
 
-    /**
-     * Create a fake PYTHON installation with spaces in its home folder path.
-     *
-     * @return The home folder
-     */
     protected File createFakePythonInstallationWithWhitespaces() {
         try {
             // Create a home folder with spaces in its name
@@ -267,13 +187,6 @@ public abstract class ShiningPandaTestCase {
         }
     }
 
-    /**
-     * Configure a PYTHON installation.
-     *
-     * @param name The name of the installation.
-     * @param home The home folder for this installation.
-     * @return the new python installation
-     */
     protected PythonInstallation configurePython(String name, String home) {
         PythonInstallation[] installations = getPythonInstallations();
         PythonInstallation[] newIntallations = new PythonInstallation[installations.length + 1];
@@ -288,47 +201,22 @@ public abstract class ShiningPandaTestCase {
         return newInstallation;
     }
 
-    /**
-     * Configure a CPython 2.x installation.
-     *
-     * @return The installation.
-     */
     protected PythonInstallation configureCPython2() {
         return configurePython(CPYTHON_2_NAME, getCPython2Home());
     }
 
-    /**
-     * Configure a CPython 3.x installation.
-     *
-     * @return The installation.
-     */
     protected PythonInstallation configureCPython3() {
         return configurePython(CPYTHON_3_NAME, getCPython3Home());
     }
 
-    /**
-     * Configure a PyPy installation.
-     *
-     * @return The installation.
-     */
     protected PythonInstallation configurePyPy() {
         return configurePython(PYPY_NAME, getPyPyHome());
     }
 
-    /**
-     * Configure a JYTHON installation.
-     *
-     * @return The installation.
-     */
     protected PythonInstallation configureJython() {
         return configurePython(JYTHON_NAME, getJythonHome());
     }
 
-    /**
-     * Configure all Python installations.
-     *
-     * @return List of Python installations.
-     */
     protected PythonInstallation[] configureAllPythons() {
         configureCPython2();
         configureCPython3();
@@ -336,43 +224,18 @@ public abstract class ShiningPandaTestCase {
         return getPythonInstallations();
     }
 
-    /**
-     * Get the Python's installations descriptor.
-     *
-     * @return The descriptor.
-     */
     protected PythonInstallation.DescriptorImpl getPythonInstallationDescriptor() {
         return j.get(PythonInstallation.DescriptorImpl.class);
     }
 
-    /**
-     * Get the list of Python's installations.
-     *
-     * @return The list of installations.
-     */
     protected PythonInstallation[] getPythonInstallations() {
         return getPythonInstallationDescriptor().getInstallations();
     }
 
-    /**
-     * Performs a configuration round-trip testing for a builder on free-style
-     * project.
-     *
-     * @param before The builder.
-     * @return The reloaded builder.
-     * @throws Exception
-     */
     protected <B extends Builder> B configFreeStyleRoundtrip(B before) throws Exception {
         return j.configRoundtrip(before);
     }
 
-    /**
-     * Performs a configuration round-trip testing for a builder on a matrix
-     * project with a Python axis.
-     *
-     * @param before The builder.
-     * @return The reloaded builder.
-     */
     @SuppressWarnings("unchecked")
     protected <B extends Builder> B configPythonMatrixRoundtrip(B before) {
         configureAllPythons();
@@ -388,13 +251,6 @@ public abstract class ShiningPandaTestCase {
         }
     }
 
-    /**
-     * Performs a configuration round-trip testing for a builder on a matrix
-     * project with a Tox axis.
-     *
-     * @param before The builder.
-     * @return The reloaded builder.
-     */
     @SuppressWarnings("unchecked")
     protected <B extends Builder> B configToxMatrixRoundtrip(B before) {
         configureAllPythons();
@@ -425,13 +281,6 @@ public abstract class ShiningPandaTestCase {
         }
     }
 
-    /**
-     * Search a field in the provided class and its super classes.
-     *
-     * @param klass The class to search in.
-     * @param p     The field to search.
-     * @return The field, or null if no such field.
-     */
     protected Field getField(@SuppressWarnings("rawtypes") Class klass, String p) {
         while (klass != Object.class) {
             try {
@@ -443,14 +292,6 @@ public abstract class ShiningPandaTestCase {
         return null;
     }
 
-    /**
-     * Same as assertEqualBeans, but works on protected and private fields.
-     *
-     * @param lhs        The initial object.
-     * @param rhs        The final object.
-     * @param properties The properties to check.
-     * @throws Exception
-     */
     public void assertEqualBeans2(Object lhs, Object rhs, String properties) throws Exception {
         assertNotNull("lhs is null", lhs);
         assertNotNull("rhs is null", rhs);
@@ -485,67 +326,31 @@ public abstract class ShiningPandaTestCase {
         }
     }
 
-    /**
-     * Get the JENKINS configuration file.
-     *
-     * @return The configuration file.
-     */
     public File getConfigFile() {
         return new File(j.jenkins.getRootDir(), "config.xml");
     }
 
-    /**
-     * Get the configuration file for this project.
-     *
-     * @param project The project
-     * @return The configuration file
-     */
     public File getConfigFile(AbstractProject<?, ?> project) {
         return new File(j.jenkins.getRootDir(),
                 StringUtils.join(new String[]{"jobs", project.getName(), "config.xml"}, File.separator));
     }
 
-    /**
-     * Create a workspace.
-     *
-     * @return The workspace
-     */
     public Workspace getWorkspace() {
         return Workspace.fromHome(new FilePath(createTmpDir()));
     }
 
-    /**
-     * Create a master workspace.
-     *
-     * @return The workspace
-     */
     public MasterWorkspace getMasterWorkspace() {
         return new MasterWorkspace(new FilePath(createTmpDir()));
     }
 
-    /**
-     * Create a slave workspace.
-     *
-     * @return The workspace
-     */
     public SlaveWorkspace getSlaveWorkspace() {
         return new SlaveWorkspace(new FilePath(createTmpDir()));
     }
 
-    /**
-     * Get the packages directory.
-     *
-     * @return The package directory
-     */
     public File getPackagesDir() {
         return new File(j.jenkins.getRootDir(), Workspace.BASENAME + File.separator + Workspace.PACKAGES);
     }
 
-    /**
-     * Create the packages directory.
-     *
-     * @return The packages directory
-     */
     public File createPackagesDir() {
         File packagesDir = getPackagesDir();
         packagesDir.mkdirs();
@@ -560,39 +365,18 @@ public abstract class ShiningPandaTestCase {
         }
     }
 
-    /**
-     * Convert a FilePath to a File.
-     *
-     * @param filePath The FilePath to convert
-     * @return The resulting file
-     */
     public File toFile(FilePath filePath) {
         return new File(filePath.getRemote());
     }
 
-    /**
-     * Assert that file exists
-     *
-     * @param file The file to check
-     */
     public void assertFile(File file) {
         assertTrue("file does not exist: " + file.getAbsolutePath(), file.isFile());
     }
 
-    /**
-     * Assert that file exists
-     *
-     * @param filePath The file to check
-     */
     public void assertFile(FilePath filePath) {
         assertFile(toFile(filePath));
     }
 
-    /**
-     * Assert that directory exists
-     *
-     * @param file The directory to check
-     */
     public void assertDirectory(File file) {
         assertTrue("directory does not exist: " + file.getAbsolutePath(), file.isDirectory());
     }
@@ -601,11 +385,6 @@ public abstract class ShiningPandaTestCase {
         assertDirectory(toFile(filePath));
     }
 
-    /**
-     * Assert that file does not exist
-     *
-     * @param file The file to check
-     */
     public void assertNotExists(File file) {
         assertFalse("file exists: " + file.getAbsolutePath(), file.exists());
     }

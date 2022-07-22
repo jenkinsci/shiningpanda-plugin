@@ -46,37 +46,11 @@ import java.io.Serializable;
 import java.util.List;
 
 public class CustomPythonBuilder extends Builder implements Serializable {
-
-    /**
-     * Home directory for the VIRTUALENV
-     */
     public final String home;
-
-    /**
-     * The nature of the command: PYTHON, shell, X shell
-     */
     public final String nature;
-
-    /**
-     * The command to execute in the PYTHON environment
-     */
     public final String command;
-
-    /**
-     * Do not consider the build as a failure if any of the commands exits with
-     * a non-zero exit code.
-     */
     public final boolean ignoreExitCode;
 
-    /**
-     * Constructor using fields
-     *
-     * @param home           The home directory for VIRTUALENV
-     * @param nature         The nature of the command: PYTHON, shell, X shell
-     * @param command        The command to execute
-     * @param ignoreExitCode Do not consider the build as a failure if any of the commands
-     *                       exits with a non-zero exit code
-     */
     @DataBoundConstructor
     public CustomPythonBuilder(String home, String nature, String command, boolean ignoreExitCode) {
         // Call super
@@ -91,12 +65,6 @@ public class CustomPythonBuilder extends Builder implements Serializable {
         this.ignoreExitCode = ignoreExitCode;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see hudson.tasks.BuildStepCompatibilityLayer#perform(hudson.model.
-     * AbstractBuild , hudson.Launcher, hudson.model.BuildListener)
-     */
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
             throws InterruptedException, IOException {
@@ -119,50 +87,24 @@ public class CustomPythonBuilder extends Builder implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Descriptor for this builder
-     */
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see hudson.model.Descriptor#getDisplayName()
-         */
         @Override
         public String getDisplayName() {
             return Messages.CustomPythonBuilder_DisplayName();
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see hudson.model.Descriptor#getHelpFile()
-         */
         @Override
         public String getHelpFile() {
             return Functions.getResourcePath() + "/plugin/shiningpanda/help/builders/CustomPythonBuilder/help.html";
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see hudson.tasks.BuildStepDescriptor#isApplicable(java.lang.Class)
-         */
         @Override
         public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> jobType) {
             // Always available
             return true;
         }
 
-        /**
-         * Check if the VIRTUALENV home is valid
-         *
-         * @param project The project for this builder
-         * @param value   The folder to check
-         * @return The result of the validation
-         */
         public FormValidation doCheckHome(@SuppressWarnings("rawtypes") @AncestorInPath AbstractProject project,
                                           @QueryParameter String value) {
             // This can be used to check the existence of a file on the
@@ -174,11 +116,6 @@ public class CustomPythonBuilder extends Builder implements Serializable {
             return FormValidationUtil.validatePython(value);
         }
 
-        /**
-         * Get the list of the available command natures.
-         *
-         * @return The list of natures
-         */
         public List<CommandNature> getNatures() {
             return CommandNature.ALL;
         }

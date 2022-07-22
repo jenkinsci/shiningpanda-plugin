@@ -21,30 +21,22 @@
  */
 package jenkins.plugins.shiningpanda;
 
+import hudson.Extension;
 import hudson.Main;
-import hudson.Plugin;
+import hudson.init.InitMilestone;
+import hudson.init.Initializer;
 import jenkins.plugins.shiningpanda.tools.PythonInstallation;
 import jenkins.plugins.shiningpanda.tools.PythonInstallationFinder;
 
-public class ShiningPanda extends Plugin {
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see hudson.Plugin#start()
-     */
-    @Override
+@Extension
+public class ShiningPanda {
+    @Initializer(after = InitMilestone.PLUGINS_STARTED)
     public void start() throws Exception {
         // Enable backward compatibility
         Compatibility.enable();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see hudson.Plugin#postInitialize()
-     */
-    @Override
+    @Initializer(after = InitMilestone.PLUGINS_STARTED)
     public void postInitialize() throws Exception {
         // Check if some installations are not already set or if this is not in
         // test context

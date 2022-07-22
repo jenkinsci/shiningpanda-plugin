@@ -44,14 +44,14 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase {
     public void testRoundTripFreeStyle() throws Exception {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder before = new VirtualenvBuilder(installation.getName(), "env2", true, false,
-                CommandNature.SHELL.getKey(), "echo hello", true);
+                CommandNature.SHELL.getKey(), "echo hello", true, false);
         VirtualenvBuilder after = configFreeStyleRoundtrip(before);
         assertEqualBeans2(before, after, "pythonName,home,clear,systemSitePackages,nature,command,ignoreExitCode");
     }
 
     public void testRoundTripMatrix() throws Exception {
         VirtualenvBuilder before = new VirtualenvBuilder("foobar", "env2", true, false, CommandNature.PYTHON.getKey(),
-                "echo hello", false);
+                "echo hello", false, false);
         VirtualenvBuilder after = configPythonMatrixRoundtrip(before);
         assertEqualBeans2(before, after, "home,clear,systemSitePackages,nature,command,ignoreExitCode");
     }
@@ -60,7 +60,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase {
         PythonInstallation installation = configurePython("Python",
                 createFakePythonInstallationWithWhitespaces().getAbsolutePath());
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", false, false,
-                CommandNature.SHELL.getKey(), "echo hello", false);
+                CommandNature.SHELL.getKey(), "echo hello", false, false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -72,7 +72,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase {
     public void testTextAxisAvailable() throws Exception {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(null, "env", true, false, CommandNature.SHELL.getKey(),
-                "echo \"Welcome $TOTO\"", false);
+                "echo \"Welcome $TOTO\"", false, false);
         MatrixProject project = createMatrixProject();
         AxisList axes = new AxisList(new PythonAxis(new String[]{installation.getName(),}),
                 new TextAxis("TOTO", "TUTU"));
@@ -90,7 +90,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase {
         configureCPython2();
         String name = "Toto";
         VirtualenvBuilder builder = new VirtualenvBuilder(name, "env", true, false, CommandNature.SHELL.getKey(),
-                "echo \"Welcome $TOTO\"", false);
+                "echo \"Welcome $TOTO\"", false, false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -102,7 +102,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase {
     public void testNoPython() throws Exception {
         String name = "Toto";
         VirtualenvBuilder builder = new VirtualenvBuilder(name, "env", true, false, CommandNature.SHELL.getKey(),
-                "echo \"Welcome $TOTO\"", false);
+                "echo \"Welcome $TOTO\"", false, false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -114,7 +114,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase {
     public void testNoPythonAxis() throws Exception {
         configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(null, "env", true, false, CommandNature.SHELL.getKey(),
-                "echo \"Welcome $TOTO\"", false);
+                "echo \"Welcome $TOTO\"", false, false);
         MatrixProject project = createMatrixProject();
         AxisList axes = new AxisList(new TextAxis("TOTO", "TUTU"));
         project.setAxes(axes);
@@ -131,7 +131,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase {
     public void testIgnoreExitCode() throws Exception {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", true, false,
-                CommandNature.SHELL.getKey(), "ls foobartrucmuch", true);
+                CommandNature.SHELL.getKey(), "ls foobartrucmuch", true, false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -142,7 +142,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase {
     public void testConsiderExitCode() throws Exception {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", true, false,
-                CommandNature.SHELL.getKey(), "ls foobartrucmuch", false);
+                CommandNature.SHELL.getKey(), "ls foobartrucmuch", false, false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -153,7 +153,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase {
     public void testNoVirtualenvClear() throws Exception {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", false, false,
-                CommandNature.SHELL.getKey(), "echo", false);
+                CommandNature.SHELL.getKey(), "echo", false, false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -167,7 +167,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase {
     public void testVirtualenvClear() throws Exception {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", true, false,
-                CommandNature.SHELL.getKey(), "echo", false);
+                CommandNature.SHELL.getKey(), "echo", false, false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -181,7 +181,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase {
     public void testVirtualenvClearOnChange() throws Exception {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", false, false,
-                CommandNature.SHELL.getKey(), "echo", false);
+                CommandNature.SHELL.getKey(), "echo", false, false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -196,7 +196,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase {
     public void testPythonNature() throws Exception {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", true, false,
-                CommandNature.PYTHON.getKey(), "import sys\nsys.stdout.write('hello world!\\n')", true);
+                CommandNature.PYTHON.getKey(), "import sys\nsys.stdout.write('hello world!\\n')", true, false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -208,7 +208,7 @@ public class TestVirtualenvBuilder extends ShiningPandaTestCase {
     public void testXShellNature() throws Exception {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", true, false,
-                CommandNature.XSHELL.getKey(), "echo %HOME%", true);
+                CommandNature.XSHELL.getKey(), "echo %HOME%", true, false);
         FreeStyleProject project = createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();

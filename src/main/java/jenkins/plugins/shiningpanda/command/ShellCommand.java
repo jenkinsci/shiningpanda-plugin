@@ -28,19 +28,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class ShellCommand extends Command {
-
-    /**
-     * Convert command to match platform specificities
-     */
     protected boolean convert;
 
-    /**
-     * Constructor using fields.
-     *
-     * @param command        The content of the execution script
-     * @param ignoreExitCode Is exit code ignored?
-     * @param convert        Convert batch to shell
-     */
     protected ShellCommand(String command, boolean ignoreExitCode, boolean convert) {
         // Call super
         super(command, ignoreExitCode);
@@ -48,47 +37,16 @@ public abstract class ShellCommand extends Command {
         this.convert = convert;
     }
 
-    /**
-     * Get the script content before potential conversions.
-     *
-     * @return The contents
-     */
     protected abstract String getSourceContent();
 
-    /**
-     * Get the separator to replace during conversion.
-     *
-     * @return The separator
-     */
     protected abstract String getSourceSeparator();
 
-    /**
-     * Get the separator.
-     *
-     * @return The separator
-     */
     protected abstract String getTargetSeparator();
 
-    /**
-     * Get the variable pattern.
-     *
-     * @return The variable pattern
-     */
     protected abstract Pattern getSourceVariable();
 
-    /**
-     * Get the variable replacement pattern.
-     *
-     * @return The variable replacement pattern
-     */
     protected abstract String getTargetVariable();
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.command.Command#getEnvironment(hudson.
-     * FilePath , hudson.EnvVars)
-     */
     @Override
     protected EnvVars getEnvironment(FilePath pwd, EnvVars environment) {
         // Check if conversion required
@@ -103,11 +61,6 @@ public abstract class ShellCommand extends Command {
         return environment;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.command.Command#getContents()
-     */
     @Override
     protected final String getContents() {
         // Get the script content

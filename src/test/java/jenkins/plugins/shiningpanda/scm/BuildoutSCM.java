@@ -40,29 +40,10 @@ import java.io.File;
 import java.io.IOException;
 
 public class BuildoutSCM extends NullSCM {
-
-    /**
-     * Path to the buildout.cfg file
-     */
     private String buildoutCfg;
-
-    /**
-     * Content of the buildout.cfg file
-     */
     private String buildoutContent;
-
-    /**
-     * Name of the fake DJANGO project
-     */
     private String djangoProject;
 
-    /**
-     * Constructor using fields
-     *
-     * @param buildoutCfg     The buildout.cfg file
-     * @param buildoutContent The buildout.cfg content
-     * @param djangoProject   Name of the fake DJANGO project
-     */
     public BuildoutSCM(String buildoutCfg, String buildoutContent, String djangoProject) {
         super();
         this.buildoutCfg = buildoutCfg;
@@ -75,7 +56,7 @@ public class BuildoutSCM extends NullSCM {
         return null;
     }
 
-    protected PollingResult compareRemoteRevisionWith(@SuppressWarnings("rawtypes") AbstractProject project,
+    protected PollingResult compareRemoteRevisionWith(AbstractProject project,
                                                       Launcher launcher, FilePath workspace, TaskListener listener, SCMRevisionState baseline)
             throws IOException, InterruptedException {
         return PollingResult.NO_CHANGES;

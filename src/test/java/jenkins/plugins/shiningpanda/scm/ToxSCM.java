@@ -40,23 +40,9 @@ import java.io.File;
 import java.io.IOException;
 
 public class ToxSCM extends NullSCM {
-
-    /**
-     * Path to the tox.ini file
-     */
     private String toxIni;
-
-    /**
-     * Content of the tox.ini file
-     */
     private String content;
 
-    /**
-     * Constructor using fields
-     *
-     * @param toxIni  The tox.init file
-     * @param content The tox.ini content
-     */
     public ToxSCM(String toxIni, String content) {
         super();
         this.toxIni = toxIni;

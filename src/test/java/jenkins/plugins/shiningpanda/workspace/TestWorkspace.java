@@ -21,7 +21,6 @@
  */
 package jenkins.plugins.shiningpanda.workspace;
 
-import hudson.FilePath;
 import hudson.matrix.AxisList;
 import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixProject;
@@ -41,19 +40,6 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class TestWorkspace extends ShiningPandaTestCase {
-
-    public void testGetVirtualenvPy() throws Exception {
-        Workspace workspace = getWorkspace();
-        FilePath slavePy = workspace.getVirtualenvPy();
-        assertFile(slavePy);
-    }
-
-    public void testGetBootstrapPy() throws Exception {
-        Workspace workspace = getWorkspace();
-        FilePath slavePy = workspace.getBootstrapPy();
-        assertFile(slavePy);
-    }
-
     public void testGetMasterPackageDirNotExists() throws Exception {
         assertNull("workspace should not have a package directory", getWorkspace().getMasterPackagesDir());
     }
@@ -67,7 +53,7 @@ public class TestWorkspace extends ShiningPandaTestCase {
     public void testDeleteFreeStyle() throws Exception {
         PythonInstallation installation = configureCPython2();
         VirtualenvBuilder builder = new VirtualenvBuilder(installation.getName(), "env", true, false,
-                CommandNature.SHELL.getKey(), "echo", true);
+                CommandNature.SHELL.getKey(), "echo", true, false);
         FreeStyleProject project = j.createFreeStyleProject();
         project.getBuildersList().add(builder);
         FreeStyleBuild build = project.scheduleBuild2(0).get();
@@ -83,7 +69,7 @@ public class TestWorkspace extends ShiningPandaTestCase {
         PythonInstallation installation2 = configureCPython2();
         PythonInstallation installation3 = configureCPython3();
         VirtualenvBuilder builder = new VirtualenvBuilder(null, "env", true, false, CommandNature.SHELL.getKey(),
-                "echo", false);
+                "echo", false, false);
         MatrixProject project = j.createProject(MatrixProject.class);
         AxisList axes = new AxisList(new PythonAxis(new String[]{installation2.getName(), installation3.getName()}));
         project.setAxes(axes);

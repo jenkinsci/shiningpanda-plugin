@@ -31,107 +31,48 @@ import jenkins.plugins.shiningpanda.utils.StringUtil;
 import java.util.regex.Pattern;
 
 public class UnixCommand extends ShellCommand {
-
-    /**
-     * Store the variable pattern.
-     */
     private final static Pattern VARIABLE = Pattern.compile("%(\\w+?)%");
 
-    /**
-     * Constructor using fields.
-     *
-     * @param command        The content of the execution script
-     * @param ignoreExitCode Is exit code ignored?
-     * @param convert        Convert batch to shell
-     */
     protected UnixCommand(String command, boolean ignoreExitCode, boolean convert) {
         super(command, ignoreExitCode, convert);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.command.Command#getExtension()
-     */
     @Override
     protected String getExtension() {
         return ".sh";
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jenkins.plugins.shiningpanda.command.ShellCommand#getOriginalContent()
-     */
     @Override
     protected String getSourceContent() {
         return addCrForNonASCII(StringUtil.fixCrLf(getCommand()));
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jenkins.plugins.shiningpanda.command.ShellCommand#getSourceSeparator()
-     */
     @Override
     protected String getSourceSeparator() {
         return "\\";
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jenkins.plugins.shiningpanda.command.ShellCommand#getTargetSeparator()
-     */
     @Override
     protected String getTargetSeparator() {
         return "/";
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jenkins.plugins.shiningpanda.command.ShellCommand#getSourceVariable()
-     */
     @Override
     protected Pattern getSourceVariable() {
         return VARIABLE;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jenkins.plugins.shiningpanda.command.ShellCommand#getTargetVariable()
-     */
     @Override
     protected String getTargetVariable() {
         return "\\${$1}";
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * jenkins.plugins.shiningpanda.command.Command#getArguments(hudson.FilePath
-     * )
-     */
     @Override
     protected ArgumentListBuilder getArguments(FilePath script) {
         return new ArgumentListBuilder(getShell(script.getChannel()), isExitCodeIgnored() ? "-x" : "-xe",
                 script.getRemote());
     }
 
-    /**
-     * Add a leading line for old shell compatibility.
-     *
-     * @param contents The string to fix
-     * @return The fixed string
-     */
     protected static String addCrForNonASCII(String contents) {
         // Check if the first char is not already a line return
         if (contents.indexOf('\n') != 0)
@@ -141,12 +82,6 @@ public class UnixCommand extends ShellCommand {
         return contents;
     }
 
-    /**
-     * Get a shell
-     *
-     * @param channel The channel
-     * @return The shell to use to launch the script file
-     */
     protected static String getShell(VirtualChannel channel) {
         return Hudson.getInstance().getDescriptorByType(Shell.DescriptorImpl.class).getShellOrDefault(channel);
     }

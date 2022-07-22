@@ -26,21 +26,10 @@ import hudson.FilePath;
 import java.io.IOException;
 
 public class MasterWorkspace extends Workspace {
-
-    /**
-     * Constructor using fields.
-     *
-     * @param home The home folder of the workspace.
-     */
     public MasterWorkspace(FilePath home) {
         super(home);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see jenkins.plugins.shiningpanda.workspace.Workspace#getPackagesDir()
-     */
     @Override
     public FilePath getPackagesDir() throws IOException, InterruptedException {
         return getMasterPackagesDir();
