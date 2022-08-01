@@ -130,7 +130,7 @@ public class ToxBuilder extends Builder implements Serializable {
         // Check if out of date to be able to create a new one
         if (virtualenv.isOutdated(workspace, interpreter, false))
             // Create the VIRTUALENV
-            if (!virtualenv.create(launcher, listener, workspace, pwd, environment, interpreter, false, false))
+            if (!virtualenv.create(launcher, listener, workspace, pwd, environment, interpreter, false, true))
                 // Failed to create the VIRTUALENV, do not continue
                 return false;
         // Install or upgrade TOX

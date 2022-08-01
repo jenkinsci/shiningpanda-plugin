@@ -57,7 +57,7 @@ If not, see <https://raw.github.com/jenkinsci/shiningpanda-plugin/master/LICENSE
     </j:choose>
     <j:choose>
       <f:entry field="upgradeDependencies" title="${%Upgrade dependencies}" help="${h.resourcePath}/plugin/shiningpanda/help/builders/VirtualenvBuilder/help-upgradeDependencies.html">
-        <f:checkbox checked="${it.upgradeDependencies}" />
+        <f:checkbox checked="${it.upgradeDependencies}" default="true"/>
       </f:entry>
     </j:choose>
   </f:advanced>

@@ -108,7 +108,7 @@ public class BuildoutBuilder extends Builder implements Serializable {
         // Check if clean required or if configuration changed
         if (virtualenv.isOutdated(workspace, interpreter, false))
             // A new environment is required
-            if (!virtualenv.create(launcher, listener, workspace, pwd, environment, interpreter, false, false))
+            if (!virtualenv.create(launcher, listener, workspace, pwd, environment, interpreter, false, true))
                 // Failed to create the environment, do not continue
                 return false;
         // Install or upgrade Buildout

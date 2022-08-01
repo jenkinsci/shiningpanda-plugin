@@ -49,10 +49,6 @@ public class VirtualenvBuilder extends Builder implements Serializable {
     public final String pythonName;
     public final String home;
     public boolean clear;
-    @Deprecated
-    public transient Boolean useDistribute;
-    @Deprecated
-    private transient Boolean noSitePackages;
     public boolean systemSitePackages;
 
     public boolean upgradeDependencies;
@@ -124,10 +120,6 @@ public class VirtualenvBuilder extends Builder implements Serializable {
     }
 
     private Object readResolve() {
-        // Check if old flag defined
-        if (noSitePackages != null)
-            // If defined, set the new one at the opposite value
-            systemSitePackages = !noSitePackages;
         // Return the builder
         return this;
     }
