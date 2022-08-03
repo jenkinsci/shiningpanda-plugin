@@ -3,11 +3,11 @@
  * Copyright (C) 2011-2015 ShiningPanda S.A.S.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of its license which incorporates the terms and 
- * conditions of version 3 of the GNU Affero General Public License, 
+ * it under the terms of its license which incorporates the terms and
+ * conditions of version 3 of the GNU Affero General Public License,
  * supplemented by the additional permissions under the GNU Affero GPL
- * version 3 section 7: if you modify this program, or any covered work, 
- * by linking or combining it with other code, such other code is not 
+ * version 3 section 7: if you modify this program, or any covered work,
+ * by linking or combining it with other code, such other code is not
  * for that reason alone subject to any of the requirements of the GNU
  * Affero GPL version 3.
  *
@@ -21,193 +21,124 @@
  */
 package jenkins.plugins.shiningpanda.interpreters;
 
-import java.io.IOException;
-import java.util.Map;
-
 import hudson.FilePath;
 import jenkins.plugins.shiningpanda.utils.FilePathUtil;
 
-public abstract class Python {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-    /**
-     * Home folder.
-     */
+public abstract class Python {
     private FilePath home;
 
-    /**
-     * Constructor using fields
-     * 
-     * @param home
-     *            The home folder
-     * @throws InterruptedException
-     * @throws IOException
-     */
     protected Python(FilePath home) throws IOException, InterruptedException {
-	// Call super
-	super();
-	// Store home folder with its absolute form
-	setHome(home.absolutize());
+        // Call super
+        super();
+        // Store home folder with its absolute form
+        setHome(home.absolutize());
     }
 
-    /**
-     * Get the home folder.
-     * 
-     * @return The home folder
-     */
     public FilePath getHome() {
-	return home;
+        return home;
     }
 
-    /**
-     * Set the home folder.
-     * 
-     * @param home
-     *            The home folder
-     */
     private void setHome(FilePath home) {
-	this.home = home;
+        this.home = home;
     }
 
-    /**
-     * Is this a CPython implementation?
-     * 
-     * @return true if this is a CPython implementation, else false
-     */
     public CPython isCPython() {
-	return null;
+        return null;
     }
 
-    /**
-     * Is this a PyPy implementation?
-     * 
-     * @return true if this is a PyPy implementation, else false
-     */
     public PyPy isPyPy() {
-	return null;
+        return null;
     }
 
-    /**
-     * Is this a JYTHON implementation?
-     * 
-     * @return true if this is a JYTHON implementation, else false
-     */
     public Jython isJython() {
-	return null;
+        return null;
     }
 
-    /**
-     * Is this a IronPython implementation?
-     * 
-     * @return true if this is a IronPython implementation, else false
-     */
     public IronPython isIronPython() {
-	return null;
+        return null;
     }
 
-    /**
-     * Is this a VIRTUALENV?
-     * 
-     * @return true if this is a VIRTUALENV, else false
-     */
     public Virtualenv isVirtualenv() {
-	return null;
+        return null;
     }
 
-    /**
-     * Is this an executable implementation?
-     * 
-     * @return true if this is an executable implementation, else false
-     */
     public Executable isExecutable() {
-	return null;
+        return null;
     }
 
-    /**
-     * Check if this is a valid interpreter.
-     * 
-     * @return true if this is a valid interpreter
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public boolean isValid() throws IOException, InterruptedException {
-	// Check that executable exists
-	return getExecutable() != null;
+        // Check that executable exists
+        return getExecutable() != null;
     }
 
-    /**
-     * Is this PYTHON on Windows?
-     * 
-     * @return true if on Windows, else false
-     * @throws IOException
-     * @throws InterruptedException
-     */
     protected boolean isWindows() throws IOException, InterruptedException {
-	return FilePathUtil.isWindows(getHome());
+        return FilePathUtil.isWindows(getHome());
     }
 
-    /**
-     * Is this PYTHON on UNIX?
-     * 
-     * @return true if on UNIX, else false
-     * @throws IOException
-     * @throws InterruptedException
-     */
     protected boolean isUnix() throws IOException, InterruptedException {
-	return FilePathUtil.isUnix(getHome());
+        return FilePathUtil.isUnix(getHome());
     }
 
-    /**
-     * Get the PYTHON executable.
-     * 
-     * @return The executable file if exists, else null
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public abstract FilePath getExecutable() throws IOException, InterruptedException;
 
-    /**
-     * Get the environment for this interpreter.
-     * 
-     * @param includeHomeKey
-     *            If true, add home variable such as PYTHONHOME
-     * @return The environment
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    public abstract Map<String, String> getEnvironment(boolean includeHomeKey) throws IOException, InterruptedException;
+    public FilePath getExecutable(String executable) throws IOException, InterruptedException {
+        List<String> executableSuffixes = new ArrayList<>();
+        if (isWindows()) {
+            executableSuffixes.add(".exe");
+            executableSuffixes.add(".bat");
+            executableSuffixes.add(".cmd");
+            executableSuffixes.add(".ps1");
+        } else {
+            executableSuffixes.add("");
+        }
+        List<String> childDirectories = new ArrayList<>();
+        childDirectories.add("bin");
+        childDirectories.add("Scripts");
 
-    /**
-     * Get the environment for this interpreter with the home variable defined.
-     * 
-     * @return The environment
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    public Map<String, String> getEnvironment() throws IOException, InterruptedException {
-	return getEnvironment(true);
+        for (String executableSuffix : executableSuffixes) {
+            String fullExecutable = executable + executableSuffix;
+            FilePath executablePath;
+            for (String childDirectory : childDirectories) {
+                FilePath childPath = getHome().child(childDirectory);
+                if (childPath.exists()) {
+                    executablePath = childPath.child(executable + executableSuffix);
+                    if (executablePath.exists()) {
+                        return executablePath;
+                    }
+                }
+            }
+            executablePath = getHome().child(fullExecutable);
+            if (executablePath.exists()) {
+                return executablePath;
+            }
+        }
+        return null;
     }
 
-    /**
-     * Create a PYTHON interpreter from its home folder.
-     * 
-     * @param home
-     *            The home folder
-     * @return The interpreter if exists, else null
-     * @throws IOException
-     * @throws InterruptedException
-     */
+    public abstract Map<String, String> getEnvironment(boolean includeHomeKey) throws
+            IOException, InterruptedException;
+
+    public Map<String, String> getEnvironment() throws IOException, InterruptedException {
+        return getEnvironment(true);
+    }
+
     public static Python fromHome(FilePath home) throws IOException, InterruptedException {
-	// Get the possible interpreters
-	Python[] interpreters = new Python[] { new Executable(home), new Virtualenv(home), new Jython(home),
-		new PyPy(home), new IronPython(home), new CPython(home) };
-	// Go threw interpreters and try to find a valid one
-	for (Python interpreter : interpreters)
-	    // Check its validity
-	    if (interpreter.isValid())
-		// Found one, return it
-		return interpreter;
-	// Not found, return null
-	return null;
+        // Get the possible interpreters
+        Python[] interpreters = new Python[]{new Executable(home), new Virtualenv(home), new Jython(home),
+                new PyPy(home), new IronPython(home), new CPython(home)};
+        // Go threw interpreters and try to find a valid one
+        for (Python interpreter : interpreters)
+            // Check its validity
+            if (interpreter.isValid())
+                // Found one, return it
+                return interpreter;
+        // Not found, return null
+        return null;
     }
 
 }

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.609</version>
+		<version>4.43.1</version>
 	</parent>
 	<artifactId>shiningpanda</artifactId>
 	<version>0.25-SNAPSHOT</version>
@@ -36,16 +36,21 @@
 		<url>https://github.com/jenkinsci/shiningpanda-plugin</url>
 	  <tag>HEAD</tag>
   </scm>
+	<properties>
+		<jenkins.version>2.359</jenkins.version>
+		<spotbugs.skip>true</spotbugs.skip>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
+			<version>2.11.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>matrix-project</artifactId>
-			<version>1.6</version>
+			<version>785.v06b_7f47b_c631</version>
+
 		</dependency>
 	</dependencies>
 	<repositories>
@@ -77,7 +82,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
-					<additionalparam>-Xdoclint:none</additionalparam>
+					<doclint>none</doclint>
 				</configuration>
 			</plugin>
 		</plugins>

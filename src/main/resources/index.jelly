@@ -19,6 +19,7 @@ license for more details.
 You should have received a copy of the license along with this program.
 If not, see <https://raw.github.com/jenkinsci/shiningpanda-plugin/master/LICENSE.txt>.
 -->
+<?jelly escape-by-default='true'?>
 <div>
   This plugin adds Python support to Jenkins with some useful builders (standard Python builder, <a href="http://pypi.python.org/pypi/virtualenv" target="_blank">virtualenv</a> builder, ...) and the ability to use a Python axis in multi-configuration projects (for testing on multiple versions of Python).
 </div>

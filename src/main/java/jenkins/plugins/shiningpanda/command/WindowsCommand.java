@@ -3,11 +3,11 @@
  * Copyright (C) 2011-2015 ShiningPanda S.A.S.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of its license which incorporates the terms and 
- * conditions of version 3 of the GNU Affero General Public License, 
+ * it under the terms of its license which incorporates the terms and
+ * conditions of version 3 of the GNU Affero General Public License,
  * supplemented by the additional permissions under the GNU Affero GPL
- * version 3 section 7: if you modify this program, or any covered work, 
- * by linking or combining it with other code, such other code is not 
+ * version 3 section 7: if you modify this program, or any covered work,
+ * by linking or combining it with other code, such other code is not
  * for that reason alone subject to any of the requirements of the GNU
  * Affero GPL version 3.
  *
@@ -21,107 +21,51 @@
  */
 package jenkins.plugins.shiningpanda.command;
 
-import java.util.regex.Pattern;
-
 import hudson.FilePath;
 import hudson.util.ArgumentListBuilder;
 
-public class WindowsCommand extends ShellCommand {
+import java.util.regex.Pattern;
 
-    /**
-     * Store the variable pattern.
-     */
+public class WindowsCommand extends ShellCommand {
     private final static Pattern VARIABLE = Pattern.compile("\\$\\{?(\\w+)\\}?");
 
-    /**
-     * Constructor using fields.
-     * 
-     * @param command
-     *            The content of the execution script
-     * @param ignoreExitCode
-     *            Is exit code ignored?
-     * @param convert
-     *            Convert shell to batch
-     */
     protected WindowsCommand(String command, boolean ignoreExitCode, boolean convert) {
-	super(command, ignoreExitCode, convert);
+        super(command, ignoreExitCode, convert);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see jenkins.plugins.shiningpanda.command.Command#getExtension()
-     */
     @Override
     protected String getExtension() {
-	return ".bat";
+        return ".bat";
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * jenkins.plugins.shiningpanda.command.ShellCommand#getOriginalContent()
-     */
     @Override
     protected String getSourceContent() {
-	return getCommand() + "\r\nexit %ERRORLEVEL%";
+        return getCommand() + "\r\nexit %ERRORLEVEL%";
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * jenkins.plugins.shiningpanda.command.ShellCommand#getSourceSeparator()
-     */
     @Override
     protected String getSourceSeparator() {
-	return "/";
+        return "/";
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * jenkins.plugins.shiningpanda.command.ShellCommand#getTargetSeparator()
-     */
     @Override
     protected String getTargetSeparator() {
-	return "\\";
+        return "\\";
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * jenkins.plugins.shiningpanda.command.ShellCommand#getSourceVariable()
-     */
     @Override
     protected Pattern getSourceVariable() {
-	return VARIABLE;
+        return VARIABLE;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * jenkins.plugins.shiningpanda.command.ShellCommand#getTargetVariable()
-     */
     @Override
     protected String getTargetVariable() {
-	return "%$1%";
+        return "%$1%";
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * jenkins.plugins.shiningpanda.command.Command#getArguments(hudson.FilePath
-     * )
-     */
     @Override
     protected ArgumentListBuilder getArguments(FilePath script) {
-	return new ArgumentListBuilder("cmd.exe", "/c", "call", script.getRemote());
+        return new ArgumentListBuilder("cmd.exe", "/c", "call", script.getRemote());
     }
 
 }
